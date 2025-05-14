@@ -1,0 +1,312 @@
+/* Biến CSS (tương tự style.css và styles.css) */
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #ff7675;
+    --bg-color: #2d3436;
+    --bg-secondary: #1a202c;
+    --text-color: #ffffff;
+    --text-secondary: #a0aec0;
+}
+
+/* Chế độ sáng */
+body.light-mode {
+    --bg-color: #ffffff;
+    --bg-secondary: #f7f7f7;
+    --text-color: #333333;
+    --text-secondary: #666666;
+}
+
+/* Kiểu chung */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: var(--bg-secondary);
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--text-secondary);
+    color: var(--text-color);
+}
+
+.btn-large {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+}
+
+.btn:disabled {
+    background-color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+/* Achievements */
+.achievements {
+    padding: 60px 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title h2 {
+    font-size: 2rem;
+}
+
+.achievement-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.achievement-card {
+    background-color: var(--bg-color);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.achievement-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.achievement-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.achievement-description {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.progress-bar {
+    background-color: var(--bg-secondary);
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress {
+    background-color: var(--primary-color);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    display: block;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+/* Leaderboards */
+.leaderboards {
+    padding: 60px 0;
+    background-color: var(--bg-secondary);
+}
+
+.leaderboard-list {
+    max-width: 800px;
+    margin: 40px auto 0;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--bg-color);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.leaderboard-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.leaderboard-rank {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    width: 30px;
+}
+
+.leaderboard-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.leaderboard-name {
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.leaderboard-score {
+    color: var(--text-secondary);
+    margin-right: 20px;
+}
+
+/* Rewards Showcase */
+.rewards-showcase {
+    padding: 60px 0;
+}
+
+.rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.reward-card {
+    background-color: var(--bg-color);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reward-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reward-card:hover {
+    transform: translateY(-5px);
+}
+
+.reward-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.reward-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.reward-description {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+/* Thông báo tùy chỉnh */
+.thong-bao {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    color: white;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.thong-bao-thanhCong {
+    background-color: #2ecc71;
+}
+
+.thong-bao-canhBao {
+    background-color: #e74c3c;
+}
+
+/* Thiết kế đáp ứng */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .achievement-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .leaderboard-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .leaderboard-rank {
+        margin-bottom: 10px;
+    }
+
+    .leaderboard-score {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .rewards-grid {
+        grid-template-columns: 1fr;
+    }
+}
