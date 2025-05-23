@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Wick: Chapter 3 - Parabellum | Maxion</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-bg: hsl(222, 25%, 10%);
+            --secondary-bg: hsl(219, 32%, 10%);
+            --card-bg: hsl(218, 39%, 14%);
+            --text-primary: hsl(0, 0%, 100%);
+            --text-secondary: hsl(0, 0%, 88%);
+            --text-muted: hsl(0, 0%, 60%);
+            --accent-blue: hsl(214, 84%, 56%);
+            --accent-hover: hsl(211, 100%, 50%);
+            --success: hsl(142, 76%, 36%);
+            --warning: hsl(45, 100%, 54%);
+            --danger: hsl(0, 79%, 63%);
+            --gradient-primary: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-hover) 100%);
+            
+            --font-family: "Inter", sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(34, 35, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+            padding: 15px 30px;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: var(--card-bg);
+            border: none;
+            color: var(--text-primary);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 18px;
+        }
+
+        .action-btn:hover {
+            background: var(--accent-blue);
+            transform: scale(1.1);
+        }
+
+        /* Video Container */
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-player {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-height: 80vh;
+            background: #000;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .video-player.theater-mode {
+            max-height: 100vh;
+            border-radius: 0;
+        }
+
+        .video-element {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        /* Video Controls */
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 40px 30px 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .video-player:hover .video-controls,
+        .video-controls.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .progress-container {
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            position: relative;
+            transition: height 0.2s ease;
+        }
+
+        .progress-container:hover .progress-bar {
+            height: 8px;
+        }
+
+        .progress-filled {
+            height: 100%;
+            background: var(--accent-blue);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .progress-thumb {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            right: -8px;
+        }
+
+        .progress-container:hover .progress-thumb {
+            opacity: 1;
+        }
+
+        .controls-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .controls-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .control-btn:hover {
+            color: var(--accent-blue);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .play-btn {
+            font-size: 32px;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .volume-filled {
+            height: 100%;
+            background: var(--accent-blue);
+            border-radius: 2px;
+            width: 70%;
+        }
+
+        .time-display {
+            font-size: 14px;
+            color: var(--text-secondary);
+            min-width: 80px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Content Section */
+        .content-section {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .movie-info {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .movie-details h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .movie-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card-bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .rating {
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .description {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        .cast-crew {
+            margin-bottom: 30px;
+        }
+
+        .cast-crew h3 {
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .cast-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .cast-member {
+            text-align: center;
+            max-width: 100px;
+        }
+
+        .cast-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .cast-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .related-movies {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .related-movie {
+            display: flex;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .related-movie:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .related-poster {
+            width: 80px;
+            height: 120px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .related-info h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .related-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .related-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--warning);
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 40px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .comment-form {
+            margin-bottom: 30px;
+        }
+
+        .comment-input {
+            width: 100%;
+            background: var(--secondary-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            color: var(--text-primary);
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comment {
+            display: flex;
+            gap: 15px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .comment-text {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .comment-actions-list {
+            display: flex;
+            gap: 15px;
+        }
+
+        .comment-action {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .comment-action:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Quality Selector */
+        .quality-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+        }
+
+        .quality-selector.active {
+            display: block;
+        }
+
+        .quality-option {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: var(--transition);
+            width: 100%;
+            text-align: left;
+        }
+
+        .quality-option:hover {
+            background: var(--accent-blue);
+        }
+
+        .quality-option.active {
+            background: var(--accent-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 15px;
+            }
+
+            .content-section {
+                padding: 20px 15px;
+            }
+
+            .movie-info {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+
+            .movie-details h1 {
+                font-size: 2em;
+            }
+
+            .movie-meta {
+                gap: 10px;
+            }
+
+            .movie-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cast-list {
+                justify-content: center;
+            }
+
+            .video-controls {
+                padding: 20px 15px 15px;
+            }
+
+            .controls-bottom {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .time-display {
+                text-align: center;
+            }
+        }
+
+        /* Theater Mode */
+        .theater-mode .content-section {
+            display: none;
+        }
+
+        .theater-mode .header {
+            background: transparent;
+            backdrop-filter: none;
+        }
+
+        /* Picture in Picture */
+        .pip-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 169px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            z-index: 1001;
+            display: none;
+        }
+
+        .pip-container.active {
+            display: block;
+        }
+
+        .pip-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .pip-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .pip-btn {
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1002;
+            transform: translateX(400px);
+            transition: var(--transition);
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        /* Hide scrollbar but keep functionality */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header-content">
+            <button class="back-btn" onclick="goBack()">
+                <span>←</span>
+                <span>Quay lại</span>
+            </button>
+            
+            <div class="logo">Maxion</div>
+            
+            <div class="header-actions">
+                <button class="action-btn" onclick="toggleTheaterMode()" title="Chế độ rạp">
+                    <span id="theaterIcon">⛶</span>
+                </button>
+                <button class="action-btn" onclick="togglePictureInPicture()" title="Picture in Picture">
+                    <span>⧉</span>
+                </button>
+                <button class="action-btn" onclick="toggleQuality()" title="Chất lượng video">
+                    <span>⚙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Video Container -->
+    <div class="video-container" id="videoContainer">
+        <div class="video-player" id="videoPlayer">
+            <video class="video-element" id="videoElement" preload="metadata">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                <track kind="captions" src="" srclang="vi" label="Tiếng Việt">
+                <track kind="captions" src="" srclang="en" label="English">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Quality Selector -->
+            <div class="quality-selector" id="qualitySelector">
+                <button class="quality-option" onclick="changeQuality('4K')">4K Ultra HD</button>
+                <button class="quality-option active" onclick="changeQuality('1080p')">1080p Full HD</button>
+                <button class="quality-option" onclick="changeQuality('720p')">720p HD</button>
+                <button class="quality-option" onclick="changeQuality('480p')">480p</button>
+                <button class="quality-option" onclick="changeQuality('360p')">360p</button>
+                <button class="quality-option" onclick="changeQuality('auto')">Tự động</button>
+            </div>
+
+            <!-- Video Controls -->
+            <div class="video-controls" id="videoControls">
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-filled" id="progressFilled"></div>
+                        <div class="progress-thumb" id="progressThumb"></div>
+                    </div>
+                </div>
+
+                <div class="controls-bottom">
+                    <div class="controls-left">
+                        <button class="control-btn play-btn" id="playPauseBtn" onclick="togglePlayPause()">
+                            <span id="playIcon">▶</span>
+                        </button>
+                        
+                        <div class="volume-container">
+                            <button class="control-btn" id="muteBtn" onclick="toggleMute()">
+                                <span id="volumeIcon">🔊</span>
+                            </button>
+                            <div class="volume-slider" id="volumeSlider">
+                                <div class="volume-filled" id="volumeFilled"></div>
+                            </div>
+                        </div>
+
+                        <div class="time-display" id="timeDisplay">
+                            00:00 / 00:00
+                        </div>
+                    </div>
+
+                    <div class="controls-right">
+                        <button class="control-btn" onclick="changePlaybackSpeed()" title="Tốc độ phát">
+                            <span id="speedIcon">1x</span>
+                        </button>
+                        
+                        <button class="control-btn" onclick="toggleSubtitles()" title="Phụ đề">
+                            <span>CC</span>
+                        </button>
+                        
+                        <button class="control-btn" onclick="toggleFullscreen()" title="Toàn màn hình">
+                            <span id="fullscreenIcon">⛶</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Picture in Picture Container -->
+    <div class="pip-container" id="pipContainer">
+        <video class="pip-video" id="pipVideo"></video>
+        <div class="pip-controls">
+            <button class="pip-btn" onclick="closePiP()">×</button>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content-section" id="contentSection">
+        <div class="movie-info">
+            <div class="movie-details">
+                <h1>John Wick: Chapter 3 - Parabellum</h1>
+                
+                <div class="movie-meta">
+                    <div class="meta-item rating">
+                        <span>⭐</span>
+                        <span>7.4</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📅</span>
+                        <span>2019</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>⏱️</span>
+                        <span>2h 11phút</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>🎬</span>
+                        <span>Hành động, Thriller</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>🔞</span>
+                        <span>R - 17+</span>
+                    </div>
+                </div>
+
+                <p class="description">
+                    John Wick bị truy nã với mức tiền thưởng 14 triệu đô la trên đầu và một đội quân sát thủ đang truy đuổi anh ta. Sau khi giết một thành viên của High Table - tổ chức sát thủ bí mật quốc tế, John Wick bị trục xuất khỏi mọi dịch vụ và cảnh báo trong ngành. Anh ta phải chiến đấu để thoát khỏi New York khi mà các sát thủ giỏi nhất thế giới đang săn lùng anh.
+                </p>
+
+                <div class="movie-actions">
+                    <button class="action-button btn-primary" onclick="restartMovie()">
+                        <span>🔄</span>
+                        Xem lại từ đầu
+                    </button>
+                    <button class="action-button btn-secondary" onclick="addToWatchlist()">
+                        <span>❤️</span>
+                        Thêm vào yêu thích
+                    </button>
+                    <button class="action-button btn-secondary" onclick="downloadMovie()">
+                        <span>📥</span>
+                        Tải xuống
+                    </button>
+                    <button class="action-button btn-secondary" onclick="shareMovie()">
+                        <span>📤</span>
+                        Chia sẻ
+                    </button>
+                </div>
+
+                <div class="cast-crew">
+                    <h3>Diễn viên & Đạo diễn</h3>
+                    <div class="cast-list">
+                        <div class="cast-member">
+                            <div class="cast-avatar">KR</div>
+                            <div class="cast-name">Keanu Reeves</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">HB</div>
+                            <div class="cast-name">Halle Berry</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">IM</div>
+                            <div class="cast-name">Ian McShane</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">LF</div>
+                            <div class="cast-name">Laurence Fishburne</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">CS</div>
+                            <div class="cast-name">Chad Stahelski</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <h3>Phim liên quan</h3>
+                <div class="related-movies">
+                    <div class="related-movie" onclick="playRelatedMovie('john-wick-1')">
+                        <div class="related-poster">JW1</div>
+                        <div class="related-info">
+                            <h4>John Wick</h4>
+                            <p>2014 • 1h 41phút</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>7.4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie('john-wick-2')">
+                        <div class="related-poster">JW2</div>
+                        <div class="related-info">
+                            <h4>John Wick: Chapter 2</h4>
+                            <p>2017 • 2h 2phút</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>7.5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie('john-wick-4')">
+                        <div class="related-poster">JW4</div>
+                        <div class="related-info">
+                            <h4>John Wick: Chapter 4</h4>
+                            <p>2023 • 2h 49phút</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>7.7</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie('nobody')">
+                        <div class="related-poster">NBD</div>
+                        <div class="related-info">
+                            <h4>Nobody</h4>
+                            <p>2021 • 1h 32phút</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>7.4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie('atomic-blonde')">
+                        <div class="related-poster">AB</div>
+                        <div class="related-info">
+                            <h4>Atomic Blonde</h4>
+                            <p>2017 • 1h 55phút</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>6.7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <div class="comments-header">
+                <h3>Bình luận (847)</h3>
+                <select style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px;">
+                    <option>Mới nhất</option>
+                    <option>Cũ nhất</option>
+                    <option>Phổ biến nhất</option>
+                </select>
+            </div>
+
+            <div class="comment-form">
+                <textarea class="comment-input" placeholder="Viết bình luận của bạn..."></textarea>
+                <div class="comment-actions">
+                    <button class="action-button btn-primary" onclick="postComment()">Đăng bình luận</button>
+                </div>
+            </div>
+
+            <div class="comments-list">
+                <div class="comment">
+                    <div class="comment-avatar">AN</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Anh Nguyễn</span>
+                            <span class="comment-time">2 giờ trước</span>
+                        </div>
+                        <div class="comment-text">
+                            Phim hay tuyệt vời! John Wick 3 thực sự không làm tôi thất vọng. Những pha hành động mãn nhãn và kịch bản chặt chẽ. Keanu Reeves thật sự đã thể hiện xuất sắc vai diễn này.
+                        </div>
+                        <div class="comment-actions-list">
+                            <button class="comment-action">
+                                <span>👍</span>
+                                <span>124</span>
+                            </button>
+                            <button class="comment-action">
+                                <span>👎</span>
+                                <span>5</span>
+                            </button>
+                            <button class="comment-action">Trả lời</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-avatar">MT</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Minh Trần</span>
+                            <span class="comment-time">5 giờ trước</span>
+                        </div>
+                        <div class="comment-text">
+                            Tôi đã xem cả series John Wick và phần này thực sự là đỉnh cao. Những pha đánh đấm được choreograph cực kỳ tinh tế và chuyên nghiệp.
+                        </div>
+                        <div class="comment-actions-list">
+                            <button class="comment-action">
+                                <span>👍</span>
+                                <span>89</span>
+                            </button>
+                            <button class="comment-action">
+                                <span>👎</span>
+                                <span>2</span>
+                            </button>
+                            <button class="comment-action">Trả lời</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-avatar">HL</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Hương Ly</span>
+                            <span class="comment-time">1 ngày trước</span>
+                        </div>
+                        <div class="comment-text">
+                            Chất lượng 4K trên Maxion thật sự tuyệt vời! Hình ảnh rất sắc nét và âm thanh sống động. Xứng đáng với từng đồng đã trả.
+                        </div>
+                        <div class="comment-actions-list">
+                            <button class="comment-action">
+                                <span>👍</span>
+                                <span>67</span>
+                            </button>
+                            <button class="comment-action">
+                                <span>👎</span>
+                                <span>1</span>
+                            </button>
+                            <button class="comment-action">Trả lời</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        // DOM Elements
+        const video = document.getElementById('videoElement');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playIcon = document.getElementById('playIcon');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFilled = document.getElementById('progressFilled');
+        const progressThumb = document.getElementById('progressThumb');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeFilled = document.getElementById('volumeFilled');
+        const volumeIcon = document.getElementById('volumeIcon');
+        const muteBtn = document.getElementById('muteBtn');
+        const fullscreenIcon = document.getElementById('fullscreenIcon');
+        const speedIcon = document.getElementById('speedIcon');
+        const videoControls = document.getElementById('videoControls');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoContainer = document.getElementById('videoContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const qualitySelector = document.getElementById('qualitySelector');
+        const header = document.getElementById('header');
+        const theaterIcon = document.getElementById('theaterIcon');
+        const contentSection = document.getElementById('contentSection');
+        const pipContainer = document.getElementById('pipContainer');
+        const pipVideo = document.getElementById('pipVideo');
+        const notification = document.getElementById('notification');
+
+        // Video State
+        let isPlaying = false;
+        let isMuted = false;
+        let currentVolume = 0.7;
+        let currentSpeed = 1;
+        let isTheaterMode = false;
+        let isPiPActive = false;
+        let controlsTimeout;
+        let isFullscreen = false;
+        let subtitlesEnabled = false;
+
+        // Playback speeds
+        const playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+        let currentSpeedIndex = 3; // 1x
+
+        // Initialize video player
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePlayer();
+            setupEventListeners();
+            
+            // Show loading
+            showLoading();
+            
+            // Hide loading when video is ready
+            video.addEventListener('canplay', hideLoading);
+            video.addEventListener('loadedmetadata', updateDuration);
+        });
+
+        function initializePlayer() {
+            video.volume = currentVolume;
+            updateVolumeDisplay();
+            updateSpeedDisplay();
+            
+            // Set initial state
+            video.currentTime = 0;
+            updateProgress();
+        }
+
+        function setupEventListeners() {
+            // Video events
+            video.addEventListener('loadstart', showLoading);
+            video.addEventListener('canplay', hideLoading);
+            video.addEventListener('waiting', showLoading);
+            video.addEventListener('playing', hideLoading);
+            video.addEventListener('timeupdate', updateProgress);
+            video.addEventListener('ended', onVideoEnded);
+            video.addEventListener('play', () => {
+                isPlaying = true;
+                playIcon.textContent = '⏸';
+            });
+            video.addEventListener('pause', () => {
+                isPlaying = false;
+                playIcon.textContent = '▶';
+            });
+
+            // Progress bar
+            progressContainer.addEventListener('click', seek);
+            progressContainer.addEventListener('mousemove', showProgressPreview);
+
+            // Volume control
+            volumeSlider.addEventListener('click', setVolume);
+
+            // Controls visibility
+            videoPlayer.addEventListener('mouseenter', showControls);
+            videoPlayer.addEventListener('mouseleave', hideControlsDelayed);
+            videoPlayer.addEventListener('mousemove', showControls);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboard);
+
+            // Click to play/pause
+            video.addEventListener('click', togglePlayPause);
+
+            // Auto-hide header when playing
+            video.addEventListener('play', () => {
+                if (isPlaying) {
+                    setTimeout(() => {
+                        if (isPlaying && !videoPlayer.matches(':hover')) {
+                            header.classList.add('hidden');
+                        }
+                    }, 3000);
+                }
+            });
+
+            video.addEventListener('pause', () => {
+                header.classList.remove('hidden');
+            });
+
+            // Fullscreen change
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+        }
+
+        // Playback controls
+        function togglePlayPause() {
+            if (video.paused) {
+                video.play();
+                showNotification('Đang phát video', 'success');
+            } else {
+                video.pause();
+                showNotification('Đã tạm dừng', 'success');
+            }
+        }
+
+        function seek(e) {
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const newTime = (clickX / rect.width) * video.duration;
+            video.currentTime = newTime;
+        }
+
+        function updateProgress() {
+            if (video.duration) {
+                const progress = (video.currentTime / video.duration) * 100;
+                progressFilled.style.width = `${progress}%`;
+                progressThumb.style.left = `${progress}%`;
+                
+                // Update time display
+                const current = formatTime(video.currentTime);
+                const duration = formatTime(video.duration);
+                timeDisplay.textContent = `${current} / ${duration}`;
+            }
+        }
+
+        function updateDuration() {
+            const duration = formatTime(video.duration);
+            timeDisplay.textContent = `00:00 / ${duration}`;
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                return `${minutes}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Volume controls
+        function toggleMute() {
+            if (isMuted) {
+                video.volume = currentVolume;
+                isMuted = false;
+                volumeIcon.textContent = '🔊';
+            } else {
+                currentVolume = video.volume;
+                video.volume = 0;
+                isMuted = true;
+                volumeIcon.textContent = '🔇';
+            }
+            updateVolumeDisplay();
+        }
+
+        function setVolume(e) {
+            const rect = volumeSlider.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const newVolume = Math.max(0, Math.min(1, clickX / rect.width));
+            
+            video.volume = newVolume;
+            currentVolume = newVolume;
+            isMuted = false;
+            
+            updateVolumeDisplay();
+            updateVolumeIcon();
+        }
+
+        function updateVolumeDisplay() {
+            const volumePercent = isMuted ? 0 : (video.volume * 100);
+            volumeFilled.style.width = `${volumePercent}%`;
+        }
+
+        function updateVolumeIcon() {
+            if (isMuted || video.volume === 0) {
+                volumeIcon.textContent = '🔇';
+            } else if (video.volume < 0.5) {
+                volumeIcon.textContent = '🔉';
+            } else {
+                volumeIcon.textContent = '🔊';
+            }
+        }
+
+        // Playback speed
+        function changePlaybackSpeed() {
+            currentSpeedIndex = (currentSpeedIndex + 1) % playbackSpeeds.length;
+            currentSpeed = playbackSpeeds[currentSpeedIndex];
+            video.playbackRate = currentSpeed;
+            updateSpeedDisplay();
+            showNotification(`Tốc độ phát: ${currentSpeed}x`, 'success');
+        }
+
+        function updateSpeedDisplay() {
+            speedIcon.textContent = `${currentSpeed}x`;
+        }
+
+        // Fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen().catch(err => {
+                    console.log('Error entering fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function updateFullscreenIcon() {
+            isFullscreen = !!document.fullscreenElement;
+            fullscreenIcon.textContent = isFullscreen ? '⛶' : '⛶';
+        }
+
+        // Theater mode
+        function toggleTheaterMode() {
+            isTheaterMode = !isTheaterMode;
+            document.body.classList.toggle('theater-mode', isTheaterMode);
+            theaterIcon.textContent = isTheaterMode ? '⛶' : '⛶';
+            
+            if (isTheaterMode) {
+                showNotification('Đã bật chế độ rạp', 'success');
+            } else {
+                showNotification('Đã tắt chế độ rạp', 'success');
+            }
+        }
+
+        // Picture in Picture
+        function togglePictureInPicture() {
+            if (!isPiPActive) {
+                if (document.pictureInPictureEnabled) {
+                    video.requestPictureInPicture()
+                        .then(() => {
+                            isPiPActive = true;
+                            showNotification('Đã bật Picture in Picture', 'success');
+                        })
+                        .catch(err => {
+                            console.log('PiP error:', err);
+                            showNotification('Không thể bật Picture in Picture', 'error');
+                        });
+                } else {
+                    // Fallback PiP implementation
+                    enableCustomPiP();
+                }
+            } else {
+                if (document.pictureInPictureElement) {
+                    document.exitPictureInPicture();
+                } else {
+                    disableCustomPiP();
+                }
+            }
+        }
+
+        function enableCustomPiP() {
+            pipContainer.classList.add('active');
+            pipVideo.src = video.src;
+            pipVideo.currentTime = video.currentTime;
+            if (isPlaying) {
+                pipVideo.play();
+            }
+            isPiPActive = true;
+            showNotification('Đã bật Picture in Picture', 'success');
+        }
+
+        function disableCustomPiP() {
+            pipContainer.classList.remove('active');
+            isPiPActive = false;
+            showNotification('Đã tắt Picture in Picture', 'success');
+        }
+
+        function closePiP() {
+            disableCustomPiP();
+        }
+
+        // Quality selector
+        function toggleQuality() {
+            qualitySelector.classList.toggle('active');
+        }
+
+        function changeQuality(quality) {
+            const currentTime = video.currentTime;
+            const wasPlaying = !video.paused;
+            
+            // Update active quality option
+            document.querySelectorAll('.quality-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // In a real app, you would change the video source here
+            showNotification(`Đã chuyển sang chất lượng ${quality}`, 'success');
+            qualitySelector.classList.remove('active');
+            
+            // Restore playback state
+            video.currentTime = currentTime;
+            if (wasPlaying) {
+                video.play();
+            }
+        }
+
+        // Subtitles
+        function toggleSubtitles() {
+            subtitlesEnabled = !subtitlesEnabled;
+            
+            if (subtitlesEnabled) {
+                // Enable subtitles
+                if (video.textTracks.length > 0) {
+                    video.textTracks[0].mode = 'showing';
+                }
+                showNotification('Đã bật phụ đề', 'success');
+            } else {
+                // Disable subtitles
+                Array.from(video.textTracks).forEach(track => {
+                    track.mode = 'hidden';
+                });
+                showNotification('Đã tắt phụ đề', 'success');
+            }
+        }
+
+        // Controls visibility
+        function showControls() {
+            videoControls.classList.add('visible');
+            clearTimeout(controlsTimeout);
+            
+            controlsTimeout = setTimeout(() => {
+                if (isPlaying && !videoPlayer.matches(':hover')) {
+                    hideControls();
+                }
+            }, 3000);
+        }
+
+        function hideControls() {
+            videoControls.classList.remove('visible');
+        }
+
+        function hideControlsDelayed() {
+            clearTimeout(controlsTimeout);
+            controlsTimeout = setTimeout(hideControls, 1000);
+        }
+
+        // Loading
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        // Video ended
+        function onVideoEnded() {
+            showNotification('Video đã kết thúc', 'success');
+            // Auto-play next episode or related video
+            setTimeout(() => {
+                showNotification('Đang tự động phát video tiếp theo...', 'success');
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        function handleKeyboard(e) {
+            // Prevent default browser shortcuts when video is focused
+            if (document.activeElement === video || e.target.closest('.video-player')) {
+                switch(e.code) {
+                    case 'Space':
+                        e.preventDefault();
+                        togglePlayPause();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        video.currentTime -= 10;
+                        showNotification('Tua lùi 10 giây', 'success');
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        video.currentTime += 10;
+                        showNotification('Tua tới 10 giây', 'success');
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        video.volume = Math.min(1, video.volume + 0.1);
+                        updateVolumeDisplay();
+                        updateVolumeIcon();
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        video.volume = Math.max(0, video.volume - 0.1);
+                        updateVolumeDisplay();
+                        updateVolumeIcon();
+                        break;
+                    case 'KeyM':
+                        e.preventDefault();
+                        toggleMute();
+                        break;
+                    case 'KeyF':
+                        e.preventDefault();
+                        toggleFullscreen();
+                        break;
+                    case 'KeyT':
+                        e.preventDefault();
+                        toggleTheaterMode();
+                        break;
+                    case 'KeyC':
+                        e.preventDefault();
+                        toggleSubtitles();
+                        break;
+                }
+            }
+        }
+
+        // Navigation functions
+        function goBack() {
+            // In a real app, this would navigate back to the previous page
+            showNotification('Đang quay lại trang trước...', 'success');
+            setTimeout(() => {
+                window.history.back();
+            }, 1000);
+        }
+
+        // Movie actions
+        function restartMovie() {
+            video.currentTime = 0;
+            video.play();
+            showNotification('Đang phát lại từ đầu', 'success');
+        }
+
+        function addToWatchlist() {
+            showNotification('Đã thêm vào danh sách yêu thích', 'success');
+        }
+
+        function downloadMovie() {
+            showNotification('Bắt đầu tải xuống...', 'success');
+        }
+
+        function shareMovie() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'John Wick: Chapter 3 - Parabellum',
+                    text: 'Xem phim hay trên Maxion',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showNotification('Đã sao chép liên kết', 'success');
+            }
+        }
+
+        function playRelatedMovie(movieId) {
+            showNotification(`Đang tải ${movieId}...`, 'success');
+            // In a real app, this would load the selected movie
+        }
+
+        // Comments
+        function postComment() {
+            const commentInput = document.querySelector('.comment-input');
+            const comment = commentInput.value.trim();
+            
+            if (comment) {
+                showNotification('Đã đăng bình luận', 'success');
+                commentInput.value = '';
+            } else {
+                showNotification('Vui lòng nhập nội dung bình luận', 'error');
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Progress preview (hover)
+        function showProgressPreview(e) {
+            // In a real app, this would show thumbnail preview
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const previewTime = (clickX / rect.width) * video.duration;
+            
+            // You could show a tooltip with the time here
+        }
+
+        // Auto-hide header on scroll
+        let lastScrollY = 0;
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+            
+            lastScrollY = currentScrollY;
+        });
+
+        // Click outside to close quality selector
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.quality-selector') && !e.target.closest('[onclick*="toggleQuality"]')) {
+                qualitySelector.classList.remove('active');
+            }
+        });
+
+        // Initialize focus for keyboard controls
+        videoPlayer.setAttribute('tabindex', '0');
+        videoPlayer.focus();
+    </script>
+</body>
+</html>

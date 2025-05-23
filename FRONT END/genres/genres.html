@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Khám phá các thể loại anime trên MAXION...">
+    <meta name="keywords" content="anime, thể loại anime, MAXION...">
+    <meta name="author" content="MAXION">
+    <title>Thể Loại Anime - MAXION</title>
+    <link rel="stylesheet" href="./style.css"> <!-- CSS for this page -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Thể Loại Anime - MAXION",
+        "description": "Khám phá các thể loại anime trên MAXION...",
+        "url": "https://www.example.com/categories" <!-- Replace with your actual URL -->
+    }
+    </script>
+</head>
+<body class="dark-mode"> <!-- Default theme, JS will manage -->
+
+     <iframe 
+        id="header-iframe" 
+        src="../header.html" 
+        style="width: 100%; border: none; position: fixed; top: 0; z-index: 1000;" 
+        onload="adjustIframeHeight(this); syncThemeWithIframe();"
+        title="Header Navigation"
+        loading="eager">
+    </iframe>
+
+    <!-- Main Page Content Wrapper -->
+    <main class="page-content fixed-header-padding">
+
+        <section class="categories-hero">
+            <div class="container">
+                <div class="categories-hero-content">
+                    <h1>Khám phá thể loại Anime</h1>
+                    <p>Tìm kiếm và khám phá các bộ anime yêu thích theo thể loại, từ hành động kịch tính đến tình cảm lãng mạn.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="category-filter">
+            <div class="container">
+                <div class="filter-container">
+                    <div class="filter-options">
+                        <div class="filter-dropdown">
+                            <label for="sort-by" class="sr-only">Sắp xếp theo</label>
+                            <select id="sort-by">
+                                <option value="popular">Phổ biến nhất</option>
+                                <option value="newest">Mới nhất</option>
+                                <option value="highest-rated">Đánh giá cao nhất</option>
+                                <option value="a-z">A-Z</option>
+                            </select>
+                        </div>
+                        <div class="filter-dropdown">
+                            <label for="year-filter" class="sr-only">Lọc theo năm</label>
+                            <select id="year-filter">
+                                <option value="all">Tất cả năm</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="older">Cũ hơn 2021</option>
+                            </select>
+                        </div>
+                        <div class="filter-dropdown">
+                             <label for="status-filter" class="sr-only">Lọc theo trạng thái</label>
+                            <select id="status-filter">
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="ongoing">Đang phát hành</option>
+                                <option value="completed">Hoàn thành</option>
+                                <option value="upcoming">Sắp ra mắt</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-filter">
+                        <label for="search-input" class="sr-only">Tìm kiếm anime</label>
+                        <input type="text" id="search-input" placeholder="Tìm kiếm tên anime...">
+                        <button id="search-button" aria-label="Tìm kiếm">🔍</button>
+                    </div>
+                </div>
+                <div class="filter-tags">
+                    <button class="tag-btn active" data-genre="all">Tất cả</button>
+                    <button class="tag-btn" data-genre="hành động">Hành động</button>
+                    <button class="tag-btn" data-genre="phiêu lưu">Phiêu lưu</button>
+                    <button class="tag-btn" data-genre="tình cảm">Tình cảm</button>
+                    <button class="tag-btn" data-genre="hài hước">Hài hước</button>
+                    <button class="tag-btn" data-genre="fantasy">Fantasy</button>
+                    <button class="tag-btn" data-genre="isekai">Isekai</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories-main">
+            <div class="container">
+                <template id="anime-card-template">
+                    <div class="category-card" data-id="">
+                        <img src="" alt="" class="category-card-img" loading="lazy">
+                        <div class="category-overlay">
+                            <div class="category-overlay-content">
+                                <span class="category-count-display"></span>
+                                <button class="favorite-btn" aria-label="Thêm vào yêu thích">❤️</button>
+                                <div class="rating">
+                                    <span class="stars-display" style="color: gold;"></span> (<span class="rating-value"></span>/5)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="category-name"></div>
+                    </div>
+                </template>
+                <div id="anime-grid-placeholder">
+                    <!-- Sections and grids will be dynamically built by JS -->
+                </div>
+                <div id="no-results" class="no-results-message" style="display: none;">
+                    <p>Không tìm thấy anime nào phù hợp với lựa chọn của bạn.</p>
+                </div>
+                <div class="pagination">
+                    <button class="pagination-arrow" id="prev-page" aria-label="Trang trước" disabled>◀</button>
+                    <span id="page-info">Trang 1 / 1</span>
+                    <button class="pagination-arrow" id="next-page" aria-label="Trang kế tiếp" disabled>▶</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="trending-genres">
+            <div class="container">
+                <div class="section-header"><h2>Thể loại thịnh hành</h2><a href="#trending" class="view-all">Xem tất cả ▶</a></div>
+                <div class="trending-slider-container">
+                    <div class="trending-slider">
+                        <div class="trending-item"><img src="https://via.placeholder.com/270x150/20232a/ffffff?text=Isekai" alt="Isekai Genre"><div class="trending-item-overlay"><h3>Isekai</h3><div><span>248 anime</span><span class="tag-hot">🔥 Hot</span></div></div></div>
+                        <div class="trending-item"><img src="https://via.placeholder.com/270x150/20232a/ffffff?text=Slice+of+Life" alt="Slice of Life"><div class="trending-item-overlay"><h3>Slice of Life</h3><div><span>185 anime</span><span class="tag-trending">↗ Trending</span></div></div></div>
+                        <div class="trending-item"><img src="https://via.placeholder.com/270x150/20232a/ffffff?text=Psychological" alt="Psychological"><div class="trending-item-overlay"><h3>Psychological</h3><div><span>132 anime</span><span class="tag-trending">↗ Trending</span></div></div></div>
+                    </div>
+                </div>
+                <div class="slider-controls">
+                    <button id="prev-trending" class="btn btn-outline" aria-label="Trending trước">◀</button>
+                    <button id="next-trending" class="btn btn-outline" aria-label="Trending kế">▶</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="staff-picks">
+             <div class="container">
+                <div class="section-header"><h2>Staff Picks</h2><a href="#staff-picks" class="view-all">Xem tất cả ▶</a></div>
+                <div class="staff-pick-grid">
+                     <div class="staff-pick-card">
+                        <div class="staff-pick-image-container"><img src="https://via.placeholder.com/320x180/1e1e1e/ffffff?text=Psychological" alt="Psychological Thriller"><div class="staff-pick-badge">Staff Pick</div></div>
+                        <div class="staff-pick-content"><h3>Psychological Thriller</h3><p>Dành cho những ai thích suy ngẫm và bất ngờ...</p><div class="staff-pick-author"><img src="https://via.placeholder.com/40x40/333333/ffffff?text=E" alt="Editor Avatar"><div><div>Biên Tập Viên A</div><div>MAXION Team</div></div></div><a href="#" class="explore-link">Khám phá <span>▶</span></a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-title"><h2>Câu hỏi thường gặp (FAQ)</h2></div>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false"><span>Làm thế nào để tìm anime theo thể loại?</span><span class="faq-icon">+</span></button>
+                        <div class="faq-answer"><p>Sử dụng bộ lọc hoặc các thẻ thể loại ở đầu trang.</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Iframe -->
+    <!-- Footer Include -->
+       <!-- Footer Include -->
+    <iframe 
+        id="footer-iframe"
+        src="../footer.html" 
+        style="width: 100%; border: none;" 
+        onload="adjustIframeHeight(this);"
+        title="Footer Information"
+        loading="lazy">
+    </iframe>
+
+    <!-- Screen reader only class for labels -->
+    <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}</style>
+
+    <script src="./script.js"></script> <!-- Link to local JS -->
+</body>
+</html>

@@ -1,0 +1,2836 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxion - Trang phim online tốt nhất</title>
+   
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root{
+            --live-indicator-shadow: hsla(0, 79%, 63%, .5);
+            --rich-blank-fogra-30: hsl(219, 32%, 10%);
+            --rich-blank-fogra-29: hsl(222, 25%, 10%);
+            --live-indicator: hsl(0, 79%, 63%);
+            --oxford-blue-50: hsla(218, 39%, 14%, .8);
+            --oxford-blue: hsl(218, 39%, 14%);
+            --light-azure: hsl(214, 84%, 56%);
+            --off-white: hsl(0, 0%, 88%);
+            --yellow: hsl(45, 100%, 54%);
+            --white: hsl(0, 0%, 100%);
+            --azure: hsl(211, 100%, 50%);
+            --success: hsl(142, 76%, 36%);
+            --gradient-primary: linear-gradient(135deg, var(--azure) 0%, var(--light-azure) 100%);
+            --gradient-success: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+
+            --font-family: "Inter", sans-serif;
+
+            --section-heading: 40px;
+            --font-size-large: 22px;
+            --font-size-medium: 17px;
+            --font-size-small: 14px;
+            --font-size-extra-small: 12px;
+
+            --fw7: 700;
+            --fw6: 600;
+            --fw5: 500;
+
+            --padding-x: 120px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Light theme variables */
+        [data-theme="light"] {
+            --rich-blank-fogra-30: hsl(0, 0%, 95%);
+            --rich-blank-fogra-29: hsl(0, 0%, 98%);
+            --oxford-blue: hsl(0, 0%, 90%);
+            --oxford-blue-50: hsla(0, 0%, 85%, .8);
+            --off-white: hsl(0, 0%, 20%);
+            --white: hsl(0, 0%, 10%);
+        }
+
+        *{
+            margin: 0;
+            padding: 0;
+            transition: var(--transition);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html{ 
+            font-family: var(--font-family);
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, h5, h6 {color: var(--white);}
+
+        body{
+            background: var(--rich-blank-fogra-29);
+            color: var(--off-white);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        img{
+            display: block;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            object-fit: cover;
+        }
+
+        input, button, select{
+            font: inherit;
+            background: none;
+            border: none;
+            outline: none;
+        }
+
+        button{
+            color: var(--off-white);
+            cursor: pointer;
+        }
+
+        li{list-style: none;}
+
+        a{
+            text-decoration: none;
+            display: block;
+            color: var(--off-white);
+        }
+
+        ::-webkit-scrollbar{
+            width: 8px;
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb{
+            background: var(--light-azure);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover{
+            background: var(--azure);
+        }
+
+        .container{
+            max-width: 1920px;
+            margin: auto;
+        }
+
+        .navbar, .banner, .movies, .category, .live, .achievements{ 
+            padding: 0 var(--padding-x);
+        }
+
+        .section-heading{
+            font-size: var(--section-heading);
+            font-weight: var(--fw5);
+            margin-bottom: 60px;
+            position: relative;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--rich-blank-fogra-29);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--oxford-blue);
+            border-top: 3px solid var(--light-azure);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /*HEADER*/
+        header {
+            position: relative;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .navbar{
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(34, 35, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+            transition: var(--transition);
+            position: relative;
+            z-index: 1001;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar.scrolled {
+            background: rgba(34, 35, 40, 0.98);
+            border-bottom: 1px solid var(--light-azure);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transform: translateY(0);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            z-index: 1002;
+        }
+
+        .navbar-brand img {
+            width: 140px;
+            height: auto;
+            filter: drop-shadow(0 2px 8px rgba(52, 152, 219, 0.3));
+            transition: var(--transition);
+        }
+
+        .navbar-brand:hover img {
+            filter: drop-shadow(0 2px 12px rgba(52, 152, 219, 0.5));
+            transform: scale(1.05);
+        }
+
+        .navbar-menu-btn{ 
+            display: none;
+            z-index: 1003;
+        }
+
+        nav{ 
+            margin-right: 200px;
+            z-index: 1001;
+        }
+
+        .navbar-nav{ 
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .navbar-link{
+            font-size: var(--font-size-small);
+            font-weight: var(--fw5);
+            position: relative;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .navbar-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--light-azure), var(--azure));
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .navbar-link:hover::before {
+            opacity: 0.1;
+        }
+
+        .navbar-link:hover{ 
+            color: var(--light-azure);
+            transform: translateY(-2px);
+        }
+
+        .indicator{ position: relative;}
+
+        .indicator::after{
+            content: '';
+            background: var(--live-indicator);
+            position: absolute;
+            top: calc(50% - 1px);
+            right: -15px;
+            width: 4px;
+            height: 4px;
+            box-shadow: 0 0 0 2px var(--live-indicator-shadow);
+            border-radius: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .navbar-actions{
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 1002;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            background: var(--oxford-blue);
+            border-radius: 25px;
+            padding: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .theme-toggle:hover {
+            background: var(--light-azure);
+            border-color: var(--light-azure);
+            transform: scale(1.1);
+        }
+
+        .navbar-form{
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .navbar-form-search{
+            background: var(--oxford-blue);
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 30px;
+            color: var(--off-white);
+            font-size: var(--font-size-small);
+            font-weight: var(--fw5);
+            transition: var(--transition);
+            min-width: 220px;
+            border: 2px solid transparent;
+        }
+
+        .navbar-form-search:focus {
+            background: var(--oxford-blue-50);
+            border-color: var(--light-azure);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+            transform: scale(1.02);
+        }
+
+        .navbar-form-btn{
+            background: transparent;
+            position: absolute;
+            top: calc(50% - 12px);
+            right: 12px;
+            padding: 4px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .navbar-form-btn:hover {
+            background: var(--light-azure);
+            transform: scale(1.1);
+        }
+
+        .navbar-form-search::placeholder { 
+            color: var(--off-white);
+            opacity: 0.7;
+        }
+
+        .navbar-form-close, .navbar-search-btn{ display: none;}
+
+        /* Search suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--oxford-blue);
+            border-radius: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1010;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .search-suggestions.active {
+            display: block;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .suggestion-item {
+            padding: 15px 24px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--oxford-blue-50);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .suggestion-item::before {
+            content: '🎬';
+            font-size: 16px;
+        }
+
+        .suggestion-item:hover {
+            background: var(--oxford-blue-50);
+            color: var(--light-azure);
+            transform: translateX(5px);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .navbar-signin{
+            display: flex;
+            align-items: center;
+            font-size: var(--font-size-small);
+            font-weight: var(--fw6);
+            background: var(--gradient-primary);
+            padding: 12px 24px;
+            border-radius: 30px;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .navbar-signin:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+            border-color: var(--white);
+        }
+
+        /* User menu dropdown */
+        .user-menu {
+            position: relative;
+            display: none; /* Hidden by default, shown when logged in */
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--light-azure);
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            border-color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--oxford-blue);
+            border-radius: 15px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1010;
+        }
+
+        .user-dropdown.active {
+            display: block;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 1px solid var(--oxford-blue-50);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-item:hover {
+            background: var(--oxford-blue-50);
+            color: var(--light-azure);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        /*BANNER SECTION*/
+        .banner{ 
+            margin-bottom: 60px;
+            margin-top: 40px;
+        }
+
+        .banner-card{
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .banner-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, transparent 50%, rgba(0,0,0,0.8) 100%);
+            z-index: 1;
+        }
+
+        .banner-card .card-content{
+            position: absolute;
+            right: 80px;
+            bottom: 60px;
+            left: 80px;
+            z-index: 2;
+        }
+
+        .banner-card .card-info{
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .banner-card .card-info div{
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .banner-card .card-info span{ 
+            font-weight: var(--fw6);
+            font-size: var(--font-size-small);
+        }
+
+        .banner-card .card-info .quality{
+            background: var(--gradient-primary);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: var(--fw7);
+            color: var(--white);
+        }
+
+        .banner-card .card-title{
+            font-size: 3.5em;
+            color: var(--white);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+            line-height: 1.2;
+            animation: slideInLeft 0.8s ease-out 0.3s both;
+        }
+
+        .banner-card:hover .banner-img{ 
+            transform: scale(1.05);
+        }
+
+        .banner-img{ 
+            object-position: center;
+            transition: transform 0.8s ease;
+        }
+
+        /* Play button for banner */
+        .banner-play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 2;
+            opacity: 0;
+            font-size: 24px;
+            color: var(--white);
+        }
+
+        .banner-card:hover .banner-play-btn {
+            opacity: 1;
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0.3); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /*MOVIES SECTION*/
+        .movies{ margin-bottom: 60px;}
+
+        .filter-bar{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--oxford-blue);
+            padding: 25px 35px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .filter-dropdowns {
+            display: flex;
+            gap: 20px;
+        }
+
+        .filter-bar select{
+            color: var(--white);
+            font-size: var(--font-size-small);
+            cursor: pointer;
+            background: var(--rich-blank-fogra-29);
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .filter-bar select:hover {
+            background: var(--oxford-blue-50);
+            transform: translateY(-2px);
+        }
+
+        .filter-bar option{ 
+            background: var(--oxford-blue);
+        }
+
+        .filter-radios{
+            position: relative;
+            background: var(--rich-blank-fogra-29);
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        .filter-radios input{ display: none;}
+
+        .filter-radios label{
+            position: relative;
+            margin: 0 15px;
+            font-size: var(--font-size-small);
+            user-select: none;
+            cursor: pointer;
+            z-index: 10;
+            padding: 8px 0;
+            transition: var(--transition);
+        }
+
+        .filter-radios input:checked + label, .filter-radios label:hover {
+            color: var(--light-azure);
+        }
+
+        input ~ .checked-radio-bg{
+            --width: 95px;
+            --left: 5px;
+
+            background: var(--gradient-primary);
+            position: absolute;
+            top: 5px;
+            left: var(--left);
+            bottom: 5px;
+            width: var(--width);
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        #popular:checked ~ .checked-radio-bg{
+            --width: 83px;
+            --left: 100px;
+        }
+
+        #newest:checked ~ .checked-radio-bg{
+            --width: 91px;
+            --left: 183px;
+        }
+
+        .movies-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .movie-card{
+            --scale: .8;
+            cursor: pointer;
+            transition: var(--transition);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .movie-card .card-head{
+            position: relative;
+            height: 280px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .movie-card:hover .card-head {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .movie-card:hover .card-img{ 
+            transform: scale(1.1);
+        }
+
+        .movie-card .card-overlay{
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.3);
+            transition: var(--transition);
+        }
+
+        .movie-card:hover .card-overlay{ 
+            opacity: 1;
+        }
+
+        .movie-card .bookmark, .movie-card .rating{
+            position: absolute;
+            top: 15px;
+            padding: 8px;
+            border-radius: 12px;
+            color: var(--light-azure);
+            transform: scale(var(--scale));
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .movie-card .bookmark{
+            background: rgba(34, 60, 80, 0.8);
+            left: 15px;
+        }
+
+        .movie-card .bookmark:hover{ 
+            color: var(--yellow);
+            background: rgba(255, 193, 0, 0.2);
+        }
+
+        .movie-card .bookmark.active {
+            color: var(--yellow);
+            background: rgba(255, 193, 0, 0.3);
+        }
+
+        .movie-card .rating{
+            display: flex;
+            align-items: center;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+        }
+
+        .movie-card .rating span{
+            color: var(--white);
+            font-size: 13px;
+            font-weight: var(--fw6);
+            margin-left: 5px;
+        }
+
+        .movie-card .play{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(var(--scale));
+            transition: var(--transition);
+            font-size: 60px;
+            color: var(--white);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .movie-card:hover :is(.bookmark, .rating, .play){ 
+            --scale: 1;
+        }
+
+        .movie-card .card-title{
+            font-size: var(--font-size-medium);
+            font-weight: var(--fw5);
+            margin-bottom: 8px;
+            text-align: center;
+            line-height: 1.4;
+            transition: var(--transition);
+        }
+
+        .movie-card:hover .card-title{ 
+            color: var(--light-azure);
+        }
+
+        .movie-card .card-info{
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: var(--font-size-extra-small);
+            font-weight: var(--fw5);
+            opacity: 0.8;
+        }
+
+        .load-more{
+            background: var(--gradient-primary);
+            display: block;
+            padding: 20px 50px;
+            margin: auto;
+            font-size: var(--font-size-small);
+            font-weight: var(--fw6);
+            border-radius: 25px;
+            color: var(--white);
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+
+        .load-more:hover{ 
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /*CATEGORY SECTION*/
+        .category{ margin-bottom: 60px;}
+
+        .category-grid{
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .category-card{
+            position: relative;
+            height: 180px;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-card::after{
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8));
+            transition: var(--transition);
+        }
+
+        .category-card:hover::after {
+            background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.9));
+        }
+
+        .category-card .name, .category-card .total{
+            position: absolute;
+            bottom: 20px;
+            color: var(--white);
+            z-index: 20;
+            transition: var(--transition);
+        }
+
+        .category-card .name{
+            left: 20px;
+            font-size: 20px;
+            font-weight: var(--fw6);
+        }
+
+        .category-card:hover .name{ 
+            color: var(--light-azure);
+            transform: translateX(5px);
+        }
+
+        .category-card .total{
+            right: 20px;
+            font-size: 16px;
+            background: var(--gradient-primary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: var(--fw6);
+        }
+
+        /*ACHIEVEMENTS SECTION*/
+        .achievements {
+            margin-bottom: 80px;
+            background: linear-gradient(135deg, var(--oxford-blue) 0%, var(--rich-blank-fogra-30) 100%);
+            padding: 60px var(--padding-x);
+            border-radius: 30px;
+            margin-left: var(--padding-x);
+            margin-right: var(--padding-x);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .achievement-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .achievement-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .achievement-card:hover::before {
+            left: 100%;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: var(--light-azure);
+        }
+
+        .achievement-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .achievement-title {
+            font-size: var(--font-size-large);
+            font-weight: var(--fw6);
+            margin-bottom: 10px;
+            color: var(--white);
+        }
+
+        .achievement-description {
+            font-size: var(--font-size-small);
+            color: var(--off-white);
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .progress-bar .progress {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+            position: relative;
+        }
+
+        .progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .achievement-card span {
+            font-size: var(--font-size-small);
+            font-weight: var(--fw6);
+            color: var(--light-azure);
+        }
+
+        /*LIVE SECTION*/
+        .live{ margin-bottom: 60px;}
+
+        .live-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .live-card{ 
+            cursor: pointer;
+            transition: var(--transition);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .live-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .live-card .card-head{
+            position: relative;
+            height: 280px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .live-card:hover .card-head {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .live-card .card-head::after{
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.7));
+        }
+
+        .live-card:hover .card-img{ 
+            transform: scale(1.08);
+        }
+
+        .live-card .live-badge, .live-card .total-viewers{
+            position: absolute;
+            left: 30px;
+            border-radius: 15px;
+            padding: 8px 15px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .live-card .live-badge{
+            top: 30px;
+            font-size: var(--font-size-extra-small);
+            font-weight: var(--fw6);
+            background: var(--live-indicator);
+            color: var(--white);
+            animation: pulse 2s infinite;
+        }
+
+        .live-card .total-viewers{
+            bottom: 30px;
+            font-size: 14px;
+            font-weight: var(--fw6);
+            background: rgba(0,0,0,0.7);
+        }
+
+        .live-card .play{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(.8);
+            opacity: 0;
+            z-index: 10;
+            transition: var(--transition);
+            font-size: 60px;
+            color: var(--white);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .live-card:hover .play{
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .live-card .card-body{
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .live-card .avatar{
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 2px solid var(--light-azure);
+        }
+
+        .live-card .card-title{
+            font-size: var(--font-size-large);
+            font-weight: var(--fw5);
+            line-height: 1.4;
+            transition: var(--transition);
+        }
+
+        .live-card:hover .card-title{ 
+            color: var(--light-azure);
+        }
+
+        /*FOOTER*/
+        footer{
+            background: var(--rich-blank-fogra-30);
+            padding: 80px var(--padding-x) 40px;
+            border-top: 1px solid var(--oxford-blue);
+        }
+
+        .footer-content{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--oxford-blue-50);
+            padding-bottom: 80px;
+        }
+
+        .footer-brand{
+            max-width: 300px;
+            margin-right: 130px;
+        }
+
+        .footer-logo{
+            width: 120px;
+            margin-bottom: 30px;
+        }
+
+        .slogan{
+            font-size: var(--font-size-small);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .social-link {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: var(--oxford-blue);
+            border-radius: 12px;
+            transition: var(--transition);
+            font-size: 18px;
+        }
+
+        .social-link a:hover {
+            background: var(--light-azure);
+            transform: translateY(-3px);
+        }
+
+        .footer-links{
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 50px;
+            align-items: flex-start;
+        }
+
+        .link-heading{ 
+            margin-bottom: 25px;
+            font-size: var(--font-size-medium);
+            font-weight: var(--fw6);
+            color: var(--white);
+        }
+
+        .link-item{ 
+            font-size: var(--font-size-small);
+            transition: var(--transition);
+        }
+
+        ul .link-item:not(:last-child) { 
+            margin-bottom: 12px;
+        }
+
+        .link-item:hover a{ 
+            color: var(--light-azure);
+            transform: translateX(5px);
+        }
+
+        .footer-copyright{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 40px;
+        }
+
+        .footer-copyright p, .wrapper a{ 
+            font-size: var(--font-size-small);
+            opacity: 0.7;
+        }
+
+        .wrapper a:hover { 
+            color: var(--light-azure);
+            opacity: 1;
+        }
+
+        .wrapper a:not(:last-child) { 
+            margin-right: 30px;
+        }
+
+        .wrapper{ 
+            display: flex;
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+            font-size: 24px;
+            color: var(--white);
+        }
+
+        .scroll-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Floating action buttons */
+        .floating-actions {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .floating-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            opacity: 0.8;
+            font-size: 20px;
+            color: var(--white);
+        }
+
+        .floating-btn:hover {
+            opacity: 1;
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Quick stats panel */
+        .quick-stats {
+            position: fixed;
+            top: 50%;
+            right: -300px;
+            transform: translateY(-50%);
+            background: var(--oxford-blue);
+            padding: 20px;
+            border-radius: 15px 0 0 15px;
+            transition: right 0.3s ease;
+            z-index: 998;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .quick-stats.active {
+            right: 0;
+        }
+
+        .quick-stats h4 {
+            color: var(--light-azure);
+            margin-bottom: 15px;
+            font-size: var(--font-size-medium);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--oxford-blue-50);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--off-white);
+            font-size: var(--font-size-small);
+        }
+
+        .stat-value {
+            color: var(--light-azure);
+            font-weight: var(--fw6);
+            font-size: var(--font-size-small);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: var(--oxford-blue);
+            color: var(--white);
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: var(--transition);
+            border-left: 4px solid var(--light-azure);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--live-indicator);
+        }
+
+        /*MEDIA QUERIES*/
+        @media screen and (max-width: 1200px){
+            :root{
+                --padding-x: 80px;
+                --section-heading: 36px;
+            }
+
+            .banner-card .card-title{ 
+                font-size: 2.5em;
+            }
+
+            .category-grid{ 
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .footer-content{ 
+                flex-direction: column;
+            }
+
+            .footer-brand{
+                margin-right: 0;
+                margin-bottom: 60px;
+            }
+
+            .footer-links{ 
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media screen and (max-width: 900px){
+            :root{
+                --padding-x: 60px;
+            }
+
+            .banner-card .card-content{
+                bottom: 40px;
+                left: 60px;
+                right: 60px;
+            }
+
+            .movies-grid{
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 25px;
+            }
+        }
+
+        @media screen and (max-width: 768px){
+            :root{
+                --padding-x: 40px;
+                --section-heading: 32px;
+            }
+
+            .banner{ display: none;}
+
+            .movies{ margin-top: 100px;}
+
+            .filter-bar{
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .filter-dropdowns {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .category-grid{ 
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .achievement-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements {
+                margin-left: 0;
+                margin-right: 0;
+                border-radius: 0;
+            }
+
+            .navbar-nav {
+                display: none;
+            }
+
+            .floating-actions {
+                bottom: 80px;
+                right: 20px;
+            }
+        }
+
+        @media screen and (max-width: 575px){
+            :root{
+                --padding-x: 20px;
+                --section-heading: 28px;
+                --font-size-large: 18px;
+            }
+
+            .movies-grid{
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 20px;
+            }
+
+            .movie-card .card-head{
+                height: 200px;
+            }
+
+            .category-grid{ 
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .category-card {
+                height: 120px;
+            }
+
+            .live-grid{
+                grid-template-columns: 1fr;
+            }
+
+            .footer-copyright{ 
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .wrapper{ 
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .scroll-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .floating-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .notification {
+                right: 20px;
+                left: 20px;
+            }
+        }
+
+        /* Hidden utility class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Voice search button */
+        .voice-btn {
+            background: var(--oxford-blue);
+            border-radius: 50%;
+            padding: 10px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            font-size: 18px;
+        }
+
+        .voice-btn:hover {
+            background: var(--light-azure);
+            border-color: var(--light-azure);
+            transform: scale(1.1);
+        }
+
+        .voice-btn:active {
+            background: var(--live-indicator);
+            animation: pulse 0.3s ease;
+        }
+
+        /* Enhanced hover effects */
+        .movie-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.1), transparent);
+            transition: left 0.6s ease;
+            z-index: 1;
+        }
+
+        .movie-card:hover::before {
+            left: 100%;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--light-azure);
+            animation: spin 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <div class="container">
+        <header class="">
+            <div class="navbar" id="navbar">
+                <a href="#" class="navbar-brand">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTQwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIyMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+" alt="Maxion Logo">
+                </a>
+
+                <nav class="" id="navMenu">
+                    <ul class="navbar-nav">
+                        <li><a href="#" class="navbar-link">Trang chủ</a></li>
+                        <li><a href="#movies" class="navbar-link">Danh sách phim</a></li>
+                        <li><a href="#achievements" class="navbar-link indicator">Thành tựu</a></li>
+                        <li><a href="#category" class="navbar-link">Thể loại</a></li>
+                        <li><a href="#live" class="navbar-link">TV Trực tiếp</a></li>
+                    </ul>
+                </nav>
+
+                <div class="navbar-actions">
+                    <form class="navbar-form" id="searchForm">
+                        <input type="text" name="search" placeholder="Tìm kiếm phim..." class="navbar-form-search" id="searchInput">
+
+                        <button type="button" class="navbar-form-btn" id="searchBtn">
+                            <span style="font-size: 18px;">🔍</span>
+                        </button>
+
+                        <div class="search-suggestions" id="searchSuggestions"></div>
+                    </form>
+
+                    <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
+                        <span>🎤</span>
+                    </button>
+
+                    <button class="theme-toggle" id="themeToggle">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+
+                    <a href="./login/out/Login.html" class="navbar-signin" id="signInBtn">
+                        <span>Đăng nhập</span>
+                        <span style="margin-left: 8px;">➡️</span>
+                    </a>
+
+                    <!-- User menu (hidden by default) -->
+                    <div class="user-menu" id="userMenu">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+Cjx0ZXh0IHg9IjEwIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPC9zdmc+Cjwvc3ZnPg==" alt="User Avatar" class="user-avatar" id="userAvatar">
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="dropdown-item" onclick="viewProfile()">
+                                <span>👤</span>
+                                Hồ sơ của tôi
+                            </div>
+                            <div class="dropdown-item" onclick="viewBookmarks()">
+                                <span>❤️</span>
+                                Danh sách yêu thích
+                            </div>
+                            <div class="dropdown-item" onclick="viewHistory()">
+                                <span>⏰</span>
+                                Lịch sử xem
+                            </div>
+                            <div class="dropdown-item" onclick="logout()">
+                                <span>🚪</span>
+                                Đăng xuất
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="banner">
+                <div class="banner-card" onclick="playBannerMovie()">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDkwMCA1MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI5MDAiIGhlaWdodD0iNTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgouYmFubmVyLXRleHQgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjkwMCIgeTI9IjUwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMWUzYzcyIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJhNTI5OCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjQ1MCIgeT0iMjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYmFubmVyLXRleHQiIGZvbnQtc2l6ZT0iNDgiPkpvaG4gV2ljayAzPC90ZXh0Pgo8dGV4dCB4PSI0NTAiIHk9IjI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImJhbm5lci10ZXh0IiBmb250LXNpemU9IjE4Ij5QYXJhYmVsbHVtPC90ZXh0Pgo8L3N2Zz4=" alt="John Wick 3 Banner" class="banner-img">
+                    
+                    <div class="banner-play-btn">
+                        <span>▶</span>
+                    </div>
+
+                    <div class="card-content">
+                        <div class="card-info">
+                            <div class="genre">
+                                <span>🎬 Hành động/Thriller</span>
+                            </div>
+
+                            <div class="year">
+                                <span>📅 2019</span>
+                            </div>
+
+                            <div class="duration">
+                                <span>⏱️ 2h 11phút</span>
+                            </div>
+
+                            <div class="quality">4K</div>
+                        </div>
+                        <h2 class="card-title">John Wick: Chapter 3 - Parabellum</h2>
+                    </div>
+                </div>
+            </section>
+
+            <section class="movies" id="movies">
+                <h2 class="section-heading">Phim Hot</h2>
+                
+                <div class="filter-bar">
+                    <div class="filter-dropdowns">
+                        <select name="genre" class="genre" id="genreFilter">
+                            <option value="all">Tất cả thể loại</option>
+                            <option value="action">Hành động</option>
+                            <option value="adventure">Phiêu lưu</option>
+                            <option value="animation">Hoạt hình</option>
+                            <option value="comedy">Hài</option>
+                            <option value="drama">Chính kịch</option>
+                            <option value="fantasy">Giả tưởng</option>
+                            <option value="horror">Kinh dị</option>
+                            <option value="scifi">Khoa học viễn tưởng</option>
+                            <option value="war">Chiến tranh</option>
+                        </select>
+
+                        <select name="year" class="year" id="yearFilter">
+                            <option value="all">Tất cả năm</option>
+                            <option value="2024">2024</option>
+                            <option value="2020-2023">2020-2023</option>
+                            <option value="2010-2019">2010-2019</option>
+                            <option value="2000-2009">2000-2009</option>
+                            <option value="1980-1999">1980-1999</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-radios">
+                        <input type="radio" name="grade" id="featured" checked>
+                        <label for="featured">Đặc biệt</label>
+
+                        <input type="radio" name="grade" id="popular">
+                        <label for="popular">Phổ biến</label>
+
+                        <input type="radio" name="grade" id="newest">
+                        <label for="newest">Mới nhất</label>
+
+                        <div class="checked-radio-bg"></div>
+                    </div>
+                </div>
+
+                <div class="movies-grid" id="moviesGrid">
+                    <!-- Movies will be populated by JavaScript -->
+                </div>
+
+                <button class="load-more" id="loadMore">TẢI THÊM</button>
+            </section>
+
+            <section class="category" id="category">
+                <h2 class="section-heading">Thể loại</h2>
+
+                <div class="category-grid">
+                    <div class="category-card" onclick="filterByCategory('action')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZGMyNjI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoG5oIMSR4buZbmc8L3RleHQ+Cjwvc3ZnPg==" alt="Hành động" class="card-img">
+                        <div class="name">Hành động</div>
+                        <div class="total">120</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('comedy')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZjM5YzEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoGk8L3RleHQ+Cjwvc3ZnPg==" alt="Hài" class="card-img">
+                        <div class="name">Hài</div>
+                        <div class="total">85</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('thriller')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjNzQzZjM5Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlRocmlsbGVyPC90ZXh0Pgo8L3N2Zz4=" alt="Thriller" class="card-img">
+                        <div class="name">Thriller</div>
+                        <div class="total">45</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('horror')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMmMzZTUwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPktpbmcgxJHhu4s8L3RleHQ+Cjwvc3ZnPg==" alt="Kinh dị" class="card-img">
+                        <div class="name">Kinh dị</div>
+                        <div class="total">60</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('adventure')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMjc4NGU3Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlBoaWV1IGzGsOG7pW5nPC90ZXh0Pgo8L3N2Zz4=" alt="Phiêu lưu" class="card-img">
+                        <div class="name">Phiêu lưu</div>
+                        <div class="total">95</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('animation')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZWQ0ODEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkhv4bqhdCBow6xuaDwvdGV4dD4KPC9zdmc+" alt="Hoạt hình" class="card-img">
+                        <div class="name">Hoạt hình</div>
+                        <div class="total">70</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('crime')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMzQzYTQwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlThu5lpIHBo4bqhbTwvdGV4dD4KPC9zdmc+" alt="Tội phạm" class="card-img">
+                        <div class="name">Tội phạm</div>
+                        <div class="total">35</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('scifi')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjOWI1OWI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlNjaS1GaTwvdGV4dD4KPC9zdmc+" alt="Khoa học viễn tưởng" class="card-img">
+                        <div class="name">Sci-fi</div>
+                        <div class="total">55</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="achievements" id="achievements">
+                <h2 class="section-heading">Thành tựu của bạn</h2>
+                
+                <div class="achievement-cards">
+                    <article class="achievement-card">
+                        <div class="achievement-icon">🌟</div>
+                        <h3 class="achievement-title">Otaku Mới</h3>
+                        <p class="achievement-description">Xem 10 bộ phim đầu tiên</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="70"></div>
+                        </div>
+                        <span>7/10</span>
+                    </article>
+
+                    <article class="achievement-card">
+                        <div class="achievement-icon">🔥</div>
+                        <h3 class="achievement-title">Người Hâm Mộ</h3>
+                        <p class="achievement-description">Xem 5 bộ phim hoàn chỉnh</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="40"></div>
+                        </div>
+                        <span>2/5</span>
+                    </article>
+
+                    <article class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <h3 class="achievement-title">Nhà Phê Bình</h3>
+                        <p class="achievement-description">Đánh giá 20 bộ phim</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="15"></div>
+                        </div>
+                        <span>3/20</span>
+                    </article>
+
+                    <article class="achievement-card">
+                        <div class="achievement-icon">⏰</div>
+                        <h3 class="achievement-title">Người Kiên Nhẫn</h3>
+                        <p class="achievement-description">Xem phim 30 ngày liên tiếp</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="50"></div>
+                        </div>
+                        <span>15/30</span>
+                    </article>
+                </div>
+            </section>
+
+            <section class="live" id="live">
+                <h2 class="section-heading">TV Shows Trực Tiếp</h2>
+
+                <div class="live-grid">
+                    <div class="live-card" onclick="playLiveStream('planet-earth')">
+                        <div class="card-head">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMzQ5ODAwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzIzNzEwMCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlBsYW5ldCBFYXJ0aDwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TORU9Pc b25lIC0gSXNsYW5kczwvdGV4dD4KPC9zdmc+" alt="Planet Earth II" class="card-img">
+                            <div class="live-badge">LIVE</div>
+                            <div class="total-viewers">305K người xem</div>
+                            <div class="play">
+                                <span>⭕</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNDI4NWY0IiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkJCQzwvdGV4dD4KPC9zdmc+" alt="BBC America" class="avatar">
+                            <h3 class="card-title">Planet Earth II <br> Season 1 - Islands</h3>
+                        </div>
+                    </div>
+
+                    <div class="live-card" onclick="playLiveStream('game-of-thrones')">
+                        <div class="card-head">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjQxZTMwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzMzMGMxZiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPkdhbWUgb2YgVGhyb25lczwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TRUE9b24gNSAtIE1vdGhlcidzIE1lcmN5PC90ZXh0Pgo8L3N2Zz4=" alt="Game of Thrones" class="card-img">
+                            <div class="live-badge">LIVE</div>
+                            <div class="total-viewers">1.7M người xem</div>
+                            <div class="play">
+                                <span>⭕</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <h3 class="card-title">Game of Thrones <br> Season 5 - Mother's Mercy</h3>
+                        </div>
+                    </div>
+
+                    <div class="live-card" onclick="playLiveStream('vikings')">
+                        <div class="card-head">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNTQ2ZTdhIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzM3NGY1MyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlZpa2luZ3M8L3RleHQ+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMTYiPlNlYXNvbiA0IC0gV2hhdCBNaWdodCBIYXZlIEJlZW48L3RleHQ+Cjwvc3ZnPg==" alt="Vikings" class="card-img">
+                            <div class="live-badge">LIVE</div>
+                            <div class="total-viewers">468K người xem</div>
+                            <div class="play">
+                                <span>⭕</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <h3 class="card-title">Vikings <br> Season 4 - What Might Have Been</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTIwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIxMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+" alt="Maxion Logo" class="footer-logo">
+                    <p class="slogan">Nền tảng xem phim và chương trình truyền hình trực tuyến hàng đầu Việt Nam. Trải nghiệm giải trí đỉnh cao với chất lượng 4K.</p>
+
+                    <div class="social-link">
+                        <a href="#">📘</a>
+                        <a href="#">🐦</a>
+                        <a href="#">📷</a>
+                        <a href="#">🎵</a>
+                        <a href="#">📺</a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <ul>
+                        <h4 class="link-heading">Maxion</h4>
+                        <li class="link-item"><a href="#">Về chúng tôi</a></li>
+                        <li class="link-item"><a href="#">Hồ sơ của tôi</a></li>
+                        <li class="link-item"><a href="#">Gói dịch vụ</a></li>
+                        <li class="link-item"><a href="#">Liên hệ</a></li>
+                    </ul>
+
+                    <ul>
+                        <h4 class="link-heading">Khám phá</h4>
+                        <li class="link-item"><a href="#">TV Trực tiếp</a></li>
+                        <li class="link-item"><a href="#">Tin tức</a></li>
+                        <li class="link-item"><a href="#">Thể thao</a></li>
+                        <li class="link-item"><a href="#">Thư viện phim</a></li>
+                    </ul>
+
+                    <ul>
+                        <h4 class="link-heading">Nội dung</h4>
+                        <li class="link-item"><a href="#">Chương trình TV</a></li>
+                        <li class="link-item"><a href="#">Phim</a></li>
+                        <li class="link-item"><a href="#">Trẻ em</a></li>
+                        <li class="link-item"><a href="#">Bộ sưu tập</a></li>
+                    </ul>
+
+                    <ul>
+                        <h4 class="link-heading">Hỗ trợ</h4>
+                        <li class="link-item"><a href="#">Tài khoản & Thanh toán</a></li>
+                        <li class="link-item"><a href="#">Gói & Giá cả</a></li>
+                        <li class="link-item"><a href="#">Thiết bị hỗ trợ</a></li>
+                        <li class="link-item"><a href="#">Trợ năng</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-copyright">
+                <div class="copyright">
+                    <p>© Copyright 2024 Maxion. Tất cả quyền được bảo lưu.</p>
+                </div>
+
+                <div class="wrapper">
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Điều khoản sử dụng</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Scroll to top button -->
+        <button class="scroll-top" id="scrollTop">
+            <span>⬆️</span>
+        </button>
+
+        <!-- Floating action buttons -->
+        <div class="floating-actions">
+            <button class="floating-btn" onclick="getRandomRecommendation()" title="Phim ngẫu nhiên">
+                <span>🎲</span>
+            </button>
+            <button class="floating-btn" onclick="getTrendingMovies()" title="Phim thịnh hành">
+                <span>📈</span>
+            </button>
+            <button class="floating-btn" onclick="applyAdvancedFilter()" title="Lọc chất lượng cao">
+                <span>🔧</span>
+            </button>
+            <button class="floating-btn" onclick="toggleQuickStats()" title="Thống kê">
+                <span>📊</span>
+            </button>
+        </div>
+
+        <!-- Quick stats panel -->
+        <div class="quick-stats" id="quickStats">
+            <h4>Thống kê nhanh</h4>
+            <div class="stat-item">
+                <span class="stat-label">Tổng số phim:</span>
+                <span class="stat-value" id="totalMovies">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Điểm TB:</span>
+                <span class="stat-value" id="avgRating">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Đã bookmark:</span>
+                <span class="stat-value" id="bookmarkCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Đã xem:</span>
+                <span class="stat-value" id="watchedCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Thể loại phổ biến:</span>
+                <span class="stat-value" id="topGenre">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        // Movie data
+        const movies = [
+            {
+                title: 'Red Notice',
+                genre: 'Hành động/Hài',
+                year: '2021',
+                rating: '6.3',
+                categories: ['action', 'comedy']
+            },
+            {
+                title: 'Spider-Man: Homecoming',
+                genre: 'Hành động/Thám hiểm',
+                year: '2017',
+                rating: '7.4',
+                categories: ['action', 'adventure']
+            },
+            {
+                title: 'Ma Trận: Hồi Sinh',
+                genre: 'Khoa học viễn tưởng/Hành động',
+                year: '2021',
+                rating: '5.6',
+                categories: ['scifi', 'action']
+            },
+            {
+                title: 'Bất Tử',
+                genre: 'Phiêu lưu/Hành động',
+                year: '2021',
+                rating: '6.3',
+                categories: ['adventure', 'action']
+            },
+            {
+                title: 'Dune: Phần Một',
+                genre: 'Khoa học viễn tưởng/Phiêu lưu',
+                year: '2021',
+                rating: '8.0',
+                categories: ['scifi', 'adventure']
+            },
+            {
+                title: '1917',
+                genre: 'Chiến tranh/Chính kịch',
+                year: '2019',
+                rating: '8.2',
+                categories: ['war', 'drama']
+            },
+            {
+                title: 'Shang-Chi và Huyền Thoại Mười Chiếc Nhẫn',
+                genre: 'Hành động/Giả tưởng',
+                year: '2021',
+                rating: '7.4',
+                categories: ['action', 'fantasy']
+            },
+            {
+                title: 'Casino Royale',
+                genre: 'Hành động/Phiêu lưu',
+                year: '2006',
+                rating: '8.0',
+                categories: ['action', 'adventure']
+            },
+            {
+                title: 'The Dark Knight',
+                genre: 'Hành động/Phiêu lưu',
+                year: '2008',
+                rating: '9.0',
+                categories: ['action', 'adventure']
+            },
+            {
+                title: 'Black Panther',
+                genre: 'Hành động/Phiêu lưu',
+                year: '2018',
+                rating: '7.3',
+                categories: ['action', 'adventure']
+            },
+            {
+                title: 'Venom',
+                genre: 'Hành động/Phiêu lưu',
+                year: '2018',
+                rating: '6.6',
+                categories: ['action', 'adventure']
+            },
+            {
+                title: 'Chúa Nhẫn: Sự Trở Về Của Nhà Vua',
+                genre: 'Giả tưởng/Phiêu lưu',
+                year: '2003',
+                rating: '9.0',
+                categories: ['fantasy', 'adventure']
+            },
+            {
+                title: 'Saving Private Ryan',
+                genre: 'Chiến tranh/Hành động',
+                year: '1998',
+                rating: '8.6',
+                categories: ['war', 'action']
+            },
+            {
+                title: 'Interstellar',
+                genre: 'Khoa học viễn tưởng/Phiêu lưu',
+                year: '2014',
+                rating: '8.7',
+                categories: ['scifi', 'adventure']
+            },
+            {
+                title: 'Gladiator',
+                genre: 'Hành động/Phiêu lưu',
+                year: '2000',
+                rating: '8.5',
+                categories: ['action', 'adventure']
+            },
+            {
+                title: 'Avengers: Endgame',
+                genre: 'Hành động/Khoa học viễn tưởng',
+                year: '2019',
+                rating: '8.5',
+                categories: ['action', 'scifi']
+            },
+            {
+                title: 'Wonder Woman 1984',
+                genre: 'Hành động/Phiêu lưu',
+                year: '2020',
+                rating: '5.4',
+                categories: ['action', 'adventure']
+            },
+            {
+                title: 'Captain Marvel',
+                genre: 'Hành động/Khoa học viễn tưởng',
+                year: '2019',
+                rating: '5.4',
+                categories: ['action', 'scifi']
+            }
+        ];
+
+        // DOM elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const notification = document.getElementById('notification');
+        const navbar = document.getElementById('navbar');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const searchInput = document.getElementById('searchInput');
+        const searchSuggestions = document.getElementById('searchSuggestions');
+        const genreFilter = document.getElementById('genreFilter');
+        const yearFilter = document.getElementById('yearFilter');
+        const moviesGrid = document.getElementById('moviesGrid');
+        const loadMoreBtn = document.getElementById('loadMore');
+        const scrollTopBtn = document.getElementById('scrollTop');
+        const signInBtn = document.getElementById('signInBtn');
+        const userMenu = document.getElementById('userMenu');
+        const userAvatar = document.getElementById('userAvatar');
+        const userDropdown = document.getElementById('userDropdown');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const quickStats = document.getElementById('quickStats');
+
+        // State variables
+        let currentMovies = [];
+        let displayedMovies = 0;
+        const moviesPerPage = 9;
+        let bookmarkedMovies = JSON.parse(localStorage.getItem('bookmarkedMovies') || '[]');
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        let watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading screen
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 1500);
+
+            initializeApp();
+        });
+
+        // Initialize application
+        function initializeApp() {
+            currentMovies = [...movies];
+            displayMovies();
+            animateProgressBars();
+            setupEventListeners();
+            setupScrollEffects();
+            checkLoginStatus();
+            initializeTheme();
+            updateQuickStats();
+        }
+
+        // Check login status
+        function checkLoginStatus() {
+            if (isLoggedIn) {
+                signInBtn.style.display = 'none';
+                userMenu.style.display = 'block';
+            } else {
+                signInBtn.style.display = 'flex';
+                userMenu.style.display = 'none';
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Search functionality
+            searchInput.addEventListener('input', handleSearch);
+            searchInput.addEventListener('focus', showSearchSuggestions);
+            document.addEventListener('click', hideSearchSuggestions);
+            
+            // User menu
+            if (userAvatar) {
+                userAvatar.addEventListener('click', toggleUserDropdown);
+            }
+            
+            // Sign in button
+            signInBtn.addEventListener('click', showLoginForm);
+            
+            // Voice search
+            if (voiceBtn) {
+                voiceBtn.addEventListener('click', initVoiceSearch);
+            }
+            
+            // Filters
+            genreFilter.addEventListener('change', filterMovies);
+            yearFilter.addEventListener('change', filterMovies);
+            
+            // Radio filters
+            document.querySelectorAll('input[name="grade"]').forEach(radio => {
+                radio.addEventListener('change', sortMovies);
+            });
+            
+            // Load more button
+            loadMoreBtn.addEventListener('click', loadMoreMovies);
+            
+            // Scroll to top
+            scrollTopBtn.addEventListener('click', scrollToTop);
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userMenu.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+                if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                    hideSearchSuggestions();
+                }
+            });
+        }
+
+        // Theme functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeIcon.textContent = newTheme === 'light' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+            
+            showNotification('Đã chuyển sang chế độ ' + (newTheme === 'light' ? 'sáng' : 'tối'), 'success');
+        }
+
+        // Initialize theme
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            themeIcon.textContent = savedTheme === 'light' ? '☀️' : '🌙';
+        }
+
+        // Search functionality
+        function handleSearch(e) {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query.length === 0) {
+                currentMovies = [...movies];
+                displayMovies();
+                hideSearchSuggestions();
+                return;
+            }
+            
+            // Filter movies based on search query
+            currentMovies = movies.filter(movie => 
+                movie.title.toLowerCase().includes(query) ||
+                movie.genre.toLowerCase().includes(query)
+            );
+            
+            displayMovies();
+            showSearchSuggestions(query);
+        }
+
+        function showSearchSuggestions(query = '') {
+            if (!query) {
+                searchSuggestions.classList.remove('active');
+                return;
+            }
+            
+            const suggestions = movies
+                .filter(movie => 
+                    movie.title.toLowerCase().includes(query.toLowerCase()) ||
+                    movie.genre.toLowerCase().includes(query.toLowerCase())
+                )
+                .slice(0, 5);
+            
+            if (suggestions.length > 0) {
+                searchSuggestions.innerHTML = suggestions
+                    .map(movie => `
+                        <div class="suggestion-item" onclick="selectSuggestion('${movie.title}')">
+                            ${movie.title} (${movie.year})
+                        </div>
+                    `).join('');
+                searchSuggestions.classList.add('active');
+            }
+        }
+
+        function selectSuggestion(title) {
+            searchInput.value = title;
+            hideSearchSuggestions();
+            handleSearch({ target: { value: title } });
+        }
+
+        function hideSearchSuggestions(e) {
+            searchSuggestions.classList.remove('active');
+        }
+
+        // Voice search functionality
+        function initVoiceSearch() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'vi-VN';
+                
+                recognition.start();
+                showNotification('Đang nghe... Hãy nói tên phim bạn muốn tìm', 'success');
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    searchInput.value = transcript;
+                    handleSearch({ target: { value: transcript } });
+                    showNotification(`Tìm kiếm: "${transcript}"`, 'success');
+                };
+                
+                recognition.onerror = () => {
+                    showNotification('Không thể nhận diện giọng nói. Vui lòng thử lại.', 'error');
+                };
+            } else {
+                showNotification('Trình duyệt không hỗ trợ tìm kiếm bằng giọng nói', 'error');
+            }
+        }
+
+        // User authentication functions
+        function showLoginForm() {
+            // Simulate login
+            isLoggedIn = true;
+            localStorage.setItem('isLoggedIn', 'true');
+            checkLoginStatus();
+            showNotification('Đăng nhập thành công!', 'success');
+        }
+
+        function toggleUserDropdown() {
+            userDropdown.classList.toggle('active');
+        }
+
+        function viewProfile() {
+            showNotification('Đang chuyển đến trang hồ sơ...', 'success');
+            userDropdown.classList.remove('active');
+            // Simulate navigation
+            setTimeout(() => {
+                window.location.href = '#profile';
+            }, 1000);
+        }
+
+        function viewBookmarks() {
+            showNotification(`Bạn có ${bookmarkedMovies.length} phim yêu thích`, 'success');
+            userDropdown.classList.remove('active');
+        }
+
+        function viewHistory() {
+            showNotification(`Bạn đã xem ${watchHistory.length} phim`, 'success');
+            userDropdown.classList.remove('active');
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            localStorage.setItem('isLoggedIn', 'false');
+            checkLoginStatus();
+            showNotification('Đã đăng xuất thành công!', 'success');
+            userDropdown.classList.remove('active');
+        }
+
+        // Movie filtering and sorting
+        function filterMovies() {
+            const selectedGenre = genreFilter.value;
+            const selectedYear = yearFilter.value;
+            
+            currentMovies = movies.filter(movie => {
+                const genreMatch = selectedGenre === 'all' || movie.categories.includes(selectedGenre);
+                const yearMatch = selectedYear === 'all' || checkYearRange(movie.year, selectedYear);
+                
+                return genreMatch && yearMatch;
+            });
+            
+            displayMovies();
+            showNotification(`Tìm thấy ${currentMovies.length} phim phù hợp`, 'success');
+        }
+
+        function filterByCategory(category) {
+            genreFilter.value = category;
+            filterMovies();
+            
+            // Scroll to movies section
+            document.getElementById('movies').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        function checkYearRange(movieYear, yearRange) {
+            const year = parseInt(movieYear);
+            
+            switch(yearRange) {
+                case '2024': return year === 2024;
+                case '2020-2023': return year >= 2020 && year <= 2023;
+                case '2010-2019': return year >= 2010 && year <= 2019;
+                case '2000-2009': return year >= 2000 && year <= 2009;
+                case '1980-1999': return year >= 1980 && year <= 1999;
+                default: return true;
+            }
+        }
+
+        function sortMovies() {
+            const selectedSort = document.querySelector('input[name="grade"]:checked').id;
+            
+            switch(selectedSort) {
+                case 'popular':
+                    currentMovies.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+                    break;
+                case 'newest':
+                    currentMovies.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+                    break;
+                case 'featured':
+                default:
+                    // Default order
+                    currentMovies = [...movies].filter(movie => {
+                        const selectedGenre = genreFilter.value;
+                        const selectedYear = yearFilter.value;
+                        
+                        const genreMatch = selectedGenre === 'all' || movie.categories.includes(selectedGenre);
+                        const yearMatch = selectedYear === 'all' || checkYearRange(movie.year, selectedYear);
+                        
+                        return genreMatch && yearMatch;
+                    });
+                    break;
+            }
+            
+            displayMovies();
+        }
+
+        // Display movies
+        function displayMovies() {
+            displayedMovies = 0;
+            moviesGrid.innerHTML = '';
+            loadMoreMovies();
+        }
+
+        function loadMoreMovies() {
+            const startIndex = displayedMovies;
+            const endIndex = Math.min(startIndex + moviesPerPage, currentMovies.length);
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                const movie = currentMovies[i];
+                const movieCard = createMovieCard(movie);
+                moviesGrid.appendChild(movieCard);
+            }
+            
+            displayedMovies = endIndex;
+            
+            // Hide load more button if all movies are displayed
+            if (displayedMovies >= currentMovies.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
+            
+            // Add animation to new cards
+            const newCards = moviesGrid.querySelectorAll('.movie-card:nth-last-child(-n+' + (endIndex - startIndex) + ')');
+            newCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('fade-in');
+            });
+        }
+
+        function createMovieCard(movie) {
+            const movieCard = document.createElement('div');
+            movieCard.className = 'movie-card';
+            movieCard.innerHTML = `
+                <div class="card-head">
+                    <img src="data:image/svg+xml;base64,${btoa(`
+                        <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="200" height="280" fill="#3498db"/>
+                            <text x="100" y="130" text-anchor="middle" font-family="Arial" font-size="14" fill="white">${movie.title}</text>
+                            <text x="100" y="160" text-anchor="middle" font-family="Arial" font-size="12" fill="white">${movie.year} • ${movie.genre}</text>
+                        </svg>
+                    `)}" alt="${movie.title}" class="card-img">
+                    
+                    <div class="card-overlay">
+                        <div class="bookmark ${bookmarkedMovies.includes(movie.title) ? 'active' : ''}" 
+                             onclick="toggleBookmark('${movie.title}', this)">
+                            <span>❤️</span>
+                        </div>
+                        
+                        <div class="rating">
+                            <span>⭐</span>
+                            <span>${movie.rating}</span>
+                        </div>
+                        
+                        <div class="play" onclick="playMovie('${movie.title}')">
+                            <span>▶️</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h3 class="card-title">${movie.title}</h3>
+                    
+                    <div class="card-info">
+                        <span class="genre">${movie.genre}</span>
+                        <span class="year">${movie.year}</span>
+                    </div>
+                </div>
+            `;
+            
+            return movieCard;
+        }
+
+        // Bookmark functionality
+        function toggleBookmark(movieTitle, element) {
+            const index = bookmarkedMovies.indexOf(movieTitle);
+            
+            if (index > -1) {
+                bookmarkedMovies.splice(index, 1);
+                element.classList.remove('active');
+                showNotification(`Đã xóa "${movieTitle}" khỏi danh sách yêu thích`, 'success');
+            } else {
+                bookmarkedMovies.push(movieTitle);
+                element.classList.add('active');
+                showNotification(`Đã thêm "${movieTitle}" vào danh sách yêu thích`, 'success');
+            }
+            
+            localStorage.setItem('bookmarkedMovies', JSON.stringify(bookmarkedMovies));
+            updateQuickStats();
+            
+            // Add feedback animation
+            element.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Play movie functions
+        function playMovie(movieTitle) {
+            // Add to watch history
+            if (!watchHistory.includes(movieTitle)) {
+                watchHistory.push(movieTitle);
+                localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+                updateQuickStats();
+            }
+            
+            showNotification(`Đang phát: ${movieTitle}`, 'success');
+            
+            // Simulate opening video player
+            setTimeout(() => {
+                showNotification('Video player sẽ mở ở đây trong ứng dụng thực tế', 'success');
+            }, 1000);
+        }
+
+        function playBannerMovie() {
+            playMovie('John Wick: Chapter 3 - Parabellum');
+        }
+
+        function playLiveStream(streamId) {
+            const streamNames = {
+                'planet-earth': 'Planet Earth II',
+                'game-of-thrones': 'Game of Thrones',
+                'vikings': 'Vikings'
+            };
+            
+            const streamName = streamNames[streamId] || streamId;
+            showNotification(`Đang kết nối đến ${streamName} LIVE...`, 'success');
+            
+            setTimeout(() => {
+                showNotification('Kết nối thành công! Đang phát trực tiếp...', 'success');
+            }, 1500);
+        }
+
+        // Enhanced features
+        function getRandomRecommendation() {
+            const randomMovie = movies[Math.floor(Math.random() * movies.length)];
+            showNotification(`Đề xuất cho bạn: ${randomMovie.title} (${randomMovie.rating}⭐)`, 'success');
+            return randomMovie;
+        }
+
+        function getTrendingMovies() {
+            // Simulate trending based on high ratings and recent years
+            const trending = movies
+                .filter(movie => parseFloat(movie.rating) > 7.5)
+                .sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
+                .slice(0, 6);
+            
+            currentMovies = trending;
+            displayMovies();
+            showNotification('Đang hiển thị phim đang thịnh hành', 'success');
+        }
+
+        function applyAdvancedFilter() {
+            const minRating = 7.0; // Minimum rating filter
+            const recentYears = ['2020', '2021', '2022', '2023', '2024'];
+            
+            currentMovies = movies.filter(movie => {
+                const hasGoodRating = parseFloat(movie.rating) >= minRating;
+                const isRecent = recentYears.includes(movie.year);
+                return hasGoodRating || isRecent;
+            });
+            
+            displayMovies();
+            showNotification(`Lọc nâng cao: ${currentMovies.length} phim chất lượng cao`, 'success');
+        }
+
+        // Quick stats functionality
+        function toggleQuickStats() {
+            quickStats.classList.toggle('active');
+            
+            if (quickStats.classList.contains('active')) {
+                updateQuickStats();
+            }
+        }
+
+        function updateQuickStats() {
+            const totalMovies = movies.length;
+            const avgRating = (movies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / totalMovies).toFixed(1);
+            const topGenre = getTopGenre();
+            
+            document.getElementById('totalMovies').textContent = totalMovies;
+            document.getElementById('avgRating').textContent = avgRating + '⭐';
+            document.getElementById('bookmarkCount').textContent = bookmarkedMovies.length;
+            document.getElementById('watchedCount').textContent = watchHistory.length;
+            document.getElementById('topGenre').textContent = getGenreDisplayName(topGenre);
+        }
+
+        function getTopGenre() {
+            const genreCount = {};
+            movies.forEach(movie => {
+                movie.categories.forEach(genre => {
+                    genreCount[genre] = (genreCount[genre] || 0) + 1;
+                });
+            });
+            
+            return Object.keys(genreCount).reduce((a, b) => genreCount[a] > genreCount[b] ? a : b);
+        }
+
+        function getGenreDisplayName(genre) {
+            const genreNames = {
+                'action': 'Hành động',
+                'adventure': 'Phiêu lưu',
+                'animation': 'Hoạt hình',
+                'comedy': 'Hài',
+                'drama': 'Chính kịch',
+                'fantasy': 'Giả tưởng',
+                'horror': 'Kinh dị',
+                'scifi': 'Khoa học viễn tưởng',
+                'war': 'Chiến tranh'
+            };
+            
+            return genreNames[genre] || genre;
+        }
+
+        // Scroll effects
+        function setupScrollEffects() {
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset;
+                
+                // Navbar scroll effect
+                if (scrollTop > 100) {
+                    navbar.classList.add('scrolled');
+                    scrollTopBtn.classList.add('active');
+                } else {
+                    navbar.classList.remove('scrolled');
+                    scrollTopBtn.classList.remove('active');
+                }
+                
+                // Parallax effect for banner
+                const banner = document.querySelector('.banner-img');
+                if (banner) {
+                    banner.style.transform = `translateY(${scrollTop * 0.5}px)`;
+                }
+            });
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Animate progress bars
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress');
+            
+            // Intersection Observer for progress bars
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const progress = entry.target;
+                        const targetWidth = progress.getAttribute('data-progress');
+                        progress.style.width = targetWidth + '%';
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            progressBars.forEach(bar => {
+                observer.observe(bar);
+            });
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Search shortcut (Ctrl/Cmd + K)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+                showNotification('Đang tìm kiếm...', 'success');
+            }
+            
+            // Theme toggle shortcut (Ctrl/Cmd + Shift + T)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                e.preventDefault();
+                toggleTheme();
+            }
+            
+            // Escape to close search suggestions
+            if (e.key === 'Escape') {
+                hideSearchSuggestions();
+                userDropdown.classList.remove('active');
+                quickStats.classList.remove('active');
+            }
+        });
+
+        // Error handling for images
+        document.addEventListener('error', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.target.style.display = 'none';
+            }
+        }, true);
+
+        // Welcome message for first-time visitors
+        if (!localStorage.getItem('hasVisited')) {
+            setTimeout(() => {
+                showNotification('Chào mừng đến với Maxion! Khám phá hàng nghìn bộ phim chất lượng cao.', 'success');
+                localStorage.setItem('hasVisited', 'true');
+            }, 2000);
+        }
+
+        // Export functions for external use
+        window.MaxionApp = {
+            playMovie,
+            toggleBookmark,
+            filterByCategory,
+            getRandomRecommendation,
+            getTrendingMovies,
+            applyAdvancedFilter,
+            toggleQuickStats,
+            updateQuickStats
+        };
+    </script>
+</body>
+</html>

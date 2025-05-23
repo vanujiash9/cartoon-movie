@@ -1,0 +1,383 @@
+/* achievements-page/style.css */
+
+/* Biến CSS (Variables) - Should match those used in header.html & footer.html for theme consistency */
+:root {
+  --primary-color: #6c5ce7;
+  --secondary-color: #ff7675; /* Matches your original CSS */
+  --accent-color: #00cec9; /* From header/footer for consistency */
+
+  /* Dark Mode Defaults */
+  --bg-color: #121212; /* Main page sections background */
+  --bg-secondary: #1e1e1e; /* Cards, hero, etc. */
+  --bg-tertiary: #2c2c2c; /* Inputs or other elements */
+  --text-color: #ffffff;
+  --text-secondary: #a0aec0;
+  --text-muted: #888888;
+  --border-color: #333333;
+  --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  --card-hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  --border-radius: 8px;
+}
+
+body.light-mode {
+  --bg-color: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e9ecef;
+  --text-color: #2c3e50;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --border-color: #dee2e6;
+  --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+  --card-hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Kiểu chung */
+body {
+  font-family: "Segoe UI", Arial, sans-serif; /* More common font stack */
+  margin: 0;
+  background-color: var(--bg-color); /* Use main BG for the body itself */
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Fixed Header Adjustment */
+.fixed-header-padding {
+  /* padding-top will be set by JS */
+  transition: padding-top 0.2s ease-out;
+}
+iframe {
+  display: block;
+  overflow: hidden; /* Prevent scrollbars if content fits */
+  background-color: transparent; /* Let parent bg show initially */
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 70px 20px; /* Reduced top/bottom padding slightly */
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  color: white; /* Text color for hero */
+}
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: white; /* Explicitly white */
+}
+.hero-content p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+/* Buttons (using your existing .btn classes) */
+.btn {
+  padding: 10px 20px; /* Unified padding */
+  border-radius: var(--border-radius, 5px);
+  cursor: pointer;
+  font-weight: 500;
+  border: 1px solid transparent; /* Base for outline */
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease, transform 0.2s ease;
+  font-size: 1rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+.btn-primary:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--primary-color) 85%,
+    black
+  ); /* Darken primary */
+  transform: translateY(-2px);
+}
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--text-secondary); /* Use themed border color */
+  color: var(--text-color); /* Use themed text color */
+}
+.hero .btn-outline {
+  /* Specific for hero outline button */
+  border-color: white;
+  color: white;
+}
+.hero .btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: white;
+}
+.btn-outline:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+.btn-large {
+  padding: 12px 30px;
+  font-size: 1.1rem;
+}
+.btn:disabled {
+  background-color: var(--text-muted, #888888) !important; /* Use muted color */
+  border-color: var(--text-muted, #888888) !important;
+  color: var(--bg-secondary) !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Achievements, Leaderboards, Rewards Sections */
+.achievements,
+.leaderboards,
+.rewards-showcase {
+  padding: 50px 0;
+}
+.leaderboards {
+  background-color: var(--bg-secondary); /* Alternate BG for leaderboards */
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.section-title h2 {
+  font-size: 2rem;
+  color: var(--text-color); /* Use theme text color */
+}
+
+.achievement-cards,
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(280px, 1fr)
+  ); /* Slightly wider min */
+  gap: 30px;
+}
+
+.achievement-card,
+.reward-card {
+  background-color: var(
+    --bg-secondary
+  ); /* Use secondary for card backgrounds */
+  border-radius: var(--border-radius, 10px);
+  padding: 25px; /* Increased padding */
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+}
+.achievement-card.visible,
+.reward-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.achievement-card:hover,
+.reward-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.achievement-icon {
+  font-size: 2.5rem; /* Larger icon */
+  margin-bottom: 15px;
+  color: var(--primary-color); /* Theme icon color */
+}
+.achievement-title,
+.reward-title {
+  font-size: 1.3rem; /* Slightly larger title */
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+.achievement-description,
+.reward-description {
+  color: var(--text-secondary);
+  margin-bottom: 20px; /* Increased margin */
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.progress-bar {
+  background-color: var(--bg-tertiary); /* Darker track for progress */
+  height: 12px; /* Slightly thicker */
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.progress {
+  background-color: var(--primary-color);
+  height: 100%;
+  transition: width 0.5s ease-in-out; /* Smoother transition */
+  border-radius: 6px 0 0 6px; /* Rounded on the left */
+}
+.progress-text {
+  display: block;
+  color: var(--text-muted); /* Muted for progress text */
+  margin-bottom: 20px; /* Increased margin */
+  font-size: 0.9rem;
+}
+
+.leaderboard-list {
+  max-width: 800px;
+  margin: 30px auto 0; /* Reduced top margin */
+}
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Reduced gap */
+  background-color: var(--bg-tertiary); /* Darker item background */
+  border-radius: var(--border-radius, 10px);
+  padding: 15px 20px; /* Adjusted padding */
+  margin-bottom: 15px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, background-color 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+.leaderboard-item:hover {
+  background-color: var(--bg-color); /* Lighten on hover */
+}
+.leaderboard-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.leaderboard-rank {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  width: 30px;
+  text-align: center;
+}
+.leaderboard-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover; /* Ensure avatar looks good */
+  border: 2px solid var(--border-color);
+}
+.leaderboard-name {
+  flex: 1;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+.leaderboard-score {
+  color: var(--text-secondary);
+  margin-right: 15px; /* Reduced margin */
+  font-size: 0.95rem;
+}
+
+.reward-image {
+  width: 120px; /* Larger reward image */
+  height: 120px;
+  border-radius: var(--border-radius, 10px);
+  margin-bottom: 20px; /* Increased margin */
+  object-fit: contain; /* Or cover, depending on image type */
+  background-color: var(
+    --bg-tertiary
+  ); /* Background for images if transparent */
+  padding: 5px;
+}
+
+/* Thông báo tùy chỉnh (from your JS) */
+.thong-bao {
+  position: fixed;
+  bottom: -100px; /* Start off-screen */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 25px;
+  border-radius: var(--border-radius, 8px);
+  color: white;
+  font-weight: 500;
+  z-index: 10000; /* Ensure it's on top */
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  min-width: 280px;
+  text-align: center;
+}
+.thong-bao.show {
+  /* Class added by JS to show */
+  opacity: 1;
+  bottom: 30px;
+}
+.thong-bao-thanhCong {
+  background-color: #2ecc71;
+} /* Green */
+.thong-bao-canhBao {
+  background-color: #f39c12;
+} /* Orange */
+.thong-bao-loi {
+  background-color: #e74c3c;
+} /* Red */
+
+/* Thiết kế đáp ứng */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  } /* Adjusted for mobile */
+  .achievement-cards,
+  .rewards-grid {
+    grid-template-columns: 1fr;
+  }
+  .leaderboard-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  .leaderboard-rank {
+    margin-bottom: 5px;
+  }
+  .leaderboard-score {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  .leaderboard-item .btn-outline {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+@media (max-width: 480px) {
+  .btn-large {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+  }
+  .achievement-card,
+  .reward-card {
+    padding: 20px;
+  }
+  .achievement-icon {
+    font-size: 2rem;
+  }
+  .achievement-title,
+  .reward-title {
+    font-size: 1.1rem;
+  }
+}

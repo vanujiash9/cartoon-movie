@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAXION Footer - Nâng Cấp</title>
+    <link rel="stylesheet" href="../categories-page/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+    <style>
+        /* CSS Variables for Consistency */
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #fd79a8;
+            --accent-color: #00cec9;
+            --bg-primary: #1c1f2f;
+            --bg-secondary: #181828;
+            --bg-elements: #252535;
+            --text-color: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #757575;
+            --border-color: #2e344d;
+            --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-elements: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --transition-default: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        .light-mode {
+            --bg-primary: #f9f9f9;
+            --bg-secondary: #ffffff;
+            --bg-elements: #e9ecef;
+            --text-color: #33373a;
+            --text-secondary: #5f6368;
+            --text-muted: #80868b;
+            --border-color: #dee2e6;
+            --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-elements: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', 'Segoe UI', -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-color);
+            font-size: 15px;
+            line-height: 1.7;
+            transition: var(--transition-default);
+        }
+
+        .page-wrapper {
+            position: relative;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-elements);
+        }
+
+        .newsletter-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .newsletter-section h4 {
+            color: white;
+            font-size: 1.7rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .newsletter-section p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: var(--transition-default);
+        }
+
+        .newsletter-form input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .newsletter-form input:focus {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+
+        .newsletter-form button {
+            padding: 15px 30px;
+            border-radius: var(--border-radius);
+            background: white;
+            color: var(--primary-color);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-default);
+        }
+
+        .newsletter-form button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer Top */
+        .footer-top {
+            background-color: var(--bg-primary);
+            padding: 60px 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-top::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .footer-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .footer-widget {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .footer-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        .gem-contacts-item {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .gem-contacts-item i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .gem-contacts-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-default);
+        }
+
+        .gem-contacts-item a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Anime Links */
+        .anime-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .anime-links li {
+            margin-bottom: 10px;
+        }
+
+        .anime-links a {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: var(--transition-default);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .anime-links a:hover {
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .anime-links a::before {
+            content: '➜';
+            opacity: 0;
+            margin-right: 8px;
+            transition: var(--transition-default);
+        }
+
+        .anime-links a:hover::before {
+            opacity: 1;
+        }
+
+        /* Contact Form */
+        .contact-form-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .wpcf7-form-control-wrap input,
+        .wpcf7-form-control-wrap textarea {
+            background: var(--bg-elements);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            width: 100%;
+            transition: var(--transition-default);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .wpcf7-form-control-wrap input:focus,
+        .wpcf7-form-control-wrap textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+            outline: none;
+        }
+
+        .wpcf7-form-control-wrap textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .wpcf7-submit {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition-default);
+            box-shadow: var(--shadow-elements);
+        }
+
+        .wpcf7-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        /* Gallery */
+        .widget_gallery ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .widget_gallery li {
+            width: calc(33.33% - 7px);
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            transition: var(--transition-default);
+        }
+
+        .widget_gallery img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: var(--transition-default);
+        }
+
+        .widget_gallery li:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Footer Bottom */
+        .footer-bottom {
+            background-color: var(--bg-secondary);
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-bottom .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-site-info {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .footer-site-info a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-default);
+        }
+
+        .footer-site-info a:hover {
+            color: var(--primary-color);
+        }
+
+        #footer-navigation ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #footer-navigation li a {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-default);
+        }
+
+        #footer-navigation li a:hover {
+            color: var(--primary-color);
+        }
+
+        #footer-socials .socials {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .socials-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: var(--transition-default);
+            box-shadow: var(--shadow-elements);
+        }
+
+        .socials-item:hover {
+            transform: translateY(-3px) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        /* Back to Top Button */
+        .back-to-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: var(--shadow-elements);
+            transition: var(--transition-default);
+        }
+
+        .back-to-top-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .back-to-top-btn.show {
+            display: flex;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .footer-row {
+                grid-template-columns: 1fr;
+            }
+            .newsletter-form {
+                flex-direction: column;
+            }
+            #footer-socials .socials {
+                justify-content: center;
+            }
+            .footer-bottom .row {
+                flex-direction: column;
+                text-align: center;
+            }
+            #footer-navigation ul {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer-top {
+                padding: 40px 0 20px;
+            }
+            .newsletter-section {
+                padding: 30px;
+            }
+            .widget_gallery li {
+                width: calc(50% - 7px);
+            }
+            .contact-form-footer {
+                padding: 0 10px;
+            }
+            .back-to-top-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            .footer-title {
+                font-size: 1.2rem;
+            }
+            .newsletter-section h4 {
+                font-size: 1.5rem;
+            }
+            .newsletter-section p {
+                font-size: 0.95rem;
+            }
+            .widget_gallery li {
+                width: 100%;
+            }
+            .socials-item {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="page-wrapper">
+        <footer>
+            <!-- Newsletter Section -->
+            <div class="newsletter-section">
+                <div class="container">
+                    <h4>📬 Đăng ký nhận tin tức</h4>
+                    <p>Nhận thông tin về anime mới, lịch phát hành, và ưu đãi độc quyền từ MAXION.</p>
+                    <form class="newsletter-form" onsubmit="handleNewsletter(event)">
+                        <input type="email" placeholder="Nhập email của bạn..." required aria-label="Email đăng ký">
+                        <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Footer Top -->
+            <div class="footer-top">
+                <div class="container">
+                    <div class="footer-row">
+                        <!-- About MAXION -->
+                        <div class="footer-col-3">
+                            <div class="widget footer_widget">
+                                <h5 class="footer-title">Về MAXION</h5>
+                                <div class="gem-contacts">
+                                    <div class="gem-contacts-item gem-contacts-address">
+                                        Nền tảng xem anime hàng đầu Việt Nam, mang đến kho phim hoạt hình đa dạng, chất lượng cao và trải nghiệm giải trí đỉnh cao.
+                                    </div>
+                                    <div class="gem-contacts-item gem-contacts-phone">
+                                        <i class="fa fa-phone" aria-hidden="true"></i>
+                                        Phone: <a href="tel:+84912345678">+84-912345678</a>
+                                    </div>
+                                    <div class="gem-contacts-item gem-contacts-email">
+                                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                                        Email: <a href="mailto:support@maxion.vn">support@maxion.vn</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Anime Links -->
+                        <div class="footer-col-3">
+                            <div class="widget footer_widget">
+                                <h5 class="footer-title">Danh mục Anime</h5>
+                                <ul class="anime-links">
+                                    <li><a href="../index.html">Trang chủ</a></li>
+                                    <li><a href="../new-releases.html">Phim mới</a></li>
+                                    <li><a href="../hot.html">Phim hot</a></li>
+                                    <li><a href="../categories.html">Thể loại</a></li>
+                                    <li><a href="../rankings.html">Xếp hạng</a></li>
+                                    <li><a href="../favorites.html">Yêu thích</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Contact Form -->
+                        <div class="footer-col-3">
+                            <div class="widget">
+                                <h5 class="footer-title">Liên hệ chúng tôi</h5>
+                                <div class="textwidget">
+                                    <form class="wpcf7-form" novalidate="novalidate">
+                                        <div class="contact-form-footer">
+                                            <p>
+                                                <span class="wpcf7-form-control-wrap your-first-name">
+                                                    <input type="text" name="your-first-name" placeholder="Tên của bạn" required aria-label="Tên">
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <span class="wpcf7-form-control-wrap your-email_1">
+                                                    <input type="email" name="your-email_1" placeholder="Email của bạn" required aria-label="Email">
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <span class="wpcf7-form-control-wrap your-message">
+                                                    <textarea name="your-message" rows="5" placeholder="Tin nhắn của bạn" required aria-label="Tin nhắn"></textarea>
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <input type="submit" value="Gửi" class="wpcf7-submit" aria-label="Gửi tin nhắn">
+                                            </p>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gallery -->
+                        <div class="footer-col-3">
+                            <div class="widget widget_gallery gallery-grid-4">
+                                <h5 class="footer-title">Thư viện ảnh</h5>
+                                <ul class="magnific-image">
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                    <li><a href="https://via.placeholder.com/300" class="magnific-anchor"><img src="https://via.placeholder.com/100" alt="Anime Gallery Image"></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="footer-site-info">
+                                2025 © <a href="#" target="_blank">MAXION Platform</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <nav id="footer-navigation" class="site-navigation footer-navigation">
+                                <ul id="footer-menu" class="nav-menu">
+                                    <li class="menu-item"><a href="#">Hỗ trợ</a></li>
+                                    <li class="menu-item"><a href="#">Liên hệ</a></li>
+                                    <li class="menu-item"><a href="#">Chính sách bảo mật</a></li>
+                                    <li class="menu-item"><a href="#">Điều khoản sử dụng</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="col-md-3">
+                            <div id="footer-socials">
+                                <div class="socials">
+                                    <a href="#" target="_blank" title="Facebook" class="socials-item" aria-label="Theo dõi trên Facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" target="_blank" title="Twitter" class="socials-item" aria-label="Theo dõi trên Twitter">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#" target="_blank" title="Instagram" class="socials-item" aria-label="Theo dõi trên Instagram">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#" target="_blank" title="YouTube" class="socials-item" aria-label="Theo dõi trên YouTube">
+                                        <i class="fab fa-youtube"></i>
+                                    </a>
+                                    <a href="#" target="_blank" title="Discord" class="socials-item" aria-label="Tham gia Discord">
+                                        <i class="fab fa-discord"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Back to Top Button -->
+        <button class="back-to-top-btn" onclick="scrollToTop()" title="Lên đầu trang" aria-label="Quay lại đầu trang">↑</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <script>
+        // Notification Utility
+        function showNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+                background: ${isError ? '#e74c3c' : 'var(--primary-color)'}; color: white;
+                border-radius: 8px; box-shadow: var(--shadow-elements); z-index: 1000;
+                opacity: 0; transition: opacity 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '1';
+            }, 10);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Newsletter Form Handler
+        function handleNewsletter(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            showNotification(`Cảm ơn bạn đã đăng ký! Email: ${email}`);
+            event.target.reset();
+        }
+
+        // Contact Form Handler
+        document.querySelector('.wpcf7-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            try {
+                // Placeholder for backend integration
+                // const response = await fetch('/api/contact', { method: 'POST', body: formData });
+                // if (response.ok) {
+                showNotification('Cảm ơn bạn đã gửi tin nhắn!');
+                form.reset();
+                // } else {
+                //     showNotification('Có lỗi xảy ra, vui lòng thử lại!', true);
+                // }
+            } catch (error) {
+                showNotification('Không thể kết nối, vui lòng thử lại!', true);
+            }
+        });
+
+        // Back to Top Functionality
+        function scrollToTop() {
+            if (window.parent) {
+                window.parent.postMessage({ type: 'scrollToTop' }, '*');
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Show/Hide Back to Top Button
+        function toggleBackToTop() {
+            const backToTopBtn = document.querySelector('.back-to-top-btn');
+            const scrollPosition = window.parent ? window.parent.pageYOffset : window.pageYOffset;
+            if (scrollPosition > 400) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        }
+
+        // Dark/Light Mode Toggle
+        function toggleTheme() {
+            const isLightMode = document.body.classList.contains('light-mode');
+            document.body.classList.remove('dark-mode', 'light-mode');
+            document.body.classList.add(isLightMode ? 'dark-mode' : 'light-mode');
+            const newTheme = isLightMode ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            if (window.parent) {
+                window.parent.postMessage({ type: 'themeChange', theme: newTheme }, '*');
+            }
+            setTimeout(() => {
+                window.parent.postMessage({ type: 'heightAdjust' }, '*');
+            }, 150);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.add(savedTheme + '-mode');
+
+            // Animate footer widgets
+            document.querySelectorAll('.footer-widget').forEach((widget, index) => {
+                widget.style.animationDelay = `${index * 0.2}s`;
+            });
+
+            // Social link hover effects
+            document.querySelectorAll('.socials-item').forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    link.style.transform = 'translateY(-3px) scale(1.1) rotate(5deg)';
+                });
+                link.addEventListener('mouseleave', () => {
+                    link.style.transform = 'translateY(0) scale(1) rotate(0deg)';
+                });
+            });
+
+            // Initialize Magnific Popup for gallery
+            document.querySelector('.widget_gallery ul')?.classList.add('mfp-gallery');
+            $('.mfp-gallery').magnificPopup({
+                delegate: 'a',
+                type: 'image',
+                gallery: { enabled: true },
+                mainClass: 'mfp-with-zoom',
+                zoom: {
+                    enabled: true,
+                    duration: 300,
+                    easing: 'ease-in-out'
+                }
+            });
+
+            // Notify parent for initial height adjustment
+            setTimeout(() => {
+                window.parent.postMessage({ type: 'heightAdjust' }, '*');
+            }, 100);
+
+            // Theme toggle button (for standalone testing)
+            const themeToggle = document.createElement('button');
+            themeToggle.textContent = 'Toggle Theme';
+            themeToggle.style.cssText = `
+                position: fixed; top: 20px; left: 20px; padding: 10px 20px;
+                background: var(--primary-color); color: white; border: none;
+                border-radius: 8px; cursor: pointer; z-index: 1000;
+            `;
+            document.body.appendChild(themeToggle);
+            themeToggle.addEventListener('click', toggleTheme);
+        });
+
+        // Handle messages from parent
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'themeChange') {
+                document.body.classList.remove('dark-mode', 'light-mode');
+                document.body.classList.add(event.data.theme + '-mode');
+                localStorage.setItem('theme', event.data.theme);
+                setTimeout(() => {
+                    window.parent.postMessage({ type: 'heightAdjust' }, '*');
+                }, 150);
+            }
+            if (event.data.type === 'scroll') {
+                toggleBackToTop();
+            }
+        });
+    </script>
+</body>
+</html>
