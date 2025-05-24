@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý tập phim</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" th:href="@{/css/episodes.css}">
+</head>
+<body>
+    <h2>Quản lý tập phim</h2>
+    <form th:action="@{'/admin/episodes/add/' + ${cartoonId}}" th:object="${episode}" method="post">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Số tập:</label>
+                <input type="number" th:field="*{episode_number}" required/>
+            </div>
+            <div class="form-group">
+                <label>Tên tập:</label>
+                <input type="text" th:field="*{title}" required/>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Video URL:</label>
+                <input type="text" th:field="*{video_url}" required/>
+            </div>
+            <div class="form-group">
+                <label>Thumbnail URL:</label>
+                <input type="text" th:field="*{thumbnail_url}" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Thời lượng (giây):</label>
+                <input type="number" th:field="*{duration}" />
+            </div>
+            <div class="form-group" style="align-items: flex-end; display: flex;">
+                <button type="submit" style="width: 100%;">Thêm tập</button>
+            </div>
+        </div>
+    </form>
+    <hr/>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Số tập</th>
+            <th>Tên tập</th>
+            <th>Video</th>
+            <th>Thumbnail</th>
+            <th>Thời lượng</th>
+            <th>Lượt xem</th>
+            <th>Ngày tạo</th>
+            <th>Hành động</th>
+        </tr>
+        <tr th:each="ep : ${episodes}">
+            <td th:text="${ep.id}"></td>
+            <td th:text="${ep.episode_number}"></td>
+            <td th:text="${ep.title}"></td>
+            <td><a th:href="${ep.video_url}" target="_blank">Xem</a></td>
+            <td>
+                <img th:if="${ep.thumbnail_url}" th:src="${ep.thumbnail_url}" style="max-width:60px;max-height:40px;" />
+            </td>
+            <td th:text="${ep.duration}"></td>
+            <td th:text="${ep.views}"></td>
+            <td th:text="${ep.created_at}"></td>
+            <td>
+                <a th:href="@{'/admin/episodes/delete/' + ${cartoonId} + '/' + ${ep.id}}"
+                   onclick="return confirm('Xóa tập này?')">Xóa</a>
+            </td>
+        </tr>
+    </table>
+    <a th:href="@{'/admin'}" class="back-link">Quay lại danh sách phim</a>
+</body>
+</html>
