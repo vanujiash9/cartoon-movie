@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý phim hoạt hình</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <!-- Header/Navbar hiện đại -->
+    <nav class="admin-navbar">
+        <div class="navbar-top">
+            <div class="navbar-brand">
+                <i class="fas fa-film"></i>
+                <span>Animation Admin</span>
+            </div>
+            <div class="navbar-actions">
+                <span><i class="fas fa-user-circle"></i> Admin</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-wrapper">
+        <div class="admin-header">
+            <h1 class="admin-title">Quản lý phim hoạt hình</h1>
+            <div class="admin-controls">
+                <!-- Nút thêm mới có thể được thêm vào đây -->
+            </div>
+        </div>
+        
+        <!-- Thanh công cụ mở rộng -->
+        <div class="admin-toolbar">
+            <form class="search-form" th:action="@{/admin}" method="get">
+                <div class="input-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="keyword" placeholder="Tìm kiếm tên phim..." th:value="${param.keyword}" />
+                </div>
+                <button type="submit"><i class="fas fa-search"></i> Tìm kiếm</button>
+            </form>
+            <form class="filter-form" th:action="@{/admin}" method="get">
+                <select name="year" th:value="${param.year}">
+                    <option value="">-- Lọc theo năm --</option>
+                    <option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${param.year} == ${y}"></option>
+                </select>
+                <select name="sort" th:value="${param.sort}">
+                    <option value="">-- Sắp xếp --</option>
+                    <option value="name_asc" th:selected="${param.sort} == 'name_asc'">Tên A-Z</option>
+                    <option value="name_desc" th:selected="${param.sort} == 'name_desc'">Tên Z-A</option>
+                    <option value="year_asc" th:selected="${param.sort} == 'year_asc'">Năm tăng dần</option>
+                    <option value="year_desc" th:selected="${param.sort} == 'year_desc'">Năm giảm dần</option>
+                </select>
+                <button type="submit"><i class="fas fa-filter"></i> Lọc</button>
+            </form>
+            <div class="statistic">
+                <i class="fas fa-chart-bar"></i> Tổng số phim: <b th:text="${cartoons.size()}"></b>
+            </div>
+        </div>
+
+        <!-- Form thêm/sửa phim -->
+        <div class="admin-form-card">
+            <div class="card-header">
+                <h2 class="card-title" th:text="${editMode} ? 'Chỉnh sửa phim' : 'Thêm phim mới'"></h2>
+            </div>
+            <form class="admin-form" th:action="@{${editMode} ? '/admin/edit/' + ${cartoon.id} : '/admin/add'}" th:object="${cartoon}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Tên phim:</label>
+                        <input type="text" class="form-control" th:field="*{title}" required/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Năm phát hành:</label>
+                        <input type="number" class="form-control" th:field="*{release_year}" required/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Số tập:</label>
+                        <input type="number" class="form-control" th:field="*{total_episodes}" required/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Ảnh (URL):</label>
+                        <input type="text" class="form-control" th:field="*{image_url}" required/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Trailer (URL):</label>
+                        <input type="text" class="form-control" th:field="*{trailer_url}" required/>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mô tả:</label>
+                    <textarea class="form-control" th:field="*{description}" required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" th:text="${editMode} ? 'Cập nhật' : 'Thêm mới'">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <a th:if="${editMode}" href="/admin" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Hủy
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Bảng dữ liệu -->
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Thông tin phim</th>
+                        <th>Năm</th>
+                        <th>Số tập</th>
+                        <th>Trailer</th>
+                        <th>Ngày tạo</th>
+                        <th>Tập phim</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cartoon : ${cartoons}" th:object="${cartoon}">
+                        <td th:text="*{id}"></td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <img th:src="*{image_url}" th:alt="*{title}" class="cartoon-img"/>
+                                <div>
+                                    <div style="font-weight:600" th:text="*{title}"></div>
+                                    <p class="text-muted description-cell" th:text="*{description} ?: 'Không có mô tả'"></p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary" th:text="*{release_year}"></span>
+                        </td>
+                        <td>
+                            <span class="badge badge-info" th:text="*{total_episodes} ?: 0"></span>
+                        </td>
+                        <td>
+                            <a th:if="*{trailer_url}" th:href="*{trailer_url}" target="_blank" class="trailer-link">
+                                <i class="fas fa-play-circle"></i> Xem trailer
+                            </a>
+                            <span th:unless="*{trailer_url}" class="text-muted">Không có</span>
+                        </td>
+                        <td th:text="*{created_at} != null ? ${#temporals.format(created_at, 'dd/MM/yyyy HH:mm')} : 'Chưa cập nhật'"></td>
+                        <td>
+                            <ul class="episode-list">
+                                <li th:each="ep : *{episodes}" class="episode-item">
+                                    <span th:text="'Tập ' + ${ep.episode_number} + ': ' + ${ep.title}"></span>
+                                    <a th:href="${ep.video_url}" target="_blank" class="episode-link">
+                                        <i class="fas fa-play"></i>
+                                    </a>
+                                </li>
+                                <li th:if="*{episodes.size()} == 0" class="episode-item text-muted">
+                                    <i class="fas fa-info-circle"></i> Chưa có tập phim
+                                </li>
+                            </ul>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a th:href="@{'/admin/edit/' + *{id}}" class="action-btn action-edit" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a th:href="@{'/admin/delete/' + *{id}}" class="action-btn action-delete" title="Xóa" 
+                                   th:attr="onclick=|return confirm('Xác nhận xóa [[*{title}]]?')|">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                                <a th:href="@{'/admin/episodes/' + *{id}}" class="action-btn action-manage" title="Quản lý tập phim">
+                                    <i class="fas fa-list"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Thêm mã JavaScript để cải thiện trải nghiệm người dùng -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Các elements fade in khi trang được tải
+            document.querySelectorAll('.admin-form-card, .table-responsive').forEach(el => {
+                el.classList.add('fade-in');
+            });
+        });
+    </script>
+</body>
+</html>
