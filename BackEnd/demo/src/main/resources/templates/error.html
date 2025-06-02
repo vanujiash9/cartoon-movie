@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout}">
+<head>
+    <title>Error - Cartoon Movie System</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="error-page">
+        <div class="error-container">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <div class="error-content">
+                <h1 class="error-title">
+                    <span th:text="${status ?: '500'}">500</span>
+                </h1>
+                
+                <h2 class="error-subtitle">
+                    <span th:switch="${status}">
+                        <span th:case="400">Bad Request</span>
+                        <span th:case="401">Unauthorized</span>
+                        <span th:case="403">Access Forbidden</span>
+                        <span th:case="404">Page Not Found</span>
+                        <span th:case="500">Internal Server Error</span>
+                        <span th:case="*">Something went wrong</span>
+                    </span>
+                </h2>
+                
+                <p class="error-message">
+                    <span th:switch="${status}">
+                        <span th:case="400">The request could not be processed due to invalid data.</span>
+                        <span th:case="401">You need to be authenticated to access this resource.</span>
+                        <span th:case="403">You don't have permission to access this resource.</span>
+                        <span th:case="404">The page you're looking for doesn't exist or has been moved.</span>
+                        <span th:case="500">An unexpected error occurred on the server.</span>
+                        <span th:case="*">An error occurred while processing your request.</span>
+                    </span>
+                </p>
+
+                <!-- Display custom error message if available -->
+                <div th:if="${message}" class="custom-error-message">
+                    <p th:text="${message}"></p>
+                </div>
+
+                <!-- Display exception details in development mode -->
+                <div th:if="${exception != null and #strings.equals(#environment.getProperty('spring.profiles.active'), 'dev')}">
+                    <p>Error details: <span th:text="${exception.message}"></span></p>
+                </div>
+
+                <div class="error-actions">
+                    <a href="javascript:history.back()" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Go Back
+                    </a>
+                    <a th:href="@{/admin}" class="btn btn-primary">
+                        <i class="fas fa-home mr-2"></i>Admin Dashboard
+                    </a>
+                    <button onclick="location.reload()" class="btn btn-outline-primary">
+                        <i class="fas fa-redo mr-2"></i>Try Again
+                    </button>
+                </div>
+
+                <!-- Additional help for common errors -->
+                <div class="error-help">
+                    <h6>Need Help?</h6>
+                    <ul class="help-list">
+                        <li th:if="${status == 404}">
+                            <i class="fas fa-search mr-2"></i>
+                            Check the URL for typos or use the navigation menu
+                        </li>
+                        <li th:if="${status == 403}">
+                            <i class="fas fa-user-shield mr-2"></i>
+                            Contact your administrator for access permissions
+                        </li>
+                        <li th:if="${status == 500}">
+                            <i class="fas fa-tools mr-2"></i>
+                            Try refreshing the page or contact technical support
+                        </li>
+                        <li>
+                            <i class="fas fa-home mr-2"></i>
+                            Return to the <a th:href="@{/admin}">main dashboard</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Navigation -->
+        <div class="quick-nav">
+            <h6>Quick Navigation</h6>
+            <div class="nav-links">
+                <a th:href="@{/admin}" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a th:href="@{/admin/movies}" class="nav-link">
+                    <i class="fas fa-film"></i>
+                    <span>Movies</span>
+                </a>
+                <a th:href="@{/admin/episodes-overview}" class="nav-link">
+                    <i class="fas fa-play"></i>
+                    <span>Episodes</span>
+                </a>
+                <a th:href="@{/admin/reviews}" class="nav-link">
+                    <i class="fas fa-star"></i>
+                    <span>Reviews</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script layout:fragment="scripts">
+    // Auto-reload for 500 errors after 30 seconds
+    if (window.location.search.includes('status=500')) {
+        setTimeout(function() {
+            if (confirm('Would you like to try reloading the page?')) {
+                location.reload();
+            }
+        }, 30000);
+    }
+
+    // Log error for analytics (in production)
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'exception', {
+            'description': document.querySelector('.error-subtitle').textContent,
+            'fatal': false
+        });
+    }
+
+    // Smooth scroll for long error details
+    document.querySelector('.exception-details')?.addEventListener('toggle', function(e) {
+        if (e.target.open) {
+            setTimeout(() => {
+                e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+    });
+</script>
+
+<style layout:fragment="styles">
+    .error-page {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        margin: -2rem;
+    }
+
+    .error-container {
+        text-align: center;
+        max-width: 600px;
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .error-icon {
+        font-size: 4rem;
+        color: #ffc107;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    .error-title {
+        font-size: 4rem;
+        font-weight: 700;
+        color: #dc3545;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .error-subtitle {
+        font-size: 1.5rem;
+        color: #495057;
+        margin: 1rem 0;
+        font-weight: 300;
+    }
+
+    .error-message {
+        font-size: 1.1rem;
+        color: #6c757d;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .custom-error-message {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .error-details {
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    .exception-details {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .exception-details summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: #495057;
+        padding: 0.5rem;
+        background: #e9ecef;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .exception-details summary:hover {
+        background: #dee2e6;
+    }
+
+    .exception-info h6 {
+        color: #495057;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stack-trace {
+        background: #f1f3f4;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        padding: 1rem;
+        font-size: 0.8rem;
+        white-space: pre-wrap;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 2rem 0;
+    }
+
+    .error-actions .btn {
+        min-width: 140px;
+    }
+
+    .error-help {
+        text-align: left;
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+
+    .error-help h6 {
+        color: #495057;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .help-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .help-list li {
+        padding: 0.5rem 0;
+        color: #6c757d;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .help-list li:last-child {
+        border-bottom: none;
+    }
+
+    .help-list a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .help-list a:hover {
+        text-decoration: underline;
+    }
+
+    .quick-nav {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        min-width: 300px;
+    }
+
+    .quick-nav h6 {
+        text-align: center;
+        color: #495057;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .nav-links {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .nav-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #495057;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+        background: #e9ecef;
+        color: #007bff;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .nav-link i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-link span {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .error-page {
+            padding: 1rem;
+        }
+
+        .error-container {
+            padding: 2rem 1rem;
+        }
+
+        .error-title {
+            font-size: 3rem;
+        }
+
+        .error-subtitle {
+            font-size: 1.2rem;
+        }
+
+        .error-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .error-actions .btn {
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .nav-links {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-nav {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .error-title {
+            font-size: 2.5rem;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+        }
+
+        .error-container {
+            margin: 1rem;
+        }
+    }
+</style>
+</body>
+</html>

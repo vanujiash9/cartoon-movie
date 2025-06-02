@@ -1,73 +1,401 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
 <head>
-    <title>Quản lý tập phim</title>
-    <meta charset="UTF-8"/>
-    <link rel="stylesheet" th:href="@{/css/episodes.css}">
+    <title>Episode Management - Cartoon Movie System</title>
 </head>
 <body>
-    <h2>Quản lý tập phim</h2>
-    <form th:action="@{'/admin/episodes/add/' + ${cartoonId}}" th:object="${episode}" method="post">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Số tập:</label>
-                <input type="number" th:field="*{episode_number}" required/>
-            </div>
-            <div class="form-group">
-                <label>Tên tập:</label>
-                <input type="text" th:field="*{title}" required/>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Video URL:</label>
-                <input type="text" th:field="*{video_url}" required/>
-            </div>
-            <div class="form-group">
-                <label>Thumbnail URL:</label>
-                <input type="text" th:field="*{thumbnail_url}" />
+<div layout:fragment="content">
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-info">
+                <h1 class="page-title">Episode Management</h1>
+                <p class="page-subtitle" th:text="'Managing episodes for: ' + ${cartoonTitle}"></p>
+            </div>            <div class="header-actions">
+                <a th:href="@{'/admin/episodes/add/' + ${cartoonId}}" 
+                   th:if="${cartoonId != null and cartoonId != ''}" 
+                   class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Episode
+                </a>
+                <a th:href="@{/admin/episodes-overview}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Overview
+                </a>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Thời lượng (giây):</label>
-                <input type="number" th:field="*{duration}" />
-            </div>
-            <div class="form-group" style="align-items: flex-end; display: flex;">
-                <button type="submit" style="width: 100%;">Thêm tập</button>
+    </div>      <!-- Alert Messages -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Quick Add Episode Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Quick Add Episode</h5>
+        </div>        <div class="card-body">
+            <form th:action="@{'/admin/episodes/add/' + ${cartoonId}}" 
+                  th:if="${cartoonId != null and cartoonId != ''}"
+                  th:object="${episode}" method="post" class="quick-add-form">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="episode_number">Episode Number</label>
+                            <input type="number" th:field="*{episode_number}" class="form-control" id="episode_number" required min="1"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="title">Episode Title</label>
+                            <input type="text" th:field="*{title}" class="form-control" id="title" required maxlength="255"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="video_url">Video URL</label>
+                            <input type="url" th:field="*{video_url}" class="form-control" id="video_url" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="duration">Duration (seconds)</label>
+                            <input type="number" th:field="*{duration}" class="form-control" id="duration" min="0"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-success btn-block">
+                                <i class="fas fa-plus"></i> Add Episode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="thumbnail_url">Thumbnail URL (optional)</label>
+                            <input type="url" th:field="*{thumbnail_url}" class="form-control" id="thumbnail_url"/>
+                        </div>
+                    </div>                </div>
+            </form>
+            <div th:unless="${cartoonId != null and cartoonId != ''}" class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Please select a cartoon to add episodes.
             </div>
         </div>
-    </form>
-    <hr/>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Số tập</th>
-            <th>Tên tập</th>
-            <th>Video</th>
-            <th>Thumbnail</th>
-            <th>Thời lượng</th>
-            <th>Lượt xem</th>
-            <th>Ngày tạo</th>
-            <th>Hành động</th>
-        </tr>
-        <tr th:each="ep : ${episodes}">
-            <td th:text="${ep.id}"></td>
-            <td th:text="${ep.episode_number}"></td>
-            <td th:text="${ep.title}"></td>
-            <td><a th:href="${ep.video_url}" target="_blank">Xem</a></td>
-            <td>
-                <img th:if="${ep.thumbnail_url}" th:src="${ep.thumbnail_url}" style="max-width:60px;max-height:40px;" />
-            </td>
-            <td th:text="${ep.duration}"></td>
-            <td th:text="${ep.views}"></td>
-            <td th:text="${ep.created_at}"></td>
-            <td>
-                <a th:href="@{'/admin/episodes/delete/' + ${cartoonId} + '/' + ${ep.id}}"
-                   onclick="return confirm('Xóa tập này?')">Xóa</a>
-            </td>
-        </tr>
-    </table>
-    <a th:href="@{'/admin'}" class="back-link">Quay lại danh sách phim</a>
+    </div>
+
+    <!-- Episodes List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Episodes List</h5>
+                <div class="card-tools">
+                    <span class="badge badge-info" th:text="'Total Episodes: ' + ${episodes.size()}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div th:if="${episodes.empty}" class="text-center py-5">
+                <i class="fas fa-film fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No episodes found</h5>
+                <p class="text-muted">Add the first episode to get started.</p>
+            </div>
+            
+            <div th:unless="${episodes.empty}">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Episode #</th>
+                                <th>Title</th>
+                                <th>Thumbnail</th>
+                                <th>Duration</th>
+                                <th>Views</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ep : ${episodes}">
+                                <td>
+                                    <span class="badge badge-primary" th:text="${ep.episode_number}"></span>
+                                </td>
+                                <td>
+                                    <div class="episode-info">
+                                        <h6 class="mb-1" th:text="${ep.title}"></h6>
+                                        <small class="text-muted" th:text="'ID: ' + ${ep.id}"></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="thumbnail-preview">
+                                        <th:block th:if="${ep.thumbnail_url != null and !ep.thumbnail_url.isEmpty()}">
+                                            <img th:src="${ep.thumbnail_url}" alt="Thumbnail" class="img-thumbnail" />
+                                        </th:block>
+                                        <th:block th:unless="${ep.thumbnail_url != null and !ep.thumbnail_url.isEmpty()}">
+                                            <span class="text-muted">No Thumbnail</span>
+                                        </th:block>
+                                    </div>
+                                </td>                                <td>
+                                    <span th:if="${ep.duration != null}" th:text="${#numbers.formatInteger(ep.duration / 60, 0)} + 'm ' + ${#numbers.formatInteger(ep.duration % 60, 0)} + 's'"></span>
+                                    <span th:unless="${ep.duration != null}" class="text-muted">Unknown</span>
+                                </td>                                <td>
+                                    <span class="badge badge-info" th:text="${ep.views != null ? ep.views : 0}"></span>
+                                </td>                                <td>
+                                    <small th:if="${ep.created_at != null}" th:text="${#temporals.format(ep.created_at, 'dd/MM/yyyy HH:mm')}"></small>
+                                    <small th:unless="${ep.created_at != null}" class="text-muted">Unknown</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="${ep.video_url}" target="_blank" class="btn btn-outline-primary" title="Watch Episode">
+                                            <i class="fas fa-play"></i>
+                                        </a>                                        <a th:href="@{'/admin/episodes/edit/' + ${cartoonId} + '/' + ${ep.id}}" 
+                                           class="btn btn-outline-secondary" title="Edit Episode" data-bs-toggle="modal" data-bs-target="#editEpisodeModal" 
+                                           th:data-episode_id="${ep.id}"
+                                           th:data-title="${ep.title}"
+                                           th:data-description="${ep.description}"
+                                           th:data-episode_number="${ep.episode_number}">
+                                            <i class="fas fa-edit"></i>
+                                        </a><button type="button" class="btn btn-outline-danger" 
+                                                th:onclick="'confirmDelete(' + ${cartoonId} + ', ' + ${ep.id} + ', \'' + ${ep.title} + '\')'" 
+                                                title="Delete Episode">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Episode Thumbnail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" class="img-fluid" alt="Episode thumbnail"/>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete episode "<span id="deleteEpisodeName"></span>"?</p>
+                    <p class="text-danger"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a id="deleteConfirmBtn" href="#" class="btn btn-danger">Delete Episode</a>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Edit Episode Modal -->
+    <div class="modal fade" id="editEpisodeModal" tabindex="-1" aria-labelledby="editEpisodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editEpisodeModalLabel">Edit Episode</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{'/admin/episodes/edit/' + ${cartoonId} + '/' + ${episode.id}}" th:object="${episode}" method="post">
+                        <div class="form-group mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" th:field="*{title}" class="form-control" id="title" required />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea th:field="*{description}" class="form-control" id="description" required></textarea>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="episode_number" class="form-label">Episode Number</label>
+                            <input type="number" th:field="*{episode_number}" class="form-control" id="episode_number" required min="1" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script layout:fragment="scripts">    function showImageModal(src) {
+        document.getElementById('modalImage').src = src;
+        var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+        imageModal.show();
+    }
+
+    function confirmDelete(cartoonId, episodeId, episodeTitle) {
+        document.getElementById('deleteEpisodeName').textContent = episodeTitle;
+        document.getElementById('deleteConfirmBtn').href = `/admin/episodes/delete/${cartoonId}/${episodeId}`;
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }    // Auto-dismiss alerts
+    setTimeout(function() {
+        document.querySelectorAll('.alert-dismissible').forEach(function(alert) {
+            alert.style.display = 'none';
+        });
+    }, 5000);
+
+    // Form validation
+    document.querySelector('.quick-add-form').addEventListener('submit', function(e) {
+        const episodeNumber = document.getElementById('episode_number').value;
+        const title = document.getElementById('title').value.trim();
+        const videoUrl = document.getElementById('video_url').value.trim();
+
+        if (!episodeNumber || episodeNumber < 1) {
+            e.preventDefault();
+            alert('Please enter a valid episode number.');
+            return;
+        }
+
+        if (!title) {
+            e.preventDefault();
+            alert('Please enter an episode title.');
+            return;
+        }
+
+        if (!videoUrl) {
+            e.preventDefault();
+            alert('Please enter a video URL.');
+            return;
+        }
+    });    // Populate and show edit episode modal
+    document.getElementById('editEpisodeModal').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var episodeId = button.getAttribute('data-episode_id');
+        var title = button.getAttribute('data-title');
+        var description = button.getAttribute('data-description');
+        var episodeNumber = button.getAttribute('data-episode_number');
+
+        var modal = this;
+        modal.querySelector('.modal-body #title').value = title;
+        modal.querySelector('.modal-body #description').value = description;
+        modal.querySelector('.modal-body #episode_number').value = episodeNumber;
+        modal.querySelector('form').setAttribute('action', '/admin/episodes/edit/' + episodeId);
+    });
+</script>
+
+<style layout:fragment="styles">
+    .quick-add-form {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+    .episode-info h6 {
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .thumbnail-preview img {
+        border-radius: 4px;
+        transition: transform 0.2s;
+    }
+
+    .thumbnail-preview img:hover {
+        transform: scale(1.1);
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin: -2rem -2rem 2rem -2rem;
+        border-radius: 0;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 300;
+    }
+
+    .page-subtitle {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .header-actions .btn {
+        margin-left: 0.5rem;
+    }
+
+    .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: none;
+    }
+
+    .card-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .badge-info {
+        background-color: #17a2b8;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .header-actions {
+            margin-top: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+        }
+
+        .quick-add-form .row .col-md-2,
+        .quick-add-form .row .col-md-3 {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
 </body>
 </html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Movies - Cartoon Movie Management</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Admin CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/movies.css}">
+</head>
+<body>
+    <!-- Include sidebar -->
+    <nav th:replace="fragments/sidebar :: sidebar"></nav>
+    
+    <!-- Main content area with proper margin -->
+    <main class="admin-main">
+        <div class="main-header">
+            <div class="header-content">
+                <div class="admin-user d-flex align-items-center gap-2">
+                    <i class="fas fa-user-circle"></i>
+                    <span>admin</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-wrapper">
+    <div class="page-header">
+        <h2>Manage Movies</h2>
+        <div class="page-actions">
+            <a href="/admin/movies/new" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Movie
+            </a>
+        </div>
+    </div>
+
+    <!-- Search and Filter Toolbar -->
+    <div class="toolbar">
+        <form class="search-form" th:action="@{/admin/movies}" method="get">
+            <div class="input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" name="keyword" placeholder="Search movies..." th:value="${param.keyword}" />
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+        
+        <form class="filter-form" th:action="@{/admin/movies}" method="get">
+            <select name="year" th:value="${param.year}">
+                <option value="">All Years</option>
+                <option th:each="y : ${years}" th:value="${y}" th:text="${y}" 
+                        th:selected="${param.year} == ${y.toString()}"></option>
+            </select>
+            <select name="genre" th:value="${param.genre}">
+                <option value="">All Genres</option>
+                <option th:each="g : ${genres}" th:value="${g}" th:text="${g}" 
+                        th:selected="${param.genre} == ${g}"></option>
+            </select>
+            <select name="sort" th:value="${param.sort}">
+                <option value="">Default Sort</option>
+                <option value="title_asc" th:selected="${param.sort} == 'title_asc'">Title A-Z</option>
+                <option value="title_desc" th:selected="${param.sort} == 'title_desc'">Title Z-A</option>
+                <option value="year_asc" th:selected="${param.sort} == 'year_asc'">Year Ascending</option>
+                <option value="year_desc" th:selected="${param.sort} == 'year_desc'">Year Descending</option>
+                <option value="episodes_asc" th:selected="${param.sort} == 'episodes_asc'">Episodes Ascending</option>
+                <option value="episodes_desc" th:selected="${param.sort} == 'episodes_desc'">Episodes Descending</option>
+            </select>
+            <button type="submit" class="btn btn-outline-secondary">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+        </form>
+        
+        <div class="toolbar-info">
+            <span class="badge badge-info">
+                <i class="fas fa-film"></i> 
+                Total: <strong th:text="${totalMovies}">0</strong> movies
+            </span>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- Movies Table -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Movie Info</th>
+                    <th>Genre</th>
+                    <th>Year</th>
+                    <th>Episodes</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cartoon : ${cartoons}" th:object="${cartoon}">
+                    <td>
+                        <div class="media">
+                            <img th:src="*{imageUrl} ?: '/images/placeholder-movie.png'" 
+                                 th:alt="*{title}" 
+                                 class="media-image" />
+                            <div class="media-content">
+                                <strong th:text="*{title}"></strong>
+                                <p class="text-muted" th:text="*{description ?: 'No description available'}" th:title="*{description}"></p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-secondary" th:text="*{genre ?: 'Unknown'}"></span>
+                    </td>
+                    <td>
+                        <span class="badge badge-primary" th:text="*{releaseYear ?: 'N/A'}"></span>
+                    </td>
+                    <td>
+                        <div class="episodes-info">
+                            <span class="badge badge-info" th:text="*{totalEpisodes ?: 0}"></span>
+                            <small class="text-muted d-block">episodes</small>
+                        </div>
+                    </td>
+                    <td>
+                        <small th:text="*{createdAt} != null ? ${#temporals.format(createdAt, 'dd/MM/yyyy')} : 'N/A'"></small>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <!-- Edit Movie -->
+                            <a th:href="@{'/admin/movies/edit/' + *{id}}" 
+                               class="btn btn-sm btn-outline-primary" title="Edit Movie">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <!-- Manage Episodes -->
+                            <a th:href="@{'/admin/episodes/' + *{id}}" 
+                               class="btn btn-sm btn-outline-success" title="Manage Episodes">
+                                <i class="fas fa-list"></i>
+                            </a>
+
+                            <!-- View Reviews -->
+                            <a th:href="@{'/admin/reviews?cartoonId=' + *{id}}" 
+                               class="btn btn-sm btn-outline-warning" title="View Reviews">
+                                <i class="fas fa-star"></i>
+                            </a>
+
+                            <!-- Delete Movie -->
+                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                    th:data-movie-id="*{id}" th:data-movie-title="*{title}"
+                                    onclick="deleteMovie(this.dataset.movieId, this.dataset.movieTitle)" title="Delete Movie">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(cartoons)}">
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="fas fa-film fa-3x mb-3"></i>
+                        <p>No movies found</p>
+                        <a href="/admin/movies/new" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add First Movie
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination-wrapper">
+        <nav aria-label="Movies pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/movies(page=${currentPage - 1}, keyword=${param.keyword}, year=${param.year}, genre=${param.genre}, sort=${param.sort})}">
+                        Previous
+                    </a>
+                </li>
+                
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                    class="page-item" th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/movies(page=${i}, keyword=${param.keyword}, year=${param.year}, genre=${param.genre}, sort=${param.sort})}" 
+                       th:text="${i + 1}">1</a>
+                </li>
+                
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/movies(page=${currentPage + 1}, keyword=${param.keyword}, year=${param.year}, genre=${param.genre}, sort=${param.sort})}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        </div>
+
+    <!-- Add New Movie Modal -->
+    <div class="modal fade" id="addMovieModal" tabindex="-1" aria-labelledby="addMovieModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form th:action="@{/admin/movies}" method="post" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMovieModalLabel">Add New Movie</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imageUrl" class="form-label">Thumbnail Image</label>
+                            <input type="file" class="form-control" id="imageUrl" name="imageUrl" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="trailerUrl" class="form-label">Trailer URL</label>
+                            <input type="url" class="form-control" id="trailerUrl" name="trailerUrl" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="genre" class="form-label">Genre</label>
+                            <input type="text" class="form-control" id="genre" name="genre" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="releaseYear" class="form-label">Release Year</label>
+                            <input type="number" class="form-control" id="releaseYear" name="releaseYear" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="director" class="form-label">Director</label>
+                            <input type="text" class="form-control" id="director" name="director" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="actors" class="form-label">Actors</label>
+                            <input type="text" class="form-control" id="actors" name="actors" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="duration" class="form-label">Duration (minutes)</label>
+                            <input type="number" class="form-control" id="duration" name="duration" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="public">Public</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script>
+        function deleteMovie(id, title) {
+            if (confirm(`Are you sure you want to delete "${title}"?\n\nThis action cannot be undone and will also delete all associated episodes and reviews.`)) {
+                // Create a form and submit it
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/admin/movies/${id}/delete`;
+
+                const csrfToken = document.querySelector('meta[name="_csrf"]');
+                if (csrfToken) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = '_csrf';
+                    input.value = csrfToken.getAttribute('content');
+                    form.appendChild(input);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const closeButton = alert.querySelector('.close');
+                    if (closeButton) {
+                        closeButton.click();
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

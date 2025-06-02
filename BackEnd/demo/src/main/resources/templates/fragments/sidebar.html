@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Admin Sidebar Fragment -->
+    <nav class="admin-sidebar" th:fragment="sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-film"></i> Cartoon Admin</h3>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-item">
+                <a th:href="@{/admin}" class="nav-link" th:classappend="${activePage} == 'dashboard' ? 'active' : ''">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/movies}" class="nav-link" th:classappend="${activePage} == 'movies' ? 'active' : ''">
+                    <i class="fas fa-film"></i> Quản lý phim
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/categories}" class="nav-link" th:classappend="${activePage} == 'categories' ? 'active' : ''">
+                    <i class="fas fa-folder"></i> Quản lý thể loại
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/episodes-overview}" class="nav-link" th:classappend="${activePage} == 'episodes-overview' ? 'active' : ''">
+                    <i class="fas fa-list"></i> Quản lý tập phim
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/users}" class="nav-link" th:classappend="${activePage} == 'users' ? 'active' : ''">
+                    <i class="fas fa-users"></i> Quản lý người dùng
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/reviews}" class="nav-link" th:classappend="${activePage} == 'reviews' ? 'active' : ''">
+                    <i class="fas fa-comments"></i> Quản lý bình luận
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/ratings}" class="nav-link" th:classappend="${activePage} == 'ratings' ? 'active' : ''">
+                    <i class="fas fa-star"></i> Quản lý đánh giá
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/statistics}" class="nav-link" th:classappend="${activePage} == 'statistics' ? 'active' : ''">
+                    <i class="fas fa-chart-bar"></i> Thống kê
+                </a>
+            </div>
+            <div class="nav-item">
+                <a th:href="@{/admin/settings}" class="nav-link" th:classappend="${activePage} == 'settings' ? 'active' : ''">
+                    <i class="fas fa-cog"></i> Cài đặt
+                </a>
+            </div>
+            <div class="nav-item mt-auto">
+                <a href="/logout" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>
