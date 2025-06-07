@@ -287,6 +287,7 @@
     margin: 0;
     border-collapse: collapse;
     margin-top: 1rem;
+    table-layout: fixed; /* Fix table layout để kiểm soát chiều rộng cột */
 }
 
 .admin-table thead {
@@ -308,6 +309,8 @@
     padding: 1.5rem 1.25rem;
     border-bottom: 1px solid var(--gray-200);
     vertical-align: middle;
+    word-wrap: break-word; /* Cho phép text wrap */
+    overflow-wrap: break-word; /* Hỗ trợ tốt hơn cho text dài */
 }
 
 .admin-table tbody tr {
@@ -320,6 +323,42 @@
 
 .admin-table tbody tr:last-child td {
     border-bottom: none;
+}
+
+/* Table Column Widths - Kiểm soát chiều rộng từng cột */
+.admin-table th:nth-child(1), .admin-table td:nth-child(1) { 
+    width: 35%; /* Cột Movie Info */
+}
+.admin-table th:nth-child(2), .admin-table td:nth-child(2) { 
+    width: 15%; /* Cột Genre */
+    max-width: 100px; /* Giới hạn chiều rộng tối đa cho desktop */
+    min-width: 80px; /* Chiều rộng tối thiểu */
+}
+.admin-table th:nth-child(3), .admin-table td:nth-child(3) { 
+    width: 10%; /* Cột Year */
+}
+.admin-table th:nth-child(4), .admin-table td:nth-child(4) { 
+    width: 10%; /* Cột Episodes */
+}
+.admin-table th:nth-child(5), .admin-table td:nth-child(5) { 
+    width: 10%; /* Cột Created */
+}
+.admin-table th:nth-child(6), .admin-table td:nth-child(6) { 
+    width: 20%; /* Cột Actions */
+    min-width: 180px; /* Đảm bảo đủ chỗ cho các nút */
+}
+
+/* Text Handling - Xử lý text dài */
+.media-content p {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Badge with tooltip for long genre names */
+.badge[title] {
+    cursor: help;
 }
 
 /* Media Content */
@@ -385,6 +424,12 @@
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.025em;
+    display: inline-block;
+    max-width: 90px; /* Giảm chiều rộng tối đa cho genre */
+    white-space: nowrap; /* Không cho phép xuống dòng */
+    overflow: hidden; /* Ẩn text thừa */
+    text-overflow: ellipsis; /* Hiển thị ... khi text dài */
+    cursor: help; /* Hiển thị cursor help khi hover */
 }
 
 .badge-secondary {
@@ -566,6 +611,137 @@
     box-shadow: none;
 }
 
+/* Modal Enhancements */
+#movieModal .modal-xl {
+    max-width: 90%;
+}
+
+#movieModal .modal-content {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-lg);
+    border: none;
+}
+
+#movieModal .modal-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    border-bottom: none;
+}
+
+#movieModal .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+#movieModal .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+#movieModal .modal-body {
+    padding: 2rem;
+    background: #fafafa;
+}
+
+#movieModal .modal-footer {
+    background: white;
+    border-top: 1px solid var(--gray-200);
+    border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+    padding: 1.5rem 2rem;
+}
+
+#movieModal h6 {
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+#movieModal .form-label {
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
+#movieModal .form-control,
+#movieModal .form-select {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-300);
+    padding: 0.75rem 1rem;
+    transition: var(--transition);
+    background: white;
+}
+
+#movieModal .form-control:focus,
+#movieModal .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#movieModal .form-text {
+    color: var(--gray-500);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+#imagePreviewContainer {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    border: 2px dashed var(--gray-300);
+    text-align: center;
+}
+
+#imagePreview {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+/* Button Enhancements */
+#movieModal .btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: var(--transition);
+}
+
+#movieModal .btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    box-shadow: var(--box-shadow);
+}
+
+#movieModal .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+}
+
+#movieModal .btn-secondary {
+    background: var(--gray-500);
+    border: none;
+    color: white;
+}
+
+#movieModal .btn-secondary:hover {
+    background: var(--gray-600);
+    transform: translateY(-1px);
+}
+
+/* Form Row Styling */
+#movieModal .row {
+    margin-bottom: 0;
+}
+
+#movieModal .row .col-md-6:first-child {
+    padding-right: 2rem;
+}
+
+#movieModal .row .col-md-6:last-child {
+    padding-left: 2rem;
+    border-left: 1px solid var(--gray-200);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .admin-main {
@@ -639,9 +815,24 @@
         margin-left: 0;
         width: 100%;
     }
+    
+    /* Additional responsive fixes for genre column */
+    .admin-table th:nth-child(2), .admin-table td:nth-child(2) { 
+        max-width: 80px; /* Giảm chiều rộng cho mobile */
+    }
+    
+    .badge {
+        max-width: 80px; /* Giảm chiều rộng badge cho mobile */
+        font-size: 0.7rem; /* Giảm font size */
+        padding: 0.3rem 0.6rem; /* Giảm padding */
+    }
+    
+    .media-content p {
+        max-width: 200px; /* Giảm chiều rộng cho mobile */
+    }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
     .page-header h2 {
         font-size: 1.5rem;
     }
@@ -667,6 +858,17 @@
     .filter-form select,
     .filter-form .btn {
         width: 100%;
+    }
+    
+    /* Giảm thêm chiều rộng cho cột genre trên mobile nhỏ */
+    .admin-table th:nth-child(2), .admin-table td:nth-child(2) { 
+        max-width: 60px; 
+    }
+    
+    .badge {
+        max-width: 60px;
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
     }
 }
 

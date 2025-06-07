@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Movies - Cartoon Movie Management</title>
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -29,18 +28,18 @@
             <div class="header-content">
                 <div class="admin-user d-flex align-items-center gap-2">
                     <i class="fas fa-user-circle"></i>
-                    <span>admin</span>
+                    <span>Admin</span>
                 </div>
             </div>
         </div>
         
         <div class="content-wrapper">
     <div class="page-header">
-        <h2>Manage Movies</h2>
+        <h2>Quản Lý Phim</h2>
         <div class="page-actions">
-            <a href="/admin/movies/new" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New Movie
-            </a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Thêm Phim Mới
+            </button>
         </div>
     </div>
 
@@ -49,44 +48,42 @@
         <form class="search-form" th:action="@{/admin/movies}" method="get">
             <div class="input-group">
                 <i class="fas fa-search"></i>
-                <input type="text" name="keyword" placeholder="Search movies..." th:value="${param.keyword}" />
+                <input type="text" name="keyword" placeholder="Tìm kiếm phim..." th:value="${param.keyword}" />
                 <button type="submit" class="btn btn-outline-primary">
-                    <i class="fas fa-search"></i> Search
+                    <i class="fas fa-search"></i> Tìm Kiếm
                 </button>
             </div>
         </form>
         
         <form class="filter-form" th:action="@{/admin/movies}" method="get">
-            <select name="year" th:value="${param.year}">
-                <option value="">All Years</option>
-                <option th:each="y : ${years}" th:value="${y}" th:text="${y}" 
-                        th:selected="${param.year} == ${y.toString()}"></option>
+            <select name="year">
+                <option value="">Tất Cả Năm</option>
+                <option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${param.year} == ${y.toString()}"></option>
             </select>
-            <select name="genre" th:value="${param.genre}">
-                <option value="">All Genres</option>
-                <option th:each="g : ${genres}" th:value="${g}" th:text="${g}" 
-                        th:selected="${param.genre} == ${g}"></option>
+            <select name="genre">
+                <option value="">Tất Cả Thể Loại</option>
+                <option th:each="g : ${genres}" th:value="${g}" th:text="${g}" th:selected="${param.genre} == ${g}"></option>
             </select>
-            <select name="sort" th:value="${param.sort}">
-                <option value="">Default Sort</option>
-                <option value="title_asc" th:selected="${param.sort} == 'title_asc'">Title A-Z</option>
-                <option value="title_desc" th:selected="${param.sort} == 'title_desc'">Title Z-A</option>
-                <option value="year_asc" th:selected="${param.sort} == 'year_asc'">Year Ascending</option>
-                <option value="year_desc" th:selected="${param.sort} == 'year_desc'">Year Descending</option>
-                <option value="episodes_asc" th:selected="${param.sort} == 'episodes_asc'">Episodes Ascending</option>
-                <option value="episodes_desc" th:selected="${param.sort} == 'episodes_desc'">Episodes Descending</option>
+            <select name="sort">
+                <option value="">Sắp Xếp Mặc Định</option>
+                <option value="title_asc" th:selected="${param.sort} == 'title_asc'">Tiêu Đề A-Z</option>
+                <option value="title_desc" th:selected="${param.sort} == 'title_desc'">Tiêu Đề Z-A</option>
+                <option value="year_asc" th:selected="${param.sort} == 'year_asc'">Năm Tăng Dần</option>
+                <option value="year_desc" th:selected="${param.sort} == 'year_desc'">Năm Giảm Dần</option>
+                <option value="episodes_asc" th:selected="${param.sort} == 'episodes_asc'">Tập Tăng Dần</option>
+                <option value="episodes_desc" th:selected="${param.sort} == 'episodes_desc'">Tập Giảm Dần</option>
             </select>
             <button type="submit" class="btn btn-outline-secondary">
-                <i class="fas fa-filter"></i> Filter
+                <i class="fas fa-filter"></i> Lọc
             </button>
         </form>
         
-        <div class="toolbar-info">
+        <!-- <div class="toolbar-info">
             <span class="badge badge-info">
-                <i class="fas fa-film"></i> 
-                Total: <strong th:text="${totalMovies}">0</strong> movies
+                <i class="fas fa-film"></i>
+                Tổng: <strong th:text="${totalMovies != null ? totalMovies : 0}">0</strong> phim
             </span>
-        </div>
+        </div> -->
     </div>
 
     <!-- Flash Messages -->
@@ -111,37 +108,39 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Movie Info</th>
-                    <th>Genre</th>
-                    <th>Year</th>
-                    <th>Episodes</th>
-                    <th>Created</th>
-                    <th>Actions</th>
+                    <th>Thông Tin Phim</th>
+                    <th>Thể Loại</th>
+                    <th>Năm</th>
+                    <th>Tập</th>
+                    <th>Trạng Thái</th>
+                    <th>Hành Động</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="cartoon : ${cartoons}" th:object="${cartoon}">
                     <td>
                         <div class="media">
-                            <img th:src="*{imageUrl} ?: '/images/placeholder-movie.png'" 
-                                 th:alt="*{title}" 
-                                 class="media-image" />
+                            <img th:src="*{imageUrl != null and !#strings.isEmpty(imageUrl) ? imageUrl : '/images/placeholder-movie.png'}"
+                                 th:alt="*{title}" class="media-image" />
                             <div class="media-content">
                                 <strong th:text="*{title}"></strong>
-                                <p class="text-muted" th:text="*{description ?: 'No description available'}" th:title="*{description}"></p>
+                                <p class="text-muted" th:text="*{description != null and !#strings.isEmpty(description) ? description : 'No description available'}"
+                                   th:title="*{description}"></p>
                             </div>
                         </div>
                     </td>
                     <td>
-                        <span class="badge badge-secondary" th:text="*{genre ?: 'Unknown'}"></span>
+                        <span class="badge badge-secondary" 
+                              th:text="*{genre != null and !#strings.isEmpty(genre) ? genre : 'Unknown'}"
+                              th:title="*{genre != null and !#strings.isEmpty(genre) ? genre : 'Unknown'}"></span>
                     </td>
                     <td>
-                        <span class="badge badge-primary" th:text="*{releaseYear ?: 'N/A'}"></span>
+                        <span class="badge badge-primary" th:text="*{releaseYear != null ? releaseYear : 'N/A'}"></span>
                     </td>
                     <td>
                         <div class="episodes-info">
-                            <span class="badge badge-info" th:text="*{totalEpisodes ?: 0}"></span>
-                            <small class="text-muted d-block">episodes</small>
+                            <span class="badge badge-info" th:text="*{totalEpisodes != null ? totalEpisodes : 0}"></span>
+                            <small class="text-muted d-block">tập</small>
                         </div>
                     </td>
                     <td>
@@ -150,19 +149,31 @@
                     <td>
                         <div class="btn-group">
                             <!-- Edit Movie -->
-                            <a th:href="@{'/admin/movies/edit/' + *{id}}" 
-                               class="btn btn-sm btn-outline-primary" title="Edit Movie">
+                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                                    onclick="openEditModal(this)" title="Edit Movie"
+                                    th:data-id="*{id}"
+                                    th:data-title="*{title}"
+                                    th:data-description="*{description}"
+                                    th:data-genre="*{genre}"
+                                    th:data-year="*{releaseYear}"
+                                    th:data-director="*{director}"
+                                    th:data-actors="*{actors}"
+                                    th:data-duration="*{duration}"
+                                    th:data-image="*{imageUrl}"
+                                    th:data-trailer="*{trailerUrl}"
+                                    th:data-video="*{videoUrl}"
+                                    th:data-status="*{status}">
                                 <i class="fas fa-edit"></i>
-                            </a>
+                            </button>
 
                             <!-- Manage Episodes -->
-                            <a th:href="@{'/admin/episodes/' + *{id}}" 
+                            <a th:href="@{'/admin/movies/episodes/' + *{id}}"
                                class="btn btn-sm btn-outline-success" title="Manage Episodes">
                                 <i class="fas fa-list"></i>
                             </a>
 
                             <!-- View Reviews -->
-                            <a th:href="@{'/admin/reviews?cartoonId=' + *{id}}" 
+                            <a th:href="@{'/admin/movies/reviews?cartoonId=' + *{id}}" 
                                class="btn btn-sm btn-outline-warning" title="View Reviews">
                                 <i class="fas fa-star"></i>
                             </a>
@@ -180,9 +191,9 @@
                     <td colspan="8" class="text-center text-muted py-4">
                         <i class="fas fa-film fa-3x mb-3"></i>
                         <p>No movies found</p>
-                        <a href="/admin/movies/new" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal" onclick="openAddModal()">
                             <i class="fas fa-plus"></i> Add First Movie
-                        </a>
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -214,63 +225,123 @@
         </nav>
         </div>
 
-    <!-- Add New Movie Modal -->
-    <div class="modal fade" id="addMovieModal" tabindex="-1" aria-labelledby="addMovieModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- Movie Modal (Add/Edit) -->
+    <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <form th:action="@{/admin/movies}" method="post" enctype="multipart/form-data">
+                <form id="movieForm" method="post" enctype="application/x-www-form-urlencoded">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addMovieModalLabel">Add New Movie</h5>
+                        <h5 class="modal-title" id="movieModalLabel">Add New Movie</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="imageUrl" class="form-label">Thumbnail Image</label>
-                            <input type="file" class="form-control" id="imageUrl" name="imageUrl" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="trailerUrl" class="form-label">Trailer URL</label>
-                            <input type="url" class="form-control" id="trailerUrl" name="trailerUrl" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="genre" class="form-label">Genre</label>
-                            <input type="text" class="form-control" id="genre" name="genre" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="releaseYear" class="form-label">Release Year</label>
-                            <input type="number" class="form-control" id="releaseYear" name="releaseYear" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="director" class="form-label">Director</label>
-                            <input type="text" class="form-control" id="director" name="director" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="actors" class="form-label">Actors</label>
-                            <input type="text" class="form-control" id="actors" name="actors" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="duration" class="form-label">Duration (minutes)</label>
-                            <input type="number" class="form-control" id="duration" name="duration" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status">
-                                <option value="public">Public</option>
-                                <option value="draft">Draft</option>
-                            </select>
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3"><i class="fas fa-info-circle"></i> Basic Information</h6>
+                                
+                                <div class="mb-3">
+                                    <label for="movieTitle" class="form-label">Title *</label>
+                                    <input type="text" class="form-control" id="movieTitle" name="title" required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="movieDescription" class="form-label">Mô Tả</label>
+                                    <textarea class="form-control" id="movieDescription" name="description" rows="4"></textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="movieGenre" class="form-label">Thể Loại</label>
+                                            <input type="text" class="form-control" id="movieGenre" name="genre" placeholder="Hành Động, Hài Hước, v.v."/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="movieYear" class="form-label">Năm Sản Xuất</label>
+                                            <input type="number" class="form-control" id="movieYear" name="releaseYear" min="1900" max="2030"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="movieDirector" class="form-label">Đạo Diễn</label>
+                                            <input type="text" class="form-control" id="movieDirector" name="director" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="movieDuration" class="form-label">Thời Gian (phút)</label>
+                                            <input type="number" class="form-control" id="movieDuration" name="duration" min="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="movieActors" class="form-label">Diễn Viên</label>
+                                    <input type="text" class="form-control" id="movieActors" name="actors" placeholder="Separate with commas"/>
+                                </div>
+                            </div>
+
+                            <!-- Media & Links -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3"><i class="fas fa-photo-video"></i> Media & Links</h6>
+                                
+                                <div class="mb-3">
+                                    <label for="movieImage" class="form-label">Ảnh</label>
+                                    <input type="url" class="form-control" id="movieImage" name="imageUrl" placeholder="https://example.com/image.jpg"/>
+                                    <div class="form-text">Link đến poster/thumbnail phim</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="movieTrailer" class="form-label">Trailer</label>
+                                    <input type="url" class="form-control" id="movieTrailer" name="trailerUrl" placeholder="https://youtube.com/watch?v=..."/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="movieVideo" class="form-label">Video</label>
+                                    <input type="url" class="form-control" id="movieVideo" name="videoUrl" placeholder="https://example.com/video.mp4"/>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="movieEpisodes" class="form-label">Tổng Số Tập</label>
+                                            <input type="number" class="form-control" id="movieEpisodes" name="totalEpisodes" min="1" value="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="movieStatus" class="form-label">Trạng Thái</label>
+                                            <select class="form-select" id="movieStatus" name="status">
+                                                <option value="Active">Đang Chiếu</option>
+                                                <option value="Inactive">Ngừng Chiếu</option>
+                                                <option value="Coming Soon">Sắp Ra Mắt</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div class="mb-3" id="imagePreviewContainer" style="display: none;">
+                                    <label class="form-label">Current Image:</label>
+                                    <div>
+                                        <img id="imagePreview" alt="Movie poster" class="img-thumbnail" style="max-width: 200px; max-height: 300px;">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> <span id="submitButtonText">Lưu Phim</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -283,6 +354,100 @@
     
     <!-- Custom Scripts -->
     <script>
+        let isEditMode = false;
+        let editMovieId = null;
+
+        // Open Add Modal
+        function openAddModal() {
+            isEditMode = false;
+            editMovieId = null;
+            
+            // Reset form
+            document.getElementById('movieForm').reset();
+            document.getElementById('movieModalLabel').textContent = 'Add New Movie';
+            document.getElementById('submitButtonText').textContent = 'Save Movie';
+            document.getElementById('movieForm').action = '/admin/movies';
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('movieModal')).show();
+        }
+
+        // Open Edit Modal
+        function openEditModal(button) {
+            isEditMode = true;
+            editMovieId = button.dataset.id;
+            
+            // Set form data
+            document.getElementById('movieTitle').value = button.dataset.title || '';
+            document.getElementById('movieDescription').value = button.dataset.description || '';
+            document.getElementById('movieGenre').value = button.dataset.genre || '';
+            document.getElementById('movieYear').value = button.dataset.year || '';
+            document.getElementById('movieDirector').value = button.dataset.director || '';
+            document.getElementById('movieActors').value = button.dataset.actors || '';
+            document.getElementById('movieDuration').value = button.dataset.duration || '';
+            document.getElementById('movieImage').value = button.dataset.image || '';
+            document.getElementById('movieTrailer').value = button.dataset.trailer || '';
+            document.getElementById('movieVideo').value = button.dataset.video || '';
+            document.getElementById('movieStatus').value = button.dataset.status || 'Active';
+            
+            // Show image preview if exists
+            if (button.dataset.image) {
+                document.getElementById('imagePreview').src = button.dataset.image;
+                document.getElementById('imagePreviewContainer').style.display = 'block';
+            } else {
+                document.getElementById('imagePreviewContainer').style.display = 'none';
+            }
+            
+            // Update modal
+            document.getElementById('movieModalLabel').textContent = 'Edit Movie';
+            document.getElementById('submitButtonText').textContent = 'Update Movie';
+            document.getElementById('movieForm').action = `/admin/movies/${editMovieId}`;
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('movieModal')).show();
+        }
+
+        // Handle form submission
+        document.getElementById('movieForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const url = this.action;
+            const method = isEditMode ? 'PUT' : 'POST';
+            
+            // Convert FormData to URLSearchParams for regular form submission
+            const data = new URLSearchParams();
+            for (let [key, value] of formData) {
+                data.append(key, value);
+            }
+            
+            // If editing, add method override
+            if (isEditMode) {
+                data.append('_method', 'PUT');
+            }
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: data
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Success - reload page
+                    window.location.reload();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving the movie. Please try again.');
+            });
+        });
+
         function deleteMovie(id, title) {
             if (confirm(`Are you sure you want to delete "${title}"?\n\nThis action cannot be undone and will also delete all associated episodes and reviews.`)) {
                 // Create a form and submit it
@@ -314,6 +479,17 @@
                         closeButton.click();
                     }
                 }, 5000);
+            });
+
+            // Image URL preview
+            document.getElementById('movieImage').addEventListener('blur', function() {
+                const imageUrl = this.value;
+                if (imageUrl) {
+                    document.getElementById('imagePreview').src = imageUrl;
+                    document.getElementById('imagePreviewContainer').style.display = 'block';
+                } else {
+                    document.getElementById('imagePreviewContainer').style.display = 'none';
+                }
             });
         });
     </script>

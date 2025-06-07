@@ -7,22 +7,17 @@
     <!-- Admin Sidebar Fragment -->
     <nav class="admin-sidebar" th:fragment="sidebar" id="adminSidebar">
         <div class="sidebar-header">
-            <h3><i class="fas fa-film"></i> Cartoon Admin</h3>
+            <h3><i class="fas fa-film"></i> Quản lý phim hoạt hình </h3>
         </div>
         <div class="sidebar-nav">
             <div class="nav-item">
                 <a th:href="@{/admin}" class="nav-link" th:classappend="${activePage} == 'dashboard' ? 'active' : ''">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                    <i class="fas fa-tachometer-alt"></i> Bảng điều khiển
                 </a>
             </div>
             <div class="nav-item">
                 <a th:href="@{/admin/movies}" class="nav-link" th:classappend="${activePage} == 'movies' ? 'active' : ''">
                     <i class="fas fa-film"></i> Quản lý phim
-                </a>
-            </div>
-            <div class="nav-item">
-                <a th:href="@{/admin/categories}" class="nav-link" th:classappend="${activePage} == 'categories' ? 'active' : ''">
-                    <i class="fas fa-folder"></i> Quản lý thể loại
                 </a>
             </div>
             <div class="nav-item">
@@ -38,11 +33,6 @@
             <div class="nav-item">
                 <a th:href="@{/admin/reviews}" class="nav-link" th:classappend="${activePage} == 'reviews' ? 'active' : ''">
                     <i class="fas fa-comments"></i> Quản lý bình luận
-                </a>
-            </div>
-            <div class="nav-item">
-                <a th:href="@{/admin/ratings}" class="nav-link" th:classappend="${activePage} == 'ratings' ? 'active' : ''">
-                    <i class="fas fa-star"></i> Quản lý đánh giá
                 </a>
             </div>
             <div class="nav-item">

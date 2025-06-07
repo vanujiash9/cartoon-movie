@@ -22,7 +22,7 @@ public class Review {
     @Column(name = "created_at")
     private LocalDateTime created_at;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cartoon_id")
     private Cartoon cartoon;
 

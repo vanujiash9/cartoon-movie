@@ -17,9 +17,8 @@
                    th:if="${cartoonId != null and cartoonId != ''}" 
                    class="btn btn-primary">
                     <i class="fas fa-plus"></i> Add New Episode
-                </a>
-                <a th:href="@{/admin/episodes-overview}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Overview
+                </a>                <a th:href="@{/admin/movies}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Movies
                 </a>
             </div>
         </div>
@@ -131,12 +130,11 @@
                                         <small class="text-muted" th:text="'ID: ' + ${ep.id}"></small>
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="thumbnail-preview">
-                                        <th:block th:if="${ep.thumbnail_url != null and !ep.thumbnail_url.isEmpty()}">
+                                <td>                                    <div class="thumbnail-preview">
+                                        <th:block th:if="${ep.thumbnail_url != null and !#strings.isEmpty(ep.thumbnail_url)}">
                                             <img th:src="${ep.thumbnail_url}" alt="Thumbnail" class="img-thumbnail" />
                                         </th:block>
-                                        <th:block th:unless="${ep.thumbnail_url != null and !ep.thumbnail_url.isEmpty()}">
+                                        <th:block th:unless="${ep.thumbnail_url != null and !#strings.isEmpty(ep.thumbnail_url)}">
                                             <span class="text-muted">No Thumbnail</span>
                                         </th:block>
                                     </div>
@@ -160,11 +158,12 @@
                                            th:data-description="${ep.description}"
                                            th:data-episode_number="${ep.episode_number}">
                                             <i class="fas fa-edit"></i>
-                                        </a><button type="button" class="btn btn-outline-danger" 
-                                                th:onclick="'confirmDelete(' + ${cartoonId} + ', ' + ${ep.id} + ', \'' + ${ep.title} + '\')'" 
-                                                title="Delete Episode">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        </a><button type="button" class="btn btn-outline-danger"
+                                            th:attr="data-cartoon-id=${cartoonId},data-ep-id=${ep.id},data-ep-title=${ep.title}"
+                                            onclick="confirmDelete(this.getAttribute('data-cartoon-id'), this.getAttribute('data-ep-id'), this.getAttribute('data-ep-title'))"
+                                            title="Delete Episode">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                     </div>
                                 </td>
                             </tr>

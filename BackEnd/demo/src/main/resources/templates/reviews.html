@@ -1,222 +1,247 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
-
+      layout:decorate="~{layouts/admin-layout}">
+      <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Admin CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/reviews.css}">
 <head>
     <title>Manage Reviews - Cartoon Movie Management</title>
+    
 </head>
 
-<div layout:fragment="content">
-    <div class="page-header">
-        <h2>Manage Reviews</h2>
-        <div class="page-actions">
-            <div class="stats-summary">
-                <span class="badge badge-info">
-                    <i class="fas fa-star"></i> Total Reviews: <strong th:text="${totalReviews}">0</strong>
-                </span>
-                <span class="badge badge-warning" th:if="${averageRating != null}">
-                    <i class="fas fa-chart-line"></i> Average Rating: <strong th:text="${#numbers.formatDecimal(averageRating, 0, 1)}">0.0</strong>
-                </span>
-            </div>
-        </div>
-    </div>
+<body>
+    <nav th:replace="fragments/sidebar :: sidebar"></nav>
 
-    <!-- Filter Toolbar -->
-    <div class="toolbar">
-        <form class="filter-form" th:action="@{/admin/reviews}" method="get">
-            <select name="cartoonId" class="form-control">
-                <option value="">All Movies</option>
-                <option th:each="cartoon : ${cartoons}" 
-                        th:value="${cartoon.id}" 
-                        th:text="${cartoon.title}"
-                        th:selected="${param.cartoonId == cartoon.id.toString()}">
-                </option>
-            </select>
-            
-            <select name="rating" class="form-control">
-                <option value="">All Ratings</option>
-                <option value="5" th:selected="${param.rating == '5'}">5 Stars</option>
-                <option value="4" th:selected="${param.rating == '4'}">4 Stars</option>
-                <option value="3" th:selected="${param.rating == '3'}">3 Stars</option>
-                <option value="2" th:selected="${param.rating == '2'}">2 Stars</option>
-                <option value="1" th:selected="${param.rating == '1'}">1 Star</option>
-            </select>
-            
-            <select name="sort" class="form-control">
-                <option value="">Default Sort</option>
-                <option value="date_desc" th:selected="${param.sort == 'date_desc'}">Newest First</option>
-                <option value="date_asc" th:selected="${param.sort == 'date_asc'}">Oldest First</option>
-                <option value="rating_desc" th:selected="${param.sort == 'rating_desc'}">Highest Rating</option>
-                <option value="rating_asc" th:selected="${param.sort == 'rating_asc'}">Lowest Rating</option>
-                <option value="username_asc" th:selected="${param.sort == 'username_asc'}">Username A-Z</option>
-            </select>
-            
-            <button type="submit" class="btn btn-outline-primary">
-                <i class="fas fa-filter"></i> Filter
-            </button>
-            
-            <a href="/admin/reviews" class="btn btn-outline-secondary">
-                <i class="fas fa-refresh"></i> Reset
-            </a>
-        </form>
-        
-        <form class="search-form" th:action="@{/admin/reviews}" method="get">
-            <input type="hidden" name="cartoonId" th:value="${param.cartoonId}" />
-            <input type="hidden" name="rating" th:value="${param.rating}" />
-            <input type="hidden" name="sort" th:value="${param.sort}" />
-            <div class="input-group">
-                <i class="fas fa-search"></i>
-                <input type="text" name="keyword" placeholder="Search reviews..." th:value="${param.keyword}" />
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Flash Messages -->
-    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="close" data-dismiss="alert">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle"></i>
-        <span th:text="${error}"></span>
-        <button type="button" class="close" data-dismiss="alert">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    <!-- Reviews List -->
-    <div class="reviews-container">
-        <div th:each="review : ${reviews}" class="review-card" th:object="${review}">
-            <div class="review-header">
-                <div class="review-info">
-                    <div class="username">
-                        <i class="fas fa-user"></i>
-                        <strong th:text="*{username}">Username</strong>
-                    </div>
-                    <div class="rating">
-                        <span class="rating-stars">
-                            <i th:each="i : ${#numbers.sequence(1, 5)}" 
-                               th:class="${i <= *{rating}} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></i>
+    <div layout:fragment="content">
+        <div class="reviews-main-content">
+            <div class="page-header">
+                <h2>Manage Reviews</h2>
+                <div class="page-actions">
+                    <div class="stats-summary">
+                        <span class="badge badge-info">
+                            <i class="fas fa-star"></i> Total Reviews: <strong th:text="${totalReviews}">0</strong>
                         </span>
-                        <span class="rating-value" th:text="*{rating} + '/5'">5/5</span>
-                    </div>
-                    <div class="review-date">
-                        <i class="fas fa-calendar"></i>
-                        <small th:text="*{created_at} != null ? ${#temporals.format(created_at, 'dd/MM/yyyy HH:mm')} : 'N/A'">Date</small>
+                        <span class="badge badge-warning" th:if="${averageRating != null}">
+                            <i class="fas fa-chart-line"></i> Average Rating: <strong th:text="${#numbers.formatDecimal(averageRating, 0, 1)}">0.0</strong>
+                        </span>
                     </div>
                 </div>
-                <div class="review-actions">
-                    <button type="button" class="btn btn-sm btn-outline-danger" 
-                            th:onclick="|deleteReview([[*{id}]], '[[*{username}]]')|" title="Delete Review">
-                        <i class="fas fa-trash"></i>
+            </div>
+
+            <!-- Filter Toolbar -->
+            <div class="toolbar">
+                <form class="filter-form" th:action="@{/admin/reviews}" method="get">
+                    <select name="cartoonId" class="form-control">
+                        <option value="">All Movies</option>
+                        <option th:each="cartoon : ${cartoons}" 
+                                th:value="${cartoon.id}" 
+                                th:text="${cartoon.title}"
+                                th:selected="${param.cartoonId == cartoon.id.toString()}">
+                        </option>
+                    </select>
+                    
+                    <select name="rating" class="form-control">
+                        <option value="">All Ratings</option>
+                        <option value="5" th:selected="${param.rating == '5'}">5 Stars</option>
+                        <option value="4" th:selected="${param.rating == '4'}">4 Stars</option>
+                        <option value="3" th:selected="${param.rating == '3'}">3 Stars</option>
+                        <option value="2" th:selected="${param.rating == '2'}">2 Stars</option>
+                        <option value="1" th:selected="${param.rating == '1'}">1 Star</option>
+                    </select>
+                    
+                    <select name="sort" class="form-control">
+                        <option value="">Default Sort</option>
+                        <option value="date_desc" th:selected="${param.sort == 'date_desc'}">Newest First</option>
+                        <option value="date_asc" th:selected="${param.sort == 'date_asc'}">Oldest First</option>
+                        <option value="rating_desc" th:selected="${param.sort == 'rating_desc'}">Highest Rating</option>
+                        <option value="rating_asc" th:selected="${param.sort == 'rating_asc'}">Lowest Rating</option>
+                        <option value="username_asc" th:selected="${param.sort == 'username_asc'}">Username A-Z</option>
+                    </select>
+                    
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-filter"></i> Filter
                     </button>
-                </div>
+                    
+                    <a href="/admin/reviews" class="btn btn-outline-secondary">
+                        <i class="fas fa-refresh"></i> Reset
+                    </a>
+                </form>
+                
+                <form class="search-form" th:action="@{/admin/reviews}" method="get">
+                    <input type="hidden" name="cartoonId" th:value="${param.cartoonId}" />
+                    <input type="hidden" name="rating" th:value="${param.rating}" />
+                    <input type="hidden" name="sort" th:value="${param.sort}" />
+                    <div class="input-group">
+                        <i class="fas fa-search"></i>
+                        <input type="text" name="keyword" placeholder="Search reviews..." th:value="${param.keyword}" />
+                        <button type="submit" class="btn btn-outline-primary">Search</button>
+                    </div>
+                </form>
             </div>
-            
-            <div class="review-movie">
-                <div class="movie-info">
-                    <img th:src="*{cartoon.image_url}" th:alt="*{cartoon.title}" class="movie-thumb" 
-                         onerror="this.src='/images/placeholder-movie.png'"/>
-                    <div class="movie-details">
-                        <strong th:text="*{cartoon.title}">Movie Title</strong>
-                        <small class="text-muted" th:text="*{cartoon.release_year}">Year</small>
+
+            <!-- Flash Messages -->
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${message}"></span>
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="reviews-container">
+                <div th:each="review : ${reviews}" class="review-card">
+                    <div class="review-header">
+                        <div class="review-info">
+                            <div class="username">
+                                <i class="fas fa-user"></i>
+                                <strong th:text="${review.username}">Username</strong>
+                            </div>
+                            <div class="rating">
+                                <span class="rating-stars">
+                                    <i th:each="i : ${#numbers.sequence(1, 5)}" 
+                                       th:class="${i <= review.rating} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></i>
+                                </span>
+                                <span class="rating-value" th:text="${review.rating} + '/5'">5/5</span>
+                            </div>
+                            <div class="review-date">
+                                <i class="fas fa-calendar"></i>
+                                <small th:text="${review.created_at != null ? #temporals.format(review.created_at, 'dd/MM/yyyy HH:mm') : 'N/A'}">Date</small>
+                            </div>
+                        </div>
+                        <div class="review-actions">
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                    th:attr="data-review-id=${review.id},data-review-username=${review.username}"
+                                    onclick="deleteReview(this.getAttribute('data-review-id'), this.getAttribute('data-review-username'))"
+                                    title="Delete Review">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="review-movie">
+                        <div class="movie-info">
+                            <img th:src="${review.cartoon != null ? review.cartoon.imageUrl : '/images/placeholder-movie.png'}" 
+                                 th:alt="${review.cartoon != null ? review.cartoon.title : 'No Movie'}" class="movie-thumb" 
+                                 onerror="this.src='/images/placeholder-movie.png'"/>
+                            <div class="movie-details">
+                                <strong th:text="${review.cartoon != null ? review.cartoon.title : 'No Movie Assigned'}">Movie Title</strong>
+                                <small class="text-muted" th:text="${review.cartoon != null ? review.cartoon.releaseYear : ''}">Year</small>
+                            </div>
+                        </div>
+                        <a th:href="${review.cartoon != null ? '/admin/movies/edit/' + review.cartoon.id : '#'}" 
+                           class="btn btn-sm btn-outline-primary"
+                           th:classappend="${review.cartoon == null ? ' disabled' : ''}">
+                            <i class="fas fa-edit"></i> Edit Movie
+                        </a>
+                    </div>
+                    
+                    <div class="review-content">
+                        <p th:text="${review.content}">Review content goes here...</p>
                     </div>
                 </div>
-                <a th:href="@{'/admin/movies/edit/' + *{cartoon.id}}" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-edit"></i> Edit Movie
-                </a>
-            </div>
-            
-            <div class="review-content">
-                <p th:text="*{content}">Review content goes here...</p>
-            </div>
-        </div>
-        
-        <!-- Empty State -->
-        <div th:if="${#lists.isEmpty(reviews)}" class="empty-state">
-            <i class="fas fa-star fa-3x text-muted"></i>
-            <h4>No Reviews Found</h4>
-            <p class="text-muted">
-                <span th:if="${param.cartoonId or param.rating or param.keyword}">
-                    Try adjusting your filters to see more reviews.
-                </span>
-                <span th:unless="${param.cartoonId or param.rating or param.keyword}">
-                    No reviews have been submitted yet.
-                </span>
-            </p>
-            <a href="/admin/reviews" class="btn btn-primary" th:if="${param.cartoonId or param.rating or param.keyword}">
-                <i class="fas fa-refresh"></i> Clear Filters
-            </a>
-        </div>
-    </div>
-
-    <!-- Pagination -->
-    <div th:if="${totalPages > 1}" class="pagination-wrapper">
-        <nav aria-label="Reviews pagination">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/reviews(page=${currentPage - 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
-                        Previous
-                    </a>
-                </li>
                 
-                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
-                    class="page-item" th:classappend="${i == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/admin/reviews(page=${i}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}" 
-                       th:text="${i + 1}">1</a>
-                </li>
-                
-                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/reviews(page=${currentPage + 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
-                        Next
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <!-- Review Statistics -->
-    <div class="stats-section">
-        <h4>Review Statistics</h4>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h5>Rating Distribution</h5>
-                <div class="rating-distribution">
-                    <div th:each="i : ${#numbers.sequence(5, 1, -1)}" class="rating-bar">
-                        <span class="rating-label">
-                            <span th:text="${i}">5</span>
-                            <i class="fas fa-star text-warning"></i>
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(reviews)}" class="empty-state">
+                    <i class="fas fa-star fa-3x text-muted"></i>
+                    <h4>No Reviews Found</h4>
+                    <p class="text-muted">
+                        <span th:if="${(param.cartoonId != null and !param.cartoonId.isEmpty()) or (param.rating != null and !param.rating.isEmpty()) or (param.keyword != null and !param.keyword.isEmpty())}">
+                            Try adjusting your filters to see more reviews.
                         </span>
-                        <div class="progress">
-                            <div class="progress-bar" th:style="'width: ' + ${ratingDistribution[i-1] ?: 0} + '%'"></div>
-                        </div>
-                        <span class="rating-count" th:text="${ratingCounts[i-1] ?: 0}">0</span>
-                    </div>
+                        <span th:unless="${(param.cartoonId != null and !param.cartoonId.isEmpty()) or (param.rating != null and !param.rating.isEmpty()) or (param.keyword != null and !param.keyword.isEmpty())}">
+                            No reviews have been submitted yet.
+                        </span>
+                    </p>
+                    <a href="/admin/reviews" class="btn btn-primary" th:if="${(param.cartoonId != null and !param.cartoonId.isEmpty()) or (param.rating != null and !param.rating.isEmpty()) or (param.keyword != null and !param.keyword.isEmpty())}">
+                        <i class="fas fa-refresh"></i> Clear Filters
+                    </a>
                 </div>
             </div>
-            
-            <div class="stat-card">
-                <h5>Top Rated Movies</h5>
-                <div class="top-movies">
-                    <div th:each="movie : ${topRatedMovies}" class="movie-stat">
-                        <div class="movie-basic">
-                            <img th:src="${movie.image_url}" th:alt="${movie.title}" class="movie-mini-thumb" />
-                            <div>
-                                <strong th:text="${movie.title}">Movie</strong>
-                                <small class="d-block text-muted" th:text="${movie.reviews.size()} + ' reviews'">0 reviews</small>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" class="pagination-wrapper">
+                <nav aria-label="Reviews pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/reviews(page=${currentPage - 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
+                                Previous
+                            </a>
+                        </li>
+                        
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                            class="page-item" th:classappend="${i == currentPage} ? 'active'">
+                            <a class="page-link" th:href="@{/admin/reviews(page=${i}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}" 
+                               th:text="${i + 1}">1</a>
+                        </li>
+                        
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/reviews(page=${currentPage + 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Review Statistics -->
+            <div class="stats-section">
+                <h4>Review Statistics</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h5>Rating Distribution</h5>
+                        <div class="rating-distribution">
+                            <div th:each="i : ${#numbers.sequence(5, 1, -1)}" class="rating-bar">
+                                <span class="rating-label">
+                                    <span th:text="${i}">5</span>
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
+                                <div class="progress">
+                                    <div class="progress-bar" th:style="'width: ' + ${ratingDistribution != null and ratingDistribution[i-1] != null ? ratingDistribution[i-1] : 0} + '%'"></div>
+                                </div>
+                                <span class="rating-count" th:text="${ratingCounts != null and ratingCounts[i-1] != null ? ratingCounts[i-1] : 0}">0</span>
                             </div>
                         </div>
-                        <div class="movie-rating">
-                            <span class="rating-value" th:text="${#numbers.formatDecimal(reviewService.getAverageRating(movie.id), 0, 1)}">0.0</span>
-                            <div class="rating-stars-mini">
-                                <i th:each="i : ${#numbers.sequence(1, 5)}" 
-                                   th:class="${i <= (#numbers.formatDecimal(reviewService.getAverageRating(movie.id), 0, 0))} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></i>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h5>Top Rated Movies</h5>
+                        <div class="top-movies">
+                            <div th:each="movie : ${topRatedMovies}" class="movie-stat">
+                                <div class="movie-basic">
+                                    <img th:src="${movie.imageUrl}" th:alt="${movie.title}" class="movie-mini-thumb" 
+                                         onerror="this.src='/images/placeholder-movie.png'"/>
+                                    <div>
+                                        <strong th:text="${movie.title}">Movie</strong>
+                                        <small class="d-block text-muted" th:text="${movie.reviews != null ? movie.reviews.size() : 0} + ' reviews'">0 reviews</small>
+                                    </div>
+                                </div>
+                                <div class="movie-rating">
+                                    <span class="rating-value">N/A</span>
+                                    <div class="rating-stars-mini">
+                                        <i th:each="i : ${#numbers.sequence(1, 5)}" 
+                                           class="far fa-star text-muted"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -224,353 +249,60 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Custom Styles -->
-<th:block layout:fragment="styles">
-    <style>
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
+    <!-- Custom Styles -->
+    <th:block layout:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/reviews.css}" />
+    </th:block>
 
-        .page-header h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        .stats-summary {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .toolbar {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            flex: 1;
-        }
-
-        .filter-form .form-control {
-            width: auto;
-            min-width: 150px;
-        }
-
-        .search-form {
-            min-width: 250px;
-        }
-
-        .reviews-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .review-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid #007bff;
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .review-info {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .username {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #333;
-        }
-
-        .rating {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .rating-stars {
-            font-size: 1.1rem;
-        }
-
-        .rating-value {
-            font-weight: 600;
-            color: #ffc107;
-        }
-
-        .review-date {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #666;
-        }
-
-        .review-movie {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .movie-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .movie-thumb {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        .movie-details strong {
-            display: block;
-            color: #333;
-        }
-
-        .review-content {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 3px solid #007bff;
-        }
-
-        .review-content p {
-            margin: 0;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #666;
-        }
-
-        .empty-state h4 {
-            margin: 1rem 0;
-            color: #333;
-        }
-
-        .stats-section {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-top: 2rem;
-        }
-
-        .stats-section h4 {
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .stat-card h5 {
-            margin-bottom: 1rem;
-            color: #333;
-            font-size: 1.1rem;
-        }
-
-        .rating-distribution {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .rating-bar {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .rating-label {
-            min-width: 60px;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .progress {
-            flex: 1;
-            height: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #ffc107, #ff8c00);
-            transition: width 0.3s ease;
-        }
-
-        .rating-count {
-            min-width: 30px;
-            text-align: right;
-            font-weight: 600;
-        }
-
-        .top-movies {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .movie-stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-
-        .movie-basic {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .movie-mini-thumb {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .movie-rating {
-            text-align: right;
-        }
-
-        .rating-stars-mini {
-            font-size: 0.8rem;
-            margin-top: 2px;
-        }
-
-        .pagination-wrapper {
-            margin: 2rem 0;
-        }
-
-        @media (max-width: 768px) {
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-form {
-                flex-direction: column;
-            }
-
-            .review-info {
-                flex-direction: column;
-                gap: 0.5rem;
-                align-items: flex-start;
-            }
-
-            .review-movie {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-summary {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .page-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-        }
-    </style>
-</th:block>
-
-<!-- Custom Scripts -->
-<th:block layout:fragment="scripts">
-    <script>
-        function deleteReview(id, username) {
-            if (confirm(`Are you sure you want to delete the review by "${username}"?\n\nThis action cannot be undone.`)) {
-                // Create a form and submit it
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/reviews/delete/${id}`;
-                
-                const csrfToken = document.querySelector('meta[name="_csrf"]');
-                if (csrfToken) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = '_token';
-                    input.value = csrfToken.getAttribute('content');
-                    form.appendChild(input);
-                }
-                
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-
-        // Auto-dismiss alerts after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    const closeButton = alert.querySelector('.close');
-                    if (closeButton) {
-                        closeButton.click();
+    <!-- Custom Scripts -->
+    <th:block layout:fragment="scripts">
+        <script>
+            function deleteReview(id, username) {
+                if (confirm(`Are you sure you want to delete the review by "${username}"?\n\nThis action cannot be undone.`)) {
+                    // Create a form and submit it
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/admin/reviews/delete/${id}`;
+                    
+                    const csrfToken = document.querySelector('meta[name="_csrf"]');
+                    if (csrfToken) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = '_token';
+                        input.value = csrfToken.getAttribute('content');
+                        form.appendChild(input);
                     }
-                }, 5000);
-            });
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
 
-            // Animate progress bars
-            const progressBars = document.querySelectorAll('.progress-bar');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 100);
+            // Auto-dismiss alerts after 5 seconds
+            document.addEventListener('DOMContentLoaded', function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        const closeButton = alert.querySelector('.close');
+                        if (closeButton) {
+                            closeButton.click();
+                        }
+                    }, 5000);
+                });
+
+                // Animate progress bars
+                const progressBars = document.querySelectorAll('.progress-bar');
+                progressBars.forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                });
             });
-        });
-    </script>
-</th:block>
+        </script>
+    </th:block>
+</body>
 
 </html>

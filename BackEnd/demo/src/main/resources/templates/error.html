@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin-layout}">
+      layout:decorate="~{layouts/admin-layout}">
 <head>
     <title>Error - Cartoon Movie System</title>
 </head>
@@ -46,7 +46,7 @@
                 </div>
 
                 <!-- Display exception details in development mode -->
-                <div th:if="${exception != null and #strings.equals(#environment.getProperty('spring.profiles.active'), 'dev')}">
+                <div th:if="${exception != null and exception.message != null and #strings.equals(#environment.getProperty('spring.profiles.active') ?: '', 'dev')}">
                     <p>Error details: <span th:text="${exception.message}"></span></p>
                 </div>
 

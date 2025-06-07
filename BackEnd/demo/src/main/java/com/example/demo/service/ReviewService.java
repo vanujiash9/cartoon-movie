@@ -3,11 +3,14 @@ package com.example.demo.service;
 import com.example.demo.entity.Review;
 import com.example.demo.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ReviewService {
+    private static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
     private final ReviewRepository reviewRepository;
 
     public ReviewService(ReviewRepository reviewRepository) {
@@ -15,7 +18,19 @@ public class ReviewService {
     }
 
     public List<Review> getAll() {
-        return reviewRepository.findAll();
+        logger.info("ReviewService.getAll() called");
+        List<Review> reviews = reviewRepository.findAllWithCartoon();
+        logger.info("ReviewService.getAll() returned {} reviews", reviews.size());
+        
+        // Log first few reviews for debugging
+        for (int i = 0; i < Math.min(3, reviews.size()); i++) {
+            Review review = reviews.get(i);
+            logger.info("Review {}: ID={}, user={}, cartoon={}", 
+                       i, review.getId(), review.getUsername(), 
+                       review.getCartoon() != null ? review.getCartoon().getTitle() : "NULL");
+        }
+        
+        return reviews;
     }
 
     public Optional<Review> getById(Integer id) {

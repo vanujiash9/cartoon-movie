@@ -55,4 +55,85 @@ public class CartoonService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    public List<Cartoon> searchAndFilter(String keyword, String year, String genre, String sort) {
+        List<Cartoon> cartoons = cartoonRepository.findAll();
+
+        // Lọc theo từ khóa
+        if (keyword != null && !keyword.isEmpty()) {
+            cartoons = cartoons.stream()
+                    .filter(c -> c.getTitle() != null && c.getTitle().toLowerCase().contains(keyword.toLowerCase()))
+                    .toList();
+        }
+
+        // Lọc theo năm
+        if (year != null && !year.isEmpty()) {
+            cartoons = cartoons.stream()
+                    .filter(c -> c.getReleaseYear() != null && c.getReleaseYear().toString().equals(year))
+                    .toList();
+        }
+
+        // Lọc theo thể loại
+        if (genre != null && !genre.isEmpty()) {
+            cartoons = cartoons.stream()
+                    .filter(c -> c.getGenre() != null && c.getGenre().toLowerCase().contains(genre.toLowerCase()))
+                    .toList();
+        }
+
+        // Sắp xếp
+        if (sort != null && !sort.isEmpty()) {
+            switch (sort) {
+                case "title_asc" -> cartoons = cartoons.stream()
+                        .sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()))
+                        .toList();
+                case "title_desc" -> cartoons = cartoons.stream()
+                        .sorted((a, b) -> b.getTitle().compareToIgnoreCase(a.getTitle()))
+                        .toList();
+                case "year_asc" -> cartoons = cartoons.stream()
+                        .sorted((a, b) -> {
+                            if (a.getReleaseYear() == null) return 1;
+                            if (b.getReleaseYear() == null) return -1;
+                            return a.getReleaseYear().compareTo(b.getReleaseYear());
+                        }).toList();
+                case "year_desc" -> cartoons = cartoons.stream()
+                        .sorted((a, b) -> {
+                            if (a.getReleaseYear() == null) return 1;
+                            if (b.getReleaseYear() == null) return -1;
+                            return b.getReleaseYear().compareTo(a.getReleaseYear());
+                        }).toList();
+                case "episodes_asc" -> cartoons = cartoons.stream()
+                        .sorted((a, b) -> {
+                            if (a.getTotalEpisodes() == null) return 1;
+                            if (b.getTotalEpisodes() == null) return -1;
+                            return a.getTotalEpisodes().compareTo(b.getTotalEpisodes());
+                        }).toList();
+                case "episodes_desc" -> cartoons = cartoons.stream()
+                        .sorted((a, b) -> {
+                            if (a.getTotalEpisodes() == null) return 1;
+                            if (b.getTotalEpisodes() == null) return -1;
+                            return b.getTotalEpisodes().compareTo(a.getTotalEpisodes());
+                        }).toList();
+            }
+        }
+
+        return cartoons;
+    }
+
+    public List<String> getAllYears() {
+        return cartoonRepository.findAll().stream()
+                .map(c -> c.getReleaseYear() != null ? c.getReleaseYear().toString() : null)
+                .filter(y -> y != null && !y.isEmpty())
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    public List<String> getAllGenres() {
+        return cartoonRepository.findAll().stream()
+                .map(Cartoon::getGenre)
+                .filter(g -> g != null && !g.isEmpty())
+                .distinct()
+                .sorted()
+                .toList();
+    }
 }
