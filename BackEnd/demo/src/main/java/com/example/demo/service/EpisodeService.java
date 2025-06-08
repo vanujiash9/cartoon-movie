@@ -26,6 +26,10 @@ public class EpisodeService {
         return episodeRepository.findByCartoonId(cartoonId);
     }
 
+    public int countByCartoonId(Integer cartoonId) {
+        return episodeRepository.countByCartoonId(cartoonId);
+    }
+
     public Episode create(Episode episode) {
         return episodeRepository.save(episode);
     }

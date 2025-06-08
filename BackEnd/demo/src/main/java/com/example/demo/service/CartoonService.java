@@ -136,4 +136,22 @@ public class CartoonService {
                 .sorted()
                 .toList();
     }
+
+    public long countByStatus(String status) {
+        return cartoonRepository.findAll().stream()
+                .filter(c -> c.getStatus() != null && c.getStatus().equalsIgnoreCase(status))
+                .count();
+    }
+
+    public long countActiveMovies() {
+        return countByStatus("Active");
+    }
+
+    public long countComingSoonMovies() {
+        return countByStatus("Coming Soon");
+    }
+
+    public long countInactiveMovies() {
+        return countByStatus("Inactive");
+    }
 }

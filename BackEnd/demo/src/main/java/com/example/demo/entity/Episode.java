@@ -38,7 +38,7 @@ public class Episode {
     private LocalDateTime created_at;
 
     @ManyToOne
-    @JoinColumn(name = "cartoon_id")
+    @JoinColumn(name = "cartoonn_id")
     private Cartoon cartoon;
 
     public Episode() {}

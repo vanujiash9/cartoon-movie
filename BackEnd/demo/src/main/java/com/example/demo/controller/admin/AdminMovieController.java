@@ -2,6 +2,7 @@ package com.example.demo.controller.admin;
 
 import com.example.demo.entity.Cartoon;
 import com.example.demo.service.CartoonService;
+import com.example.demo.service.EpisodeService;
 import com.example.demo.service.ReviewService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -19,13 +20,15 @@ import java.util.List;
 public class AdminMovieController {
 
     private final ReviewService reviewService;
+    private final EpisodeService episodeService;
     
     private static final Logger logger = LoggerFactory.getLogger(AdminMovieController.class);
     private final CartoonService cartoonService;
     
-    public AdminMovieController(CartoonService cartoonService, ReviewService reviewService) {
+    public AdminMovieController(CartoonService cartoonService, ReviewService reviewService, EpisodeService episodeService) {
         this.cartoonService = cartoonService;
         this.reviewService = reviewService;
+        this.episodeService = episodeService;
     }
     
     @GetMapping
@@ -37,7 +40,12 @@ public class AdminMovieController {
             Model model) {
         try {
             List<Cartoon> cartoons = cartoonService.searchAndFilter(keyword, year, genre, sort);
+            java.util.Map<Integer, Integer> episodeCounts = new java.util.HashMap<>();
+            for (Cartoon cartoon : cartoons) {
+                episodeCounts.put(cartoon.getId(), episodeService.countByCartoonId(cartoon.getId()));
+            }
             model.addAttribute("cartoons", cartoons);
+            model.addAttribute("episodeCounts", episodeCounts);
             model.addAttribute("param", new org.springframework.util.LinkedMultiValueMap<String, String>() {{
                 add("keyword", keyword);
                 add("year", year);

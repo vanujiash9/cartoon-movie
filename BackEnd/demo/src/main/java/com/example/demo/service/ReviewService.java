@@ -61,4 +61,23 @@ public class ReviewService {
                 .average()
                 .orElse(0.0);
     }
+
+    public List<Review> getLatestReviews(int count) {
+        List<Review> reviews = getAll();
+        return reviews.stream()
+                .sorted((a, b) -> b.getCreated_at().compareTo(a.getCreated_at()))
+                .limit(count)
+                .toList();
+    }
+
+    public long countReviewsInCurrentMonth() {
+        java.time.LocalDate now = java.time.LocalDate.now();
+        int currentYear = now.getYear();
+        int currentMonth = now.getMonthValue();
+        return getAll().stream()
+                .filter(r -> r.getCreated_at() != null &&
+                        r.getCreated_at().getYear() == currentYear &&
+                        r.getCreated_at().getMonthValue() == currentMonth)
+                .count();
+    }
 }

@@ -106,11 +106,18 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-fire"></i> Thể loại phổ biến</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center" th:each="genreStat : ${topGenres}">
-                                <span th:text="${genreStat.genre}">Thể loại</span>
-                                <span class="badge bg-primary rounded-pill" th:text="${genreStat.count}">0</span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Hành động</span>
+                                <span class="badge bg-primary rounded-pill">8</span>
                             </li>
-                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(topGenres)}">Không có dữ liệu</li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Phiêu lưu</span>
+                                <span class="badge bg-primary rounded-pill">6</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Hài hước</span>
+                                <span class="badge bg-primary rounded-pill">4</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -118,11 +125,14 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-user-plus"></i> User mới đăng ký</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item" th:each="user : ${recentUsers}">
-                                <span th:text="${user.username}">Username</span>
-                                <span class="badge bg-secondary ms-2" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">Ngày</span>
+                            <li class="list-group-item" th:each="user : ${latestUsers}">
+                                <span th:text="${user.username}">username</span>
+                                <span class="badge bg-secondary ms-2" th:if="${user.createdAt != null}" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">--/--/----</span>
+                                <span class="badge bg-secondary ms-2" th:if="${user.createdAt == null}">Chưa có</span>
                             </li>
-                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(recentUsers)}">Không có dữ liệu</li>
+                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(latestUsers)}">
+                                Không có người dùng mới đăng ký gần đây.
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -132,11 +142,18 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-trophy"></i> Phim nhiều review nhất</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center" th:each="movie : ${mostReviewedMovies}">
-                                <span th:text="${movie.title}">Tên phim</span>
-                                <span class="badge bg-warning rounded-pill" th:text="${movie.reviewCount}">0</span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Doraemon</span>
+                                <span class="badge bg-warning rounded-pill">15</span>
                             </li>
-                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(mostReviewedMovies)}">Không có dữ liệu</li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Conan</span>
+                                <span class="badge bg-warning rounded-pill">12</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Pokemon</span>
+                                <span class="badge bg-warning rounded-pill">10</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -144,11 +161,18 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-thumbs-up"></i> Phim điểm cao nhất</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center" th:each="movie : ${topRatedMovies}">
-                                <span th:text="${movie.title}">Tên phim</span>
-                                <span class="badge bg-success rounded-pill" th:text="${movie.avgRating} + '/5'">0/5</span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Doraemon</span>
+                                <span class="badge bg-success rounded-pill">4.9/5</span>
                             </li>
-                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(topRatedMovies)}">Không có dữ liệu</li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Conan</span>
+                                <span class="badge bg-success rounded-pill">4.8/5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Pokemon</span>
+                                <span class="badge bg-success rounded-pill">4.7/5</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -158,7 +182,7 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-calendar-plus"></i> Phim thêm trong tháng này</div>
                         <div class="card-body">
-                            <div class="fs-4 fw-bold text-primary" th:text="${moviesThisMonth}">0</div>
+                            <div class="fs-4 fw-bold text-primary">4</div>
                             <div class="small">Phim mới trong tháng</div>
                         </div>
                     </div>
@@ -178,11 +202,18 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-clock"></i> Phim mới thêm gần đây</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item" th:each="cartoon : ${recentMovies}">
-                                <span th:text="${cartoon.title}">Tên phim</span>
-                                <span class="badge bg-secondary ms-2" th:text="${cartoon.releaseYear}">Năm</span>
+                            <li class="list-group-item">
+                                <span>Doraemon</span>
+                                <span class="badge bg-secondary ms-2">2025</span>
                             </li>
-                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(recentMovies)}">Không có dữ liệu</li>
+                            <li class="list-group-item">
+                                <span>Conan</span>
+                                <span class="badge bg-secondary ms-2">2024</span>
+                            </li>
+                            <li class="list-group-item">
+                                <span>Pokemon</span>
+                                <span class="badge bg-secondary ms-2">2023</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -190,12 +221,17 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-comments"></i> Đánh giá mới nhất</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item" th:each="review : ${recentReviews}">
-                                <span th:text="${review.username}">User</span>:
+                            <li class="list-group-item" th:each="review : ${latestReviews}">
+                                <span th:text="${review.username}">user</span>:
                                 <span th:text="${review.content}">Nội dung đánh giá</span>
                                 <span class="badge bg-info ms-2" th:text="${review.rating} + '/5'">5/5</span>
+                                <span th:if="${review.cartoon != null}" class="text-muted ms-2" style="font-size:0.9em;">
+                                    (<span th:text="${review.cartoon.title}">Tên phim</span>)
+                                </span>
                             </li>
-                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(recentReviews)}">Không có dữ liệu</li>
+                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(latestReviews)}">
+                                Không có đánh giá nào gần đây.
+                            </li>
                         </ul>
                     </div>
                 </div>

@@ -141,4 +141,484 @@ a:hover {
 
 .back-link:hover {
     background: #495057;
+}                                                                                               
+
+/* --- ADMIN EPISODES PAGE CUSTOM STYLES --- */
+.admin-main {
+    background: #f4f6fb;
+    min-height: 100vh;
+    padding-bottom: 40px;
+    margin-left: 0 !important; /* Override sidebar margin */
+    width: 100% !important;
+}
+
+.content-wrapper {
+    max-width: 1400px; /* Increased max-width for full-width layout */
+    margin: 0 auto;
+    padding: 32px 24px 0 24px; /* Increased horizontal padding */
+    width: 100%;
+}
+
+.main-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 32px 40px 24px 40px; /* Increased horizontal padding */
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(102,126,234,0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add subtle pattern overlay */
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    pointer-events: none;
+}
+
+.page-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+.header-actions .btn {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: none;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 18px 24px;
+    position: relative;
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+    border-bottom: none;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.table td {
+    vertical-align: middle;
+    border: none;
+    font-size: 1rem;
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f3f6;
+}
+
+.table tbody tr:hover {
+    background: #f8faff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102,126,234,0.08);
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.badge.bg-info {
+    background: #17a2b8 !important;
+    color: #fff !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 14px;
+}
+
+.badge.bg-primary {
+    background: #667eea !important;
+    color: #fff !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 14px;
+}
+
+.btn-outline-primary, .btn-outline-secondary, .btn-outline-danger {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: box-shadow 0.2s;
+}
+
+.btn-outline-primary {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.btn-outline-primary:hover {
+    background: #667eea;
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background: #dc3545;
+    border-color: #dc3545;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.img-thumbnail {
+    border-radius: 8px;
+    border: 2px solid #e3e6ea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.img-thumbnail:hover {
+    transform: scale(1.1);
+    border-color: #667eea;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+}
+
+.quick-add-form {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-add-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23667eea' fill-opacity='0.02'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    pointer-events: none;
+}
+
+.quick-add-form .form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 7px 10px;
+    transition: all 0.2s ease;
+    background: #fff;
+    font-size: 0.98rem;
+}
+
+.quick-add-form .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    background: #fff;
+}
+
+.quick-add-form .btn {
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.quick-add-form .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+}
+
+.quick-add-form .btn-success:hover {
+    background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.alert {
+    font-size: 1rem;
+    border-radius: 12px;
+    border: none;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #b8daff 100%);
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+.thumbnail-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-center.py-5 {
+    padding: 3rem 1rem !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.text-center.py-5 .fa-film {
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.text-center.py-5 h5 {
+    color: #495057;
+    font-weight: 600;
+}
+
+.text-center.py-5 p {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+@media (max-width: 1200px) {
+    .content-wrapper {
+        padding: 24px 20px 0 20px;
+    }
+    .main-header {
+        padding: 28px 32px 20px 32px;
+    }
+}
+
+@media (max-width: 900px) {
+    .content-wrapper {
+        padding: 16px 12px 0 12px;
+    }
+    .main-header {
+        padding: 20px 16px 16px 16px;
+        margin-bottom: 24px;
+    }
+    .page-title {
+        font-size: 1.8rem;
+    }
+    .page-subtitle {
+        font-size: 1rem;
+    }
+    .header-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .header-actions .btn {
+        width: 100%;
+        margin-left: 0;
+    }
+    .card-header {
+        font-size: 1rem;
+    }
+    .quick-add-form {
+        padding: 16px;
+    }
+    .quick-add-form .row {
+        margin: 0;
+    }
+    .quick-add-form .col-md-2,
+    .quick-add-form .col-md-3 {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .content-wrapper {
+        padding: 12px 8px 0 8px;
+    }
+    .main-header {
+        padding: 16px 12px 12px 12px;
+        margin-bottom: 20px;
+    }
+    .page-title {
+        font-size: 1.5rem;
+    }
+    .page-subtitle {
+        font-size: 0.9rem;
+    }
+    .table th, .table td {
+        font-size: 0.85rem;
+        padding: 8px 4px;
+    }
+    .quick-add-form {
+        padding: 12px;
+    }
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.8rem;
+    }
+    .badge {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-wrapper {
+        padding: 8px 4px 0 4px;
+    }
+    .main-header {
+        padding: 12px 8px 8px 8px;
+        border-radius: 8px;
+    }
+    .page-title {
+        font-size: 1.3rem;
+    }
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    .header-actions {
+        width: 100%;
+    }
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    .img-thumbnail {
+        max-width: 40px !important;
+        max-height: 40px !important;
+    }
+}
+
+/* Fix quick-add-form grid and spacing */
+.quick-add-form.row.g-3 {
+    --bs-gutter-x: 10px;
+    --bs-gutter-y: 8px;
+    margin-right: 0;
+    margin-left: 0;
+}
+.quick-add-form .col-md-2, .quick-add-form .col-md-3 {
+    padding-right: 6px;
+    padding-left: 6px;
+}
+.quick-add-form .form-label {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+.quick-add-form .form-control {
+    font-size: 0.98rem;
+    padding: 7px 10px;
+}
+/* Đảm bảo các trường input nằm ngang hàng trong quick-add-form */
+.quick-add-form .col-md-2, .quick-add-form .col-md-3 {
+    flex: 0 0 auto !important;
+    max-width: 100% !important;
+    min-width: 0;
+    margin-bottom: 0 !important;
+}
+.quick-add-form.row.g-3 {
+    flex-wrap: nowrap !important;
+    gap: 10px 10px;
+}
+@media (max-width: 1200px) {
+    .quick-add-form.row.g-3 {
+        flex-wrap: wrap !important;
+    }
+}
+@media (max-width: 900px) {
+    .quick-add-form .col-md-2, .quick-add-form .col-md-3 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+    .quick-add-form.row.g-3 {
+        flex-wrap: wrap !important;
+    }
+}
+
+/* Cho phép form tự wrap khi không đủ không gian */
+.quick-add-form.row.g-3 {
+    flex-wrap: wrap !important;
+    width: 100%;
+}
+/* Đảm bảo form chiếm toàn bộ chiều rộng card-body */
+.quick-add-form {
+    width: 100%;
+    min-width: 0;
+}
+/* Giảm padding card-body khi chứa quick-add-form */
+.card-body > .quick-add-form {
+    margin-left: -12px;
+    margin-right: -12px;
+}
+@media (max-width: 900px) {
+    .card-body > .quick-add-form {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }

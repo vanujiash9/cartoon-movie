@@ -139,12 +139,17 @@
                     </td>
                     <td>
                         <div class="episodes-info">
-                            <span class="badge badge-info" th:text="*{totalEpisodes != null ? totalEpisodes : 0}"></span>
+                            <span class="badge badge-info" th:text="${episodeCounts[cartoon.id] != null ? episodeCounts[cartoon.id] : 0}"></span>
                             <small class="text-muted d-block">tập</small>
                         </div>
                     </td>
                     <td>
-                        <small th:text="*{createdAt} != null ? ${#temporals.format(createdAt, 'dd/MM/yyyy')} : 'N/A'"></small>
+                        <span class="badge badge-status" th:switch="*{status}">
+                            <span th:case="'Active'" class="bg-success">Đang chiếu</span>
+                            <span th:case="'Inactive'" class="bg-danger">Ngừng chiếu</span>
+                            <span th:case="'Coming Soon'" class="bg-info text-dark">Sắp ra mắt</span>
+                            <span th:case="*">N/A</span>
+                        </span>
                     </td>
                     <td>
                         <div class="btn-group">

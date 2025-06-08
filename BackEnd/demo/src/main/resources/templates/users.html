@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+</head>
+<body>
+<nav th:replace="fragments/sidebar :: sidebar"></nav>
+<main class="admin-main">
+    <div class="main-header d-flex justify-content-end align-items-center">
+        <div class="header-content">
+            <div class="admin-user d-flex align-items-center gap-2">
+                <i class="fas fa-user-circle"></i>
+                <span>Admin</span>
+            </div>
+        </div>
+    </div>
+    <div class="content-wrapper">
+        <div class="page-header mb-4 d-flex justify-content-between align-items-center">
+            <h2>Quản lý người dùng</h2>
+        </div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Email</th>
+                        <th>Họ tên</th>
+                        <th>Quyền</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}">1</td>
+                        <td th:text="${user.username}">username</td>
+                        <td th:text="${user.email}">email@example.com</td>
+                        <td th:text="${user.fullName}">Họ tên</td>
+                        <td>
+                            <form th:action="@{'/admin/users/update-role/' + ${user.id}}" method="post" class="d-flex align-items-center gap-2 mb-0">
+                                <select name="role" class="form-select form-select-sm" th:value="${user.role}">
+                                    <option value="USER" th:selected="${user.role == 'USER'}">Người dùng thường</option>
+                                    <option value="VIP" th:selected="${user.role == 'VIP'}">VIP</option>
+                                    <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">Quản trị viên</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Lưu</button>
+                            </form>
+                        </td>
+                        <td>
+                            <span th:if="${user.enabled}" class="badge bg-success">Kích hoạt</span>
+                            <span th:unless="${user.enabled}" class="badge bg-secondary">Khóa</span>
+                        </td>
+                        <td>
+                            <form th:action="@{'/admin/users/delete/' + ${user.id}}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="7" class="text-center text-muted">Không có người dùng nào.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

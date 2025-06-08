@@ -1,178 +1,167 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Episode Management - Cartoon Movie System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tập phim - Admin</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/episodes.css}">
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="page-header">
-        <div class="header-content">
-            <div class="header-info">
-                <h1 class="page-title">Episode Management</h1>
-                <p class="page-subtitle" th:text="'Managing episodes for: ' + ${cartoonTitle}"></p>
-            </div>            <div class="header-actions">
-                <a th:href="@{'/admin/episodes/add/' + ${cartoonId}}" 
-                   th:if="${cartoonId != null and cartoonId != ''}" 
-                   class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add New Episode
-                </a>                <a th:href="@{/admin/movies}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Movies
-                </a>
+    <main class="admin-main">
+        <div class="content-wrapper">
+            <!-- Header Gradient -->
+            <div class="main-header mb-4">
+                <div class="header-content d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="page-title mb-1">Quản lý tập phim</h1>
+                        <div class="page-subtitle text-light" th:text="'Phim: ' + ${cartoonTitle}"></div>
+                    </div>
+                    <div class="header-actions">
+                        <a th:href="@{'/admin/episodes/add/' + ${cartoonId}}" th:if="${cartoonId != null and cartoonId != ''}" class="btn btn-success btn-lg me-2">
+                            <i class="fas fa-plus"></i> Thêm Tập Mới
+                        </a>
+                        <a th:href="@{/admin/movies}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-arrow-left"></i> Quay lại danh sách phim
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>      <!-- Alert Messages -->
-    <div th:if="${message}" class="alert alert-success alert-dismissible fade show">
-        <span th:text="${message}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <!-- Quick Add Episode Form -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Quick Add Episode</h5>
-        </div>        <div class="card-body">
-            <form th:action="@{'/admin/episodes/add/' + ${cartoonId}}" 
-                  th:if="${cartoonId != null and cartoonId != ''}"
-                  th:object="${episode}" method="post" class="quick-add-form">
-                <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="episode_number">Episode Number</label>
+            <!-- Alert Messages -->
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <!-- Quick Add Episode Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white fw-bold"><i class="fas fa-plus"></i> Thêm tập nhanh</div>
+                <div class="">
+                    <form th:action="@{'/admin/episodes/add/' + ${cartoonId}}" th:if="${cartoonId != null and cartoonId != ''}" th:object="${episode}" method="post" class="row g-3 align-items-end quick-add-form">
+                        <div class="col-md-2">
+                            <label for="episode_number" class="form-label">Số tập</label>
                             <input type="number" th:field="*{episode_number}" class="form-control" id="episode_number" required min="1"/>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="title">Episode Title</label>
+                        <div class="col-md-3">
+                            <label for="title" class="form-label">Tên tập</label>
                             <input type="text" th:field="*{title}" class="form-control" id="title" required maxlength="255"/>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="video_url">Video URL</label>
+                        <div class="col-md-3">
+                            <label for="video_url" class="form-label">Video URL</label>
                             <input type="url" th:field="*{video_url}" class="form-control" id="video_url" required/>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="duration">Duration (seconds)</label>
+                        <div class="col-md-2">
+                            <label for="duration" class="form-label">Thời lượng (giây)</label>
                             <input type="number" th:field="*{duration}" class="form-control" id="duration" min="0"/>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-success btn-block">
-                                <i class="fas fa-plus"></i> Add Episode
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="thumbnail_url">Thumbnail URL (optional)</label>
+                        <div class="col-md-2">
+                            <label for="thumbnail_url" class="form-label">Thumbnail (tùy chọn)</label>
                             <input type="url" th:field="*{thumbnail_url}" class="form-control" id="thumbnail_url"/>
                         </div>
-                    </div>                </div>
-            </form>
-            <div th:unless="${cartoonId != null and cartoonId != ''}" class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Please select a cartoon to add episodes.
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-plus"></i> Thêm tập
+                            </button>
+                        </div>
+                    </form>
+                    <div th:unless="${cartoonId != null and cartoonId != ''}" class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i> Vui lòng chọn phim để thêm tập.
+                    </div>
+                </div>
+            </div>
+            <!-- Episodes Table -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-list"></i> Danh sách tập phim</span>
+                    <span class="badge bg-info text-dark" th:text="'Tổng số tập: ' + ${episodes.size()}"></span>
+                </div>
+                <div class="card-body">
+                    <div th:if="${episodes.empty}" class="text-center py-5">
+                        <i class="fas fa-film fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Chưa có tập nào</h5>
+                        <p class="text-muted">Hãy thêm tập đầu tiên để bắt đầu.</p>
+                    </div>
+                    <div th:unless="${episodes.empty}">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle admin-table rounded-3 overflow-hidden">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tên tập</th>
+                                        <th>Thumbnail</th>
+                                        <th>Thời lượng</th>
+                                        <th>Lượt xem</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="ep : ${episodes}">
+                                        <td><span class="badge bg-primary" th:text="${ep.episode_number}"></span></td>
+                                        <td>
+                                            <div class="fw-bold" th:text="${ep.title}"></div>
+                                            <small class="text-muted" th:text="'ID: ' + ${ep.id}"></small>
+                                        </td>
+                                        <td>
+                                            <div class="thumbnail-preview">
+                                                <th:block th:if="${ep.thumbnail_url != null and !#strings.isEmpty(ep.thumbnail_url)}">
+                                                    <img th:src="${ep.thumbnail_url}" alt="Thumbnail" class="img-thumbnail shadow-sm" style="max-width:60px;max-height:60px;object-fit:cover;cursor:pointer;" onclick="showImageModal(this.src)"/>
+                                                </th:block>
+                                                <th:block th:unless="${ep.thumbnail_url != null and !#strings.isEmpty(ep.thumbnail_url)}">
+                                                    <span class="text-muted">Không có</span>
+                                                </th:block>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span th:if="${ep.duration != null}" th:text="${#numbers.formatInteger(ep.duration / 60, 0)} + 'm ' + ${#numbers.formatInteger(ep.duration % 60, 0)} + 's'"></span>
+                                            <span th:unless="${ep.duration != null}" class="text-muted">Không rõ</span>
+                                        </td>
+                                        <td><span class="badge bg-info text-dark" th:text="${ep.views != null ? ep.views : 0}"></span></td>
+                                        <td>
+                                            <small th:if="${ep.created_at != null}" th:text="${#temporals.format(ep.created_at, 'dd/MM/yyyy HH:mm')}"></small>
+                                            <small th:unless="${ep.created_at != null}" class="text-muted">Không rõ</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a th:href="${ep.video_url}" target="_blank" class="btn btn-outline-primary" title="Xem tập">
+                                                    <i class="fas fa-play"></i>
+                                                </a>
+                                                <a th:href="@{'/admin/episodes/edit/' + ${cartoonId} + '/' + ${ep.id}}"
+                                                   class="btn btn-outline-secondary" title="Sửa tập" data-bs-toggle="modal" data-bs-target="#editEpisodeModal"
+                                                   th:data-episode_id="${ep.id}"
+                                                   th:data-title="${ep.title}"
+                                                   th:data-description="${ep.description}"
+                                                   th:data-episode_number="${ep.episode_number}"
+                                                   th:data-cartoon_id="${cartoonId}">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-outline-danger"
+                                                    th:attr="data-cartoon-id=${cartoonId},data-ep-id=${ep.id},data-ep-title=${ep.title}"
+                                                    onclick="confirmDelete(this.getAttribute('data-cartoon-id'), this.getAttribute('data-ep-id'), this.getAttribute('data-ep-title'))"
+                                                    title="Xóa tập">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Episodes List -->
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Episodes List</h5>
-                <div class="card-tools">
-                    <span class="badge badge-info" th:text="'Total Episodes: ' + ${episodes.size()}"></span>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <div th:if="${episodes.empty}" class="text-center py-5">
-                <i class="fas fa-film fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No episodes found</h5>
-                <p class="text-muted">Add the first episode to get started.</p>
-            </div>
-            
-            <div th:unless="${episodes.empty}">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Episode #</th>
-                                <th>Title</th>
-                                <th>Thumbnail</th>
-                                <th>Duration</th>
-                                <th>Views</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="ep : ${episodes}">
-                                <td>
-                                    <span class="badge badge-primary" th:text="${ep.episode_number}"></span>
-                                </td>
-                                <td>
-                                    <div class="episode-info">
-                                        <h6 class="mb-1" th:text="${ep.title}"></h6>
-                                        <small class="text-muted" th:text="'ID: ' + ${ep.id}"></small>
-                                    </div>
-                                </td>
-                                <td>                                    <div class="thumbnail-preview">
-                                        <th:block th:if="${ep.thumbnail_url != null and !#strings.isEmpty(ep.thumbnail_url)}">
-                                            <img th:src="${ep.thumbnail_url}" alt="Thumbnail" class="img-thumbnail" />
-                                        </th:block>
-                                        <th:block th:unless="${ep.thumbnail_url != null and !#strings.isEmpty(ep.thumbnail_url)}">
-                                            <span class="text-muted">No Thumbnail</span>
-                                        </th:block>
-                                    </div>
-                                </td>                                <td>
-                                    <span th:if="${ep.duration != null}" th:text="${#numbers.formatInteger(ep.duration / 60, 0)} + 'm ' + ${#numbers.formatInteger(ep.duration % 60, 0)} + 's'"></span>
-                                    <span th:unless="${ep.duration != null}" class="text-muted">Unknown</span>
-                                </td>                                <td>
-                                    <span class="badge badge-info" th:text="${ep.views != null ? ep.views : 0}"></span>
-                                </td>                                <td>
-                                    <small th:if="${ep.created_at != null}" th:text="${#temporals.format(ep.created_at, 'dd/MM/yyyy HH:mm')}"></small>
-                                    <small th:unless="${ep.created_at != null}" class="text-muted">Unknown</small>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a th:href="${ep.video_url}" target="_blank" class="btn btn-outline-primary" title="Watch Episode">
-                                            <i class="fas fa-play"></i>
-                                        </a>                                        <a th:href="@{'/admin/episodes/edit/' + ${cartoonId} + '/' + ${ep.id}}" 
-                                           class="btn btn-outline-secondary" title="Edit Episode" data-bs-toggle="modal" data-bs-target="#editEpisodeModal" 
-                                           th:data-episode_id="${ep.id}"
-                                           th:data-title="${ep.title}"
-                                           th:data-description="${ep.description}"
-                                           th:data-episode_number="${ep.episode_number}">
-                                            <i class="fas fa-edit"></i>
-                                        </a><button type="button" class="btn btn-outline-danger"
-                                            th:attr="data-cartoon-id=${cartoonId},data-ep-id=${ep.id},data-ep-title=${ep.title}"
-                                            onclick="confirmDelete(this.getAttribute('data-cartoon-id'), this.getAttribute('data-ep-id'), this.getAttribute('data-ep-title'))"
-                                            title="Delete Episode">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>    <!-- Image Modal -->
+    <!-- Image Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -232,9 +221,7 @@
         </div>
     </div>
 
-</div>
-
-<script layout:fragment="scripts">    function showImageModal(src) {
+    <script layout:fragment="scripts">    function showImageModal(src) {
         document.getElementById('modalImage').src = src;
         var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
         imageModal.show();
@@ -253,42 +240,47 @@
     }, 5000);
 
     // Form validation
-    document.querySelector('.quick-add-form').addEventListener('submit', function(e) {
-        const episodeNumber = document.getElementById('episode_number').value;
-        const title = document.getElementById('title').value.trim();
-        const videoUrl = document.getElementById('video_url').value.trim();
+    const quickAddForm = document.querySelector('.quick-add-form');
+    if (quickAddForm) {
+        quickAddForm.addEventListener('submit', function(e) {
+            const episodeNumber = document.getElementById('episode_number').value;
+            const title = document.getElementById('title').value.trim();
+            const videoUrl = document.getElementById('video_url').value.trim();
 
-        if (!episodeNumber || episodeNumber < 1) {
-            e.preventDefault();
-            alert('Please enter a valid episode number.');
-            return;
-        }
-
-        if (!title) {
-            e.preventDefault();
-            alert('Please enter an episode title.');
-            return;
-        }
-
-        if (!videoUrl) {
-            e.preventDefault();
-            alert('Please enter a video URL.');
-            return;
-        }
-    });    // Populate and show edit episode modal
-    document.getElementById('editEpisodeModal').addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget; // Button that triggered the modal
-        var episodeId = button.getAttribute('data-episode_id');
-        var title = button.getAttribute('data-title');
-        var description = button.getAttribute('data-description');
-        var episodeNumber = button.getAttribute('data-episode_number');
-
-        var modal = this;
-        modal.querySelector('.modal-body #title').value = title;
-        modal.querySelector('.modal-body #description').value = description;
-        modal.querySelector('.modal-body #episode_number').value = episodeNumber;
-        modal.querySelector('form').setAttribute('action', '/admin/episodes/edit/' + episodeId);
-    });
+            if (!episodeNumber || episodeNumber < 1) {
+                e.preventDefault();
+                alert('Vui lòng nhập số tập hợp lệ.');
+                return;
+            }
+            if (!title) {
+                e.preventDefault();
+                alert('Vui lòng nhập tên tập.');
+                return;
+            }
+            if (!videoUrl) {
+                e.preventDefault();
+                alert('Vui lòng nhập video URL.');
+                return;
+            }
+        });
+    }    // Populate and show edit episode modal
+    // Sửa lại để lấy đúng cartoonId và set action đúng endpoint
+    const editModal = document.getElementById('editEpisodeModal');
+    if (editModal) {
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget; // Button that triggered the modal
+            var episodeId = button.getAttribute('data-episode_id');
+            var title = button.getAttribute('data-title');
+            var description = button.getAttribute('data-description');
+            var episodeNumber = button.getAttribute('data-episode_number');
+            var cartoonId = button.getAttribute('data-cartoon_id');
+            var modal = this;
+            modal.querySelector('.modal-body #title').value = title;
+            modal.querySelector('.modal-body #description').value = description;
+            modal.querySelector('.modal-body #episode_number').value = episodeNumber;
+            modal.querySelector('form').setAttribute('action', '/admin/episodes/edit/' + cartoonId + '/' + episodeId);
+        });
+    }
 </script>
 
 <style layout:fragment="styles">
