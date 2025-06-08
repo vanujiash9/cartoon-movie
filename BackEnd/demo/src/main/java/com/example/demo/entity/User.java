@@ -2,6 +2,9 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +20,9 @@ public class User {
     private boolean enabled;
 
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<UserAchievement> achievements;
 
     // Getters and setters
     public Integer getId() { return id; }
@@ -39,4 +45,7 @@ public class User {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public List<UserAchievement> getAchievements() { return achievements; }
+    public void setAchievements(List<UserAchievement> achievements) { this.achievements = achievements; }
 }

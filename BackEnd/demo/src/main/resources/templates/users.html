@@ -36,6 +36,7 @@
                         <th>Họ tên</th>
                         <th>Quyền</th>
                         <th>Trạng thái</th>
+                        <th>Thành tựu</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -60,6 +61,12 @@
                             <span th:unless="${user.enabled}" class="badge bg-secondary">Khóa</span>
                         </td>
                         <td>
+                            <ul class="list-unstyled mb-0">
+                                <li th:each="ua : ${user.achievements}" th:text="${ua.achievement.name} + ' - ' + ${ua.achievement.description}"></li>
+                                <li th:if="${#lists.isEmpty(user.achievements)}" class="text-muted">Chưa có thành tựu</li>
+                            </ul>
+                        </td>
+                        <td>
                             <form th:action="@{'/admin/users/delete/' + ${user.id}}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');">
                                     <i class="fas fa-trash"></i> Xóa
@@ -68,7 +75,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(users)}">
-                        <td colspan="7" class="text-center text-muted">Không có người dùng nào.</td>
+                        <td colspan="8" class="text-center text-muted">Không có người dùng nào.</td>
                     </tr>
                 </tbody>
             </table>

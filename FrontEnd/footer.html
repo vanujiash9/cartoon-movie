@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer - Maxion</title>
+   
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root{
+            --live-indicator-shadow: hsla(0, 79%, 63%, .5);
+            --rich-blank-fogra-30: hsl(219, 32%, 10%);
+            --rich-blank-fogra-29: hsl(222, 25%, 10%);
+            --live-indicator: hsl(0, 79%, 63%);
+            --oxford-blue-50: hsla(218, 39%, 14%, .8);
+            --oxford-blue: hsl(218, 39%, 14%);
+            --light-azure: hsl(214, 84%, 56%);
+            --off-white: hsl(0, 0%, 88%);
+            --yellow: hsl(45, 100%, 54%);
+            --white: hsl(0, 0%, 100%);
+            --azure: hsl(211, 100%, 50%);
+            --success: hsl(142, 76%, 36%);
+            --gradient-primary: linear-gradient(135deg, var(--azure) 0%, var(--light-azure) 100%);
+            --gradient-success: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+
+            --font-family: "Inter", sans-serif;
+
+            --section-heading: 40px;
+            --font-size-large: 22px;
+            --font-size-medium: 17px;
+            --font-size-small: 14px;
+            --font-size-extra-small: 12px;
+
+            --fw7: 700;
+            --fw6: 600;
+            --fw5: 500;
+
+            --padding-x: 120px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Light theme variables */
+        [data-theme="light"] {
+            --rich-blank-fogra-30: hsl(0, 0%, 95%);
+            --rich-blank-fogra-29: hsl(0, 0%, 98%);
+            --oxford-blue: hsl(0, 0%, 90%);
+            --oxford-blue-50: hsla(0, 0%, 85%, .8);
+            --off-white: hsl(0, 0%, 20%);
+            --white: hsl(0, 0%, 10%);
+        }
+
+        *{
+            margin: 0;
+            padding: 0;
+            transition: var(--transition);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html{ 
+            font-family: var(--font-family);
+            scroll-behavior: smooth;
+            height: 100%;
+        }
+
+        body{
+            background: var(--rich-blank-fogra-30);
+            color: var(--off-white);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        img{
+            display: block;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            object-fit: cover;
+        }
+
+        button{
+            color: var(--off-white);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font: inherit;
+        }
+
+        li{list-style: none;}
+
+        a{
+            text-decoration: none;
+            display: block;
+            color: var(--off-white);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /*FOOTER*/
+        footer{
+            background: var(--rich-blank-fogra-30);
+            padding: 60px var(--padding-x) 30px;
+            border-top: 1px solid var(--oxford-blue);
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        .footer-content{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--oxford-blue-50);
+            padding-bottom: 60px;
+            margin-bottom: 30px;
+        }
+
+        .footer-brand{
+            max-width: 300px;
+            margin-right: 80px;
+        }
+
+        .footer-logo{
+            width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .slogan{
+            font-size: var(--font-size-small);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .social-link {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: var(--oxford-blue);
+            border-radius: 12px;
+            transition: var(--transition);
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .social-link a:hover {
+            background: var(--light-azure);
+            transform: translateY(-3px);
+        }
+
+        .footer-links{
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .link-heading{ 
+            margin-bottom: 20px;
+            font-size: var(--font-size-medium);
+            font-weight: var(--fw6);
+            color: var(--white);
+        }
+
+        .link-item{ 
+            font-size: var(--font-size-small);
+            transition: var(--transition);
+        }
+
+        ul .link-item:not(:last-child) { 
+            margin-bottom: 10px;
+        }
+
+        .link-item:hover a{ 
+            color: var(--light-azure);
+            transform: translateX(5px);
+        }
+
+        .footer-copyright{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+        }
+
+        .footer-copyright p, .wrapper a{ 
+            font-size: var(--font-size-small);
+            opacity: 0.7;
+        }
+
+        .wrapper a:hover { 
+            color: var(--light-azure);
+            opacity: 1;
+        }
+
+        .wrapper a:not(:last-child) { 
+            margin-right: 30px;
+        }
+
+        .wrapper{ 
+            display: flex;
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+            font-size: 24px;
+            color: var(--white);
+            border: none;
+        }
+
+        .scroll-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Floating action buttons */
+        .floating-actions {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .floating-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            opacity: 0.8;
+            font-size: 20px;
+            color: var(--white);
+            border: none;
+        }
+
+        .floating-btn:hover {
+            opacity: 1;
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Quick stats panel */
+        .quick-stats {
+            position: fixed;
+            top: 50%;
+            right: -300px;
+            transform: translateY(-50%);
+            background: var(--oxford-blue);
+            padding: 20px;
+            border-radius: 15px 0 0 15px;
+            transition: right 0.3s ease;
+            z-index: 998;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .quick-stats.active {
+            right: 0;
+        }
+
+        .quick-stats h4 {
+            color: var(--light-azure);
+            margin-bottom: 15px;
+            font-size: var(--font-size-medium);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--oxford-blue-50);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--off-white);
+            font-size: var(--font-size-small);
+        }
+
+        .stat-value {
+            color: var(--light-azure);
+            font-weight: var(--fw6);
+            font-size: var(--font-size-small);
+        }
+
+        /*MEDIA QUERIES FOR FOOTER*/
+        @media screen and (max-width: 1200px){
+            :root{
+                --padding-x: 80px;
+            }
+
+            .footer-content{ 
+                flex-direction: column;
+            }
+
+            .footer-brand{
+                margin-right: 0;
+                margin-bottom: 40px;
+            }
+
+            .footer-links{ 
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media screen and (max-width: 768px){
+            :root{
+                --padding-x: 40px;
+            }
+
+            .floating-actions {
+                bottom: 80px;
+                right: 20px;
+            }
+
+            .footer-links{ 
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+        }
+
+        @media screen and (max-width: 575px){
+            :root{
+                --padding-x: 20px;
+            }
+
+            .footer-copyright{ 
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .wrapper{ 
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .scroll-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .floating-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .footer-links{ 
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+        }
+
+        /* Hidden utility class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTIwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIxMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+" alt="Maxion Logo" class="footer-logo">
+                <p class="slogan">Nền tảng xem phim và chương trình truyền hình trực tuyến hàng đầu Việt Nam. Trải nghiệm giải trí đỉnh cao với chất lượng 4K.</p>
+
+                <div class="social-link">
+                    <a href="#" title="Facebook">📘</a>
+                    <a href="#" title="Twitter">🐦</a>
+                    <a href="#" title="Instagram">📷</a>
+                    <a href="#" title="TikTok">🎵</a>
+                    <a href="#" title="YouTube">📺</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <ul>
+                    <h4 class="link-heading">Maxion</h4>
+                    <li class="link-item"><a href="#">Về chúng tôi</a></li>
+                    <li class="link-item"><a href="#">Hồ sơ của tôi</a></li>
+                    <li class="link-item"><a href="#">Gói dịch vụ</a></li>
+                    <li class="link-item"><a href="#">Liên hệ</a></li>
+                </ul>
+
+                <ul>
+                    <h4 class="link-heading">Khám phá</h4>
+                    <li class="link-item"><a href="#">TV Trực tiếp</a></li>
+                    <li class="link-item"><a href="#">Tin tức</a></li>
+                    <li class="link-item"><a href="#">Thể thao</a></li>
+                    <li class="link-item"><a href="#">Thư viện phim</a></li>
+                </ul>
+
+                <ul>
+                    <h4 class="link-heading">Nội dung</h4>
+                    <li class="link-item"><a href="#">Chương trình TV</a></li>
+                    <li class="link-item"><a href="#">Phim</a></li>
+                    <li class="link-item"><a href="#">Trẻ em</a></li>
+                    <li class="link-item"><a href="#">Bộ sưu tập</a></li>
+                </ul>
+
+                <ul>
+                    <h4 class="link-heading">Hỗ trợ</h4>
+                    <li class="link-item"><a href="#">Tài khoản & Thanh toán</a></li>
+                    <li class="link-item"><a href="#">Gói & Giá cả</a></li>
+                    <li class="link-item"><a href="#">Thiết bị hỗ trợ</a></li>
+                    <li class="link-item"><a href="#">Trợ năng</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-copyright">
+            <div class="copyright">
+                <p>© Copyright 2024 Maxion. Tất cả quyền được bảo lưu.</p>
+            </div>
+
+            <div class="wrapper">
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Điều khoản sử dụng</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to top button -->
+    <button class="scroll-top" id="scrollTop">
+        <span>⬆️</span>
+    </button>
+
+    <!-- Floating action buttons -->
+    <div class="floating-actions">
+        <button class="floating-btn" onclick="triggerParentFunction('getRandomRecommendation')" title="Phim ngẫu nhiên">
+            <span>🎲</span>
+        </button>
+        <button class="floating-btn" onclick="triggerParentFunction('getTrendingMovies')" title="Phim thịnh hành">
+            <span>📈</span>
+        </button>
+        <button class="floating-btn" onclick="triggerParentFunction('applyAdvancedFilter')" title="Lọc chất lượng cao">
+            <span>🔧</span>
+        </button>
+        <button class="floating-btn" onclick="toggleQuickStats()" title="Thống kê">
+            <span>📊</span>
+        </button>
+    </div>
+
+    <!-- Quick stats panel -->
+    <div class="quick-stats" id="quickStats">
+        <h4>Thống kê nhanh</h4>
+        <div class="stat-item">
+            <span class="stat-label">Tổng số phim:</span>
+            <span class="stat-value" id="totalMovies">18</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Điểm TB:</span>
+            <span class="stat-value" id="avgRating">7.2⭐</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Đã bookmark:</span>
+            <span class="stat-value" id="bookmarkCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Đã xem:</span>
+            <span class="stat-value" id="watchedCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Thể loại phổ biến:</span>
+            <span class="stat-value" id="topGenre">Hành động</span>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        // Footer specific functionality
+        const scrollTopBtn = document.getElementById('scrollTop');
+        const quickStats = document.getElementById('quickStats');
+
+        // Initialize footer
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFooter();
+        });
+
+        function initializeFooter() {
+            setupFooterEventListeners();
+            setupScrollEffects();
+            updateQuickStats();
+        }
+
+        // Setup event listeners for footer
+        function setupFooterEventListeners() {
+            // Scroll to top
+            if (scrollTopBtn) {
+                scrollTopBtn.addEventListener('click', scrollToTop);
+            }
+
+            // Auto-resize iframe height
+            window.addEventListener('load', function() {
+                const height = document.body.scrollHeight;
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'resizeIframe',
+                        height: height
+                    }, '*');
+                }
+            });
+        }
+
+        // Scroll to top function
+        function scrollToTop() {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'scrollToTop'
+                }, '*');
+            } else {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Quick stats functionality
+        function toggleQuickStats() {
+            if (quickStats) {
+                quickStats.classList.toggle('active');
+                
+                if (quickStats.classList.contains('active')) {
+                    updateQuickStats();
+                }
+            }
+        }
+
+        function updateQuickStats() {
+            // Get data from localStorage or parent window
+            const bookmarkedMovies = JSON.parse(localStorage.getItem('bookmarkedMovies') || '[]');
+            const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+            
+            if (document.getElementById('bookmarkCount')) {
+                document.getElementById('bookmarkCount').textContent = bookmarkedMovies.length;
+            }
+            if (document.getElementById('watchedCount')) {
+                document.getElementById('watchedCount').textContent = watchHistory.length;
+            }
+
+            // Try to get data from parent window
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'requestStats'
+                }, '*');
+            }
+        }
+
+        // Enhanced features - communicate with parent window
+        function triggerParentFunction(functionName) {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'callFunction',
+                    functionName: functionName
+                }, '*');
+            } else {
+                console.log('Function call:', functionName);
+            }
+        }
+
+        // Listen for messages from parent window
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'updateStats') {
+                const stats = event.data.stats;
+                if (stats) {
+                    if (document.getElementById('totalMovies')) {
+                        document.getElementById('totalMovies').textContent = stats.totalMovies || '18';
+                    }
+                    if (document.getElementById('avgRating')) {
+                        document.getElementById('avgRating').textContent = (stats.avgRating || '7.2') + '⭐';
+                    }
+                    if (document.getElementById('topGenre')) {
+                        document.getElementById('topGenre').textContent = stats.topGenre || 'Hành động';
+                    }
+                    if (document.getElementById('bookmarkCount')) {
+                        document.getElementById('bookmarkCount').textContent = stats.bookmarkCount || '0';
+                    }
+                    if (document.getElementById('watchedCount')) {
+                        document.getElementById('watchedCount').textContent = stats.watchedCount || '0';
+                    }
+                }
+            }
+        });
+
+        // Scroll effects
+        function setupScrollEffects() {
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset;
+                
+                // Show/hide scroll to top button
+                if (scrollTop > 500) {
+                    scrollTopBtn.classList.add('active');
+                } else {
+                    scrollTopBtn.classList.remove('active');
+                }
+            });
+
+            // Listen for parent scroll events
+            if (window.parent && window.parent !== window) {
+                window.addEventListener('message', function(event) {
+                    if (event.data.type === 'parentScroll') {
+                        const scrollTop = event.data.scrollTop;
+                        if (scrollTop > 500) {
+                            scrollTopBtn.classList.add('active');
+                        } else {
+                            scrollTopBtn.classList.remove('active');
+                        }
+                    }
+                });
+            }
+        }
+
+        // Export footer functions for use by parent page
+        window.FooterApp = {
+            updateQuickStats,
+            toggleQuickStats,
+            scrollToTop
+        };
+    </script>
+</body>
+</html>

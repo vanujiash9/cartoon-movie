@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxion - Trang phim online tốt nhất</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- Include Header -->
+    <iframe src="./header.html" class="header-frame" id="headerFrame" onload="initHeaderIframe()"></iframe>
+
+    <div class="container">
+        <main>
+            <section class="banner">
+                <div class="banner-card" onclick="playBannerMovie()">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDkwMCA1MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI5MDAiIGhlaWdodD0iNTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgouYmFubmVyLXRleHQgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjkwMCIgeTI9IjUwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMWUzYzcyIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJhNTI5OCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjQ1MCIgeT0iMjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYmFubmVyLXRleHQiIGZvbnQtc2l6ZT0iNDgiPkpvaG4gV2ljayAzPC90ZXh0Pgo8dGV4dCB4PSI0NTAiIHk9IjI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImJhbm5lci10ZXh0IiBmb250LXNpemU9IjE4Ij5QYXJhYmVsbHVtPC90ZXh0Pgo8L3N2Zz4=" alt="John Wick 3 Banner" class="banner-img">
+                    
+                    <div class="banner-play-btn">
+                        <span>▶</span>
+                    </div>
+
+                    <div class="card-content">
+                        <div class="card-info">
+                            <div class="genre">
+                                <span>🎬 Hành động/Thriller</span>
+                            </div>
+
+                            <div class="year">
+                                <span>📅 2019</span>
+                            </div>
+
+                            <div class="duration">
+                                <span>⏱️ 2h 11phút</span>
+                            </div>
+
+                            <div class="quality">4K</div>
+                        </div>
+                        <h2 class="card-title">John Wick: Chapter 3 - Parabellum</h2>
+                    </div>
+                </div>
+            </section>
+
+            <section class="movies" id="movies">
+                <h2 class="section-heading">Phim Hot</h2>
+                
+                <div class="filter-bar">
+                    <div class="filter-dropdowns">
+                        <select name="genre" class="genre" id="genreFilter">
+                            <option value="all">Tất cả thể loại</option>
+                            <option value="action">Hành động</option>
+                            <option value="adventure">Phiêu lưu</option>
+                            <option value="animation">Hoạt hình</option>
+                            <option value="comedy">Hài</option>
+                            <option value="drama">Chính kịch</option>
+                            <option value="fantasy">Giả tưởng</option>
+                            <option value="horror">Kinh dị</option>
+                            <option value="scifi">Khoa học viễn tưởng</option>
+                            <option value="war">Chiến tranh</option>
+                        </select>
+
+                        <select name="year" class="year" id="yearFilter">
+                            <option value="all">Tất cả năm</option>
+                            <option value="2024">2024</option>
+                            <option value="2020-2023">2020-2023</option>
+                            <option value="2010-2019">2010-2019</option>
+                            <option value="2000-2009">2000-2009</option>
+                            <option value="1980-1999">1980-1999</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-radios">
+                        <input type="radio" name="grade" id="featured" checked>
+                        <label for="featured">Đặc biệt</label>
+
+                        <input type="radio" name="grade" id="popular">
+                        <label for="popular">Phổ biến</label>
+
+                        <input type="radio" name="grade" id="newest">
+                        <label for="newest">Mới nhất</label>
+
+                        <div class="checked-radio-bg"></div>
+                    </div>
+                </div>
+
+                <div class="movies-grid" id="moviesGrid">
+                    <!-- Movies will be populated by JavaScript -->
+                </div>
+
+                <button class="load-more" id="loadMore">TẢI THÊM</button>
+            </section>
+
+            <section class="category" id="category">
+                <h2 class="section-heading">Thể loại</h2>
+
+                <div class="category-grid">
+                    <div class="category-card" onclick="filterByCategory('action')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZGMyNjI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoG5oIMSR4buZbmc8L3RleHQ+Cjwvc3ZnPg==" alt="Hành động" class="card-img">
+                        <div class="name">Hành động</div>
+                        <div class="total">120</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('comedy')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZjM5YzEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoGk8L3RleHQ+Cjwvc3ZnPg==" alt="Hài" class="card-img">
+                        <div class="name">Hài</div>
+                        <div class="total">85</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('thriller')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjNzQzZjM5Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlRocmlsbGVyPC90ZXh0Pgo8L3N2Zz4=" alt="Thriller" class="card-img">
+                        <div class="name">Thriller</div>
+                        <div class="total">45</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('horror')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMmMzZTUwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPktpbmcgxJHhu4s8L3RleHQ+Cjwvc3ZnPg==" alt="Kinh dị" class="card-img">
+                        <div class="name">Kinh dị</div>
+                        <div class="total">60</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('adventure')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMjc4NGU3Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlBoaWV1IGzGsOG7pW5nPC90ZXh0Pgo8L3N2Zz4=" alt="Phiêu lưu" class="card-img">
+                        <div class="name">Phiêu lưu</div>
+                        <div class="total">95</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('animation')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZWQ0ODEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkhv4bqhdCBow6xuaDwvdGV4dD4KPC9zdmc+" alt="Hoạt hình" class="card-img">
+                        <div class="name">Hoạt hình</div>
+                        <div class="total">70</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('crime')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMzQzYTQwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlThu5lpIHBo4bqhbTwvdGV4dD4KPC9zdmc+" alt="Tội phạm" class="card-img">
+                        <div class="name">Tội phạm</div>
+                        <div class="total">35</div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('scifi')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjOWI1OWI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlNjaS1GaTwvdGV4dD4KPC9zdmc+" alt="Khoa học viễn tưởng" class="card-img">
+                        <div class="name">Sci-fi</div>
+                        <div class="total">55</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="achievements" id="achievements">
+                <h2 class="section-heading">Thành tựu của bạn</h2>
+                
+                <div class="achievement-cards">
+                    <article class="achievement-card">
+                        <div class="achievement-icon">🌟</div>
+                        <h3 class="achievement-title">Otaku Mới</h3>
+                        <p class="achievement-description">Xem 10 bộ phim đầu tiên</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="70"></div>
+                        </div>
+                        <span>7/10</span>
+                    </article>
+
+                    <article class="achievement-card">
+                        <div class="achievement-icon">🔥</div>
+                        <h3 class="achievement-title">Người Hâm Mộ</h3>
+                        <p class="achievement-description">Xem 5 bộ phim hoàn chỉnh</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="40"></div>
+                        </div>
+                        <span>2/5</span>
+                    </article>
+
+                    <article class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <h3 class="achievement-title">Nhà Phê Bình</h3>
+                        <p class="achievement-description">Đánh giá 20 bộ phim</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="15"></div>
+                        </div>
+                        <span>3/20</span>
+                    </article>
+
+                    <article class="achievement-card">
+                        <div class="achievement-icon">⏰</div>
+                        <h3 class="achievement-title">Người Kiên Nhẫn</h3>
+                        <p class="achievement-description">Xem phim 30 ngày liên tiếp</p>
+                        <div class="progress-bar">
+                            <div class="progress" data-progress="50"></div>
+                        </div>
+                        <span>15/30</span>
+                    </article>
+                </div>
+            </section>
+
+            <section class="live" id="live">
+                <h2 class="section-heading">TV Shows Trực Tiếp</h2>
+
+                <div class="live-grid">
+                    <div class="live-card" onclick="playLiveStream('planet-earth')">
+                        <div class="card-head">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMzQ5ODAwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzIzNzEwMCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlBsYW5ldCBFYXJ0aDwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TQUE9Pc b25lIC0gSXNsYW5kczwvdGV4dD4KPC9zdmc+" alt="Planet Earth II" class="card-img">
+                            <div class="live-badge">LIVE</div>
+                            <div class="total-viewers">305K người xem</div>
+                            <div class="play">
+                                <span>⭕</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNDI4NWY0IiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkJCQzwvdGV4dD4KPC9zdmc+" alt="BBC America" class="avatar">
+                            <h3 class="card-title">Planet Earth II <br> Season 1 - Islands</h3>
+                        </div>
+                    </div>
+
+                    <div class="live-card" onclick="playLiveStream('game-of-thrones')">
+                        <div class="card-head">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjQxZTMwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzMzMGMxZiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPkdhbWUgb2YgVGhyb25lczwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TRUE9b24gNSAtIE1vdGhlcidzIE1lcmN5PC90ZXh0Pgo8L3N2Zz4=" alt="Game of Thrones" class="card-img">
+                            <div class="live-badge">LIVE</div>
+                            <div class="total-viewers">1.7M người xem</div>
+                            <div class="play">
+                                <span>⭕</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <h3 class="card-title">Game of Thrones <br> Season 5 - Mother's Mercy</h3>
+                        </div>
+                    </div>
+
+                    <div class="live-card" onclick="playLiveStream('vikings')">
+                        <div class="card-head">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNTQ2ZTdhIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzM3NGY1MyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlZpa2luZ3M8L3RleHQ+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMTYiPlNlYXNvbiA0IC0gV2hhdCBNaWdodCBIYXZlIEJlZW48L3RleHQ+Cjwvc3ZnPg==" alt="Vikings" class="card-img">
+                            <div class="live-badge">LIVE</div>
+                            <div class="total-viewers">468K người xem</div>
+                            <div class="play">
+                                <span>⭕</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <h3 class="card-title">Vikings <br> Season 4 - What Might Have Been</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Include Footer -->
+    <iframe src="./footer.html" class="footer-frame" id="footerFrame" onload="initFooterIframe()"></iframe>
+
+    <!-- Load JavaScript -->
+    <script src="./script.js"></script>
+</body>
+</html>
