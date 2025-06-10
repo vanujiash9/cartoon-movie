@@ -6,14 +6,6 @@ const headerIframeEl = document.getElementById("header-iframe");
 const footerIframeEl = document.getElementById("footer-iframe");
 const pageContentWrapper = document.querySelector(".page-content"); // Assumes your <main> has this class
 
-function applyThemeToCurrentPage(themeName) {
-  mainPageBody.classList.remove("light-mode", "dark-mode");
-  mainPageBody.classList.add(
-    themeName === "light" ? "light-mode" : "dark-mode"
-  );
-  localStorage.setItem("theme", themeName); // Use 'theme' to match header/footer.html
-}
-
 function syncThemeWithIframes(themeName) {
   const themeMessage = { type: "themeChange", theme: themeName };
   if (headerIframeEl && headerIframeEl.contentWindow) {
@@ -112,7 +104,7 @@ window.addEventListener("message", (event) => {
   if (event.data && event.data.type) {
     switch (event.data.type) {
       case "themeChange": // From header's toggle
-        applyThemeToCurrentPage(event.data.theme);
+        // XÓA ĐOẠN XỬ LÝ NÚT CHUYỂN ĐỔI GIAO DIỆN VÀ HÀM applyThemeToCurrentPage
         syncThemeWithIframes(event.data.theme); // Inform other iframes (e.g., footer)
         break;
       case "iframeLoaded":
@@ -145,12 +137,6 @@ window.addEventListener("message", (event) => {
   }
 });
 
-// Apply initial theme to this page
-const initialParentTheme = localStorage.getItem("theme") || "dark";
-applyThemeToCurrentPage(initialParentTheme);
-// Initial sync is largely handled by iframe onload, but this ensures if parent loads first.
-// syncThemeWithIframes(initialParentTheme);
-
 // --- Your Existing Achievements Page JS ---
 document.addEventListener("DOMContentLoaded", () => {
   // Hàm hiển thị thông báo tùy chỉnh (already defined in your script)
@@ -167,24 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => thongBao.remove(), 300);
     }, 3000);
   }
-
-  // Theme toggle button on THIS page (if you had one, ID 'theme-toggle')
-  // Your header iframe now handles the primary theme toggle.
-  // This section can be removed if the toggle is exclusively in header.html
-  /*
-    const nutChuyenDoiGiaoDienThisPage = document.getElementById('theme-toggle');
-    if (nutChuyenDoiGiaoDienThisPage) {
-        // Initial state based on localStorage
-        const currentTheme = localStorage.getItem('theme') || 'dark';
-        nutChuyenDoiGiaoDienThisPage.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
-
-        nutChuyenDoiGiaoDienThisPage.addEventListener('click', () => {
-            const newTheme = mainPageBody.classList.contains('light-mode') ? 'dark' : 'light';
-            applyThemeToCurrentPage(newTheme); // Apply to this page
-            syncThemeWithIframes(newTheme);    // Tell iframes
-        });
-    }
-    */
 
   const quanSat = new IntersectionObserver(
     (muc) => {

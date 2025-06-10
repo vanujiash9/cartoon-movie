@@ -1,0 +1,14 @@
+/* CSS tách từ <style> trong Register.html */
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #a29bfe;
+    --bg-color: #1a1a2e;
+    --bg-secondary: #16213e;
+    --text-color: #e0e0e0;
+    --light-color: #d3d3d3;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    --transition-default: all 0.3s ease;
+}
+/* ...phần còn lại giữ nguyên như trong <style>... */

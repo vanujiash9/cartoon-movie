@@ -6,15 +6,7 @@ const headerIframeEl = document.getElementById("header-iframe");
 const footerIframeEl = document.getElementById("footer-iframe");
 const pageContentWrapper = document.querySelector(".page-content");
 
-function applyThemeToCurrentPage(themeName) {
-  mainPageBody.classList.remove("light-mode", "dark-mode");
-  mainPageBody.classList.add(
-    themeName === "light" ? "light-mode" : "dark-mode"
-  );
-  // localStorage.setItem('giaoDien', themeName); // Header handles its own localStorage for theme
-  // Parent page also needs to store it for consistency on reload
-  localStorage.setItem("theme", themeName); // Using 'theme' to match header/footer.html
-}
+// XÓA HÀM applyThemeToCurrentPage VÀ CÁC ĐOẠN GỌI ĐẾN HÀM NÀY
 
 function syncThemeWithIframes(themeName) {
   const themeMessage = { type: "themeChange", theme: themeName };
@@ -104,7 +96,7 @@ window.addEventListener("message", (event) => {
       case "themeChange": // Message from header's toggle to sync parent
         // The header iframe has already changed its theme and updated localStorage.
         // The parent page needs to reflect this change.
-        applyThemeToCurrentPage(event.data.theme);
+        // applyThemeToCurrentPage(event.data.theme);
         // Sync with footer (header already knows, it sent the message)
         if (footerIframeEl && footerIframeEl.contentWindow) {
           try {
@@ -148,8 +140,7 @@ window.addEventListener("message", (event) => {
 });
 
 // Initial theme application for this page from its own localStorage
-const initialParentTheme = localStorage.getItem("theme") || "dark";
-applyThemeToCurrentPage(initialParentTheme);
+// Đã loại bỏ hoàn toàn logic applyThemeToCurrentPage
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Page Specific JS (Categories Page) ---
@@ -634,140 +625,29 @@ document.addEventListener("DOMContentLoaded", () => {
           window.scrollTo({
             top:
               document.querySelector(".categories-main").offsetTop -
-              (parseInt(pageContentWrapper.style.paddingTop) || 70),
+              (headerIframeEl ? headerIframeEl.offsetHeight : 0),
             behavior: "smooth",
           });
       }
     });
   if (nextPageBtnEl)
     nextPageBtnEl.addEventListener("click", () => {
-      const totalItems = currentlyDisplayedAnime.length;
-      const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE_DISPLAY);
+      const totalPages = Math.ceil(
+        currentlyDisplayedAnime.length / ITEMS_PER_PAGE_DISPLAY
+      );
       if (currentDisplayPage < totalPages) {
         currentDisplayPage++;
-        renderAnimeGrid(currentlyDisplayedAnime);
+        renderAnimeGrid(currentlyDisplayedAnime); // Re-render with new page slice
         if (pageContentWrapper)
           window.scrollTo({
             top:
               document.querySelector(".categories-main").offsetTop -
-              (parseInt(pageContentWrapper.style.paddingTop) || 70),
+              (headerIframeEl ? headerIframeEl.offsetHeight : 0),
             behavior: "smooth",
           });
       }
     });
 
-  const trendingSliderEl = document.querySelector(".trending-slider");
-  const prevTrendingBtnEl = document.getElementById("prev-trending");
-  const nextTrendingBtnEl = document.getElementById("next-trending");
-  if (trendingSliderEl && prevTrendingBtnEl && nextTrendingBtnEl) {
-    const scrollAmount =
-      (trendingSliderEl.querySelector(".trending-item")?.offsetWidth || 270) +
-      20;
-    prevTrendingBtnEl.addEventListener("click", () =>
-      trendingSliderEl.scrollBy({ left: -scrollAmount, behavior: "smooth" })
-    );
-    nextTrendingBtnEl.addEventListener("click", () =>
-      trendingSliderEl.scrollBy({ left: scrollAmount, behavior: "smooth" })
-    );
-    function updateTrendingSliderControls() {
-      if (!trendingSliderEl || !prevTrendingBtnEl || !nextTrendingBtnEl) return;
-      prevTrendingBtnEl.disabled = trendingSliderEl.scrollLeft <= 5; // 5px buffer
-      nextTrendingBtnEl.disabled =
-        trendingSliderEl.scrollLeft >=
-        trendingSliderEl.scrollWidth - trendingSliderEl.clientWidth - 5;
-    }
-    trendingSliderEl.addEventListener("scroll", updateTrendingSliderControls, {
-      passive: true,
-    });
-    setTimeout(updateTrendingSliderControls, 250); // Initial check after layout
-    window.addEventListener("resize", updateTrendingSliderControls); // Update on resize
-  }
-
-  document.querySelectorAll(".faq-question").forEach((questionBtn) => {
-    questionBtn.addEventListener("click", () => {
-      const answerEl = questionBtn.nextElementSibling;
-      const iconEl = questionBtn.querySelector(".faq-icon");
-      const isOpening = questionBtn.getAttribute("aria-expanded") === "false";
-      questionBtn.setAttribute("aria-expanded", isOpening);
-      if (iconEl) iconEl.textContent = isOpening ? "−" : "+";
-      if (isOpening) {
-        answerEl.style.display = "block";
-        requestAnimationFrame(() => {
-          answerEl.style.maxHeight = answerEl.scrollHeight + "px";
-          answerEl.style.opacity = "1";
-          answerEl.style.paddingBottom = "20px";
-        });
-      } else {
-        answerEl.style.maxHeight = "0px";
-        answerEl.style.opacity = "0";
-        answerEl.style.paddingBottom = "0px";
-      }
-    });
-  });
-
-  document
-    .querySelectorAll(".trending-item, .staff-pick-card, .faq-item")
-    .forEach((el) => {
-      observer.observe(el);
-    });
-
-  document.addEventListener("keydown", (e) => {
-    const activeEl = document.activeElement;
-    if (
-      e.key === "/" &&
-      activeEl &&
-      activeEl.tagName !== "INPUT" &&
-      activeEl.tagName !== "TEXTAREA"
-    ) {
-      e.preventDefault();
-      if (searchInputEl) searchInputEl.focus();
-    }
-    if (
-      activeEl &&
-      activeEl.tagName !== "INPUT" &&
-      activeEl.tagName !== "TEXTAREA"
-    ) {
-      if (e.key === "ArrowRight" && nextPageBtnEl && !nextPageBtnEl.disabled)
-        nextPageBtnEl.click();
-      else if (
-        e.key === "ArrowLeft" &&
-        prevPageBtnEl &&
-        !prevPageBtnEl.disabled
-      )
-        prevPageBtnEl.click();
-    }
-  });
-
-  function hienThiThongBao(noiDung, loai = "thanhCong") {
-    const thongBao = document.createElement("div");
-    thongBao.className = `thong-bao thong-bao-${loai}`;
-    thongBao.textContent = noiDung;
-    document.body.appendChild(thongBao);
-    requestAnimationFrame(() => {
-      thongBao.classList.add("show");
-    });
-    setTimeout(() => {
-      thongBao.classList.remove("show");
-      setTimeout(() => thongBao.remove(), 300);
-    }, 3000);
-  }
-
-  // Initial Render
-  filterAndDisplayAnime();
-
-  // Fallback for iframe height adjustment if onload didn't catch it due to timing
-  setTimeout(() => {
-    if (
-      headerIframeEl &&
-      (!headerIframeEl.style.height || headerIframeEl.style.height === "0px")
-    ) {
-      window.handleIframeLoad(headerIframeEl);
-    }
-    if (
-      footerIframeEl &&
-      (!footerIframeEl.style.height || footerIframeEl.style.height === "0px")
-    ) {
-      window.handleIframeLoad(footerIframeEl);
-    }
-  }, 700); // Slightly longer delay for this fallback
-}); // End DOMContentLoaded
+  // Initial render
+  renderAnimeGrid(currentlyDisplayedAnime);
+});

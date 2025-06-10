@@ -678,13 +678,6 @@ function initHeaderIframe() {
                 const query = event.data.query;
                 performSearch(query);
             }
-            
-            // Handle theme changes from header
-            if (event.data.type === 'themeChanged') {
-                const theme = event.data.theme;
-                document.documentElement.setAttribute('data-theme', theme);
-                showNotification(`Đã chuyển sang chế độ ${theme === 'light' ? 'sáng' : 'tối'}`, 'success');
-            }
         }
     });
     

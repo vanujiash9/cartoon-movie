@@ -11,25 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    // Chuyển đổi chế độ sáng/tối (nếu có nút theme-toggle trong Header)
-    const nutChuyenDoiGiaoDien = document.getElementById('theme-toggle');
-    if (nutChuyenDoiGiaoDien) {
-        nutChuyenDoiGiaoDien.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            document.body.classList.toggle('dark-mode');
-            nutChuyenDoiGiaoDien.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
-            localStorage.setItem('giaoDien', document.body.classList.contains('dark-mode') ? 'toi' : 'sang');
-        });
-
-        // Khôi phục chế độ giao diện từ localStorage
-        const giaoDienDaLuu = localStorage.getItem('giaoDien');
-        if (giaoDienDaLuu === 'sang') {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-            nutChuyenDoiGiaoDien.textContent = '☀️';
-        }
-    }
-
     // Chuyển đổi hiển thị FAQ
     document.querySelectorAll('.faq-question').forEach(cauHoi => {
         cauHoi.addEventListener('click', () => {

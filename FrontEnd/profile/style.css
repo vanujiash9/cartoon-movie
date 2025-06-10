@@ -8,14 +8,6 @@
     --text-secondary: #a0aec0;
 }
 
-/* Chế độ sáng */
-body.light-mode {
-    --bg-color: #ffffff;
-    --bg-secondary: #f7f7f7;
-    --text-color: #333333;
-    --text-secondary: #666666;
-}
-
 /* Kiểu chung */
 body {
     font-family: Arial, sans-serif;

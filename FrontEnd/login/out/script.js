@@ -10,25 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Xử lý chế độ sáng/tối
-    const themeToggle = document.querySelector('.theme-toggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            document.body.classList.toggle('dark-mode');
-            themeToggle.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
-            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-        });
-
-        // Khôi phục chế độ từ localStorage
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-            themeToggle.textContent = '☀️';
-        }
-    }
-
     // Xử lý form đăng nhập
     const loginForm = document.getElementById('login-form');
     if (loginForm) {

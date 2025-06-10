@@ -212,10 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (event.data && event.data.type) {
             switch (event.data.type) {
-                case 'themeToggle': // Assuming header sends this
-                    const newTheme = body.classList.contains('light-mode') ? 'dark' : 'light';
-                    applyTheme(newTheme);
-                    break;
                 case 'requestHeightUpdate': // If an iframe's content changes dynamically
                     const iframeToUpdate = document.getElementById(event.data.iframeId);
                     if (iframeToUpdate) {

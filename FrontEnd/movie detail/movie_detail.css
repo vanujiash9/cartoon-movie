@@ -1,0 +1,79 @@
+/* CSS tách từ <style> trong movie_detail.html */
+.movie-detail-hero {
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+}
+.movie-detail-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.movie-detail-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(18, 18, 18, 0.7) 0%, rgba(18, 18, 18, 0.6) 50%, rgba(18, 18, 18, 0.9) 100%);
+    display: flex;
+    align-items: flex-end;
+}
+.movie-detail-content {
+    padding: 40px 0;
+}
+.movie-info-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+}
+.movie-poster-container {
+    position: relative;
+}
+.movie-poster-lg {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.play-trailer-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: rgba(108, 92, 231, 0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.play-trailer-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: rgba(108, 92, 231, 1);
+}
+.movie-info-main h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+.movie-meta-info {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+.movie-meta-info span {
+    padding: 5px 15px;
+    background-color: var(--light-color);
+    color: var(--text-color);
+    border-radius: 20px;
+}
