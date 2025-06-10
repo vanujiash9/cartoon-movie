@@ -1,0 +1,89 @@
+package com.example.demo.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.service.CustomUserDetailsService;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+
+@Configuration
+@EnableMethodSecurity
+public class SecurityConfig {
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println("===> SecurityFilterChain is being configured!");
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/cartoons/vip-content").hasAnyRole("VIP", "ADMIN")
+                .requestMatchers("/api/vip/**").hasAnyRole("VIP", "ADMIN")
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() // Allow static resources
+                .requestMatchers("/login").permitAll() // Allow access to login page
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().authenticated() // Ensure all other requests are authenticated
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/admin", false) // Chỉ về /admin nếu không có saved request
+                .permitAll()
+            )
+            .logout(LogoutConfigurer::permitAll)
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    if (request.getRequestURI().startsWith("/api/")) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\": \"Unauthorized\"}"); // Correct way to escape quotes in Java String
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/login");
+                    }
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    if (request.getRequestURI().startsWith("/api/")) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\": \"Forbidden\"}"); // Correct way to escape quotes in Java String
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("text/html");
+                        response.getWriter().write("<html><body><h1>Access Denied</h1><p>You do not have permission to view this page.</p></body></html>");
+                    }
+                })
+            );
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // return NoOpPasswordEncoder.getInstance(); // Deprecated
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Use a more secure default
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+}

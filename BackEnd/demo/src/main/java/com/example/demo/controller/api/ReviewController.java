@@ -6,6 +6,7 @@ import com.example.demo.service.CartoonService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,12 +25,14 @@ public class ReviewController {
         this.cartoonService = cartoonService;
     }
     
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
     @GetMapping
     public ResponseEntity<List<Review>> getAllReviews() {
         List<Review> reviews = reviewService.getAll();
         return ResponseEntity.ok(reviews);
     }
     
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
     @GetMapping("/cartoon/{cartoonId}")
     public ResponseEntity<List<Review>> getReviewsByCartoonId(@PathVariable Integer cartoonId) {
         try {
@@ -46,6 +49,7 @@ public class ReviewController {
         }
     }
     
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
     @PostMapping
     public ResponseEntity<Review> createReview(@RequestBody Review review) {
         try {
@@ -61,6 +65,7 @@ public class ReviewController {
         }
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Integer id) {
         try {

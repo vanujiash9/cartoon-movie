@@ -24,6 +24,11 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAchievement> achievements;
 
+    private String password;
+
+    @Column(name = "ban_comment_until")
+    private LocalDateTime banCommentUntil;
+
     // Getters and setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -48,4 +53,10 @@ public class User {
 
     public List<UserAchievement> getAchievements() { return achievements; }
     public void setAchievements(List<UserAchievement> achievements) { this.achievements = achievements; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public LocalDateTime getBanCommentUntil() { return banCommentUntil; }
+    public void setBanCommentUntil(LocalDateTime banCommentUntil) { this.banCommentUntil = banCommentUntil; }
 }

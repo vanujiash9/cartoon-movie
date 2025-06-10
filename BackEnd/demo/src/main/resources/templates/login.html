@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập hệ thống</title>
+    <!-- <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}"> -->
+    <style>
+        body { background: #f5f6fa; }
+        .login-container { max-width: 400px; margin: 80px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 32px; }
+        .login-title { text-align: center; margin-bottom: 24px; font-size: 1.5rem; font-weight: 600; }
+        .form-group { margin-bottom: 18px; }
+        .form-control { width: 100%; padding: 10px 12px; border-radius: 4px; border: 1px solid #ddd; }
+        .btn-primary { width: 100%; padding: 10px; font-weight: 600; }
+        .error-message { color: #e74c3c; text-align: center; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-title">Đăng nhập quản trị</div>
+    <form th:action="@{/login}" method="post">
+        <div th:if="${param.error}" class="error-message">Sai tài khoản hoặc mật khẩu!</div>
+        <div class="form-group">
+            <label for="username">Tên đăng nhập</label>
+            <input type="text" id="username" name="username" class="form-control" required autofocus />
+        </div>
+        <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            <input type="password" id="password" name="password" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+    </form>
+</div>
+</body>
+</html>

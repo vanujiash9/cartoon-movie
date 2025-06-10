@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "review")
@@ -26,6 +27,9 @@ public class Review {
     @JoinColumn(name = "cartoon_id")
     private Cartoon cartoon;
 
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> replies;
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -43,4 +47,7 @@ public class Review {
 
     public Cartoon getCartoon() { return cartoon; }
     public void setCartoon(Cartoon cartoon) { this.cartoon = cartoon; }
+
+    public List<Reply> getReplies() { return replies; }
+    public void setReplies(List<Reply> replies) { this.replies = replies; }
 }

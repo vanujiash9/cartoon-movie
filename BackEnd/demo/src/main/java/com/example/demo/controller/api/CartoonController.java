@@ -5,6 +5,7 @@ import com.example.demo.service.CartoonService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ public class CartoonController {
         this.cartoonService = cartoonService;
     }
     
+    // Chỉ USER, VIP, ADMIN đều xem được danh sách phim thường
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
     @GetMapping
     public ResponseEntity<List<Cartoon>> getAllCartoons() {
         List<Cartoon> cartoons = cartoonService.getAll();
@@ -96,5 +99,16 @@ public ResponseEntity<Cartoon> createCartoon(@RequestBody Cartoon cartoon) {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+    
+    // Chỉ VIP và ADMIN mới xem được phim VIP
+    @PreAuthorize("hasAnyRole('VIP','ADMIN')")
+    @GetMapping("/vip-content")
+    public ResponseEntity<List<Cartoon>> getVipCartoons() {
+        System.out.println("===> getVipCartoons() called!"); // Log để kiểm tra
+        List<Cartoon> vipCartoons = cartoonService.getAll().stream()
+            .filter(c -> "VIP".equalsIgnoreCase(c.getStatus()))
+            .toList();
+        return ResponseEntity.ok(vipCartoons);
     }
 }
