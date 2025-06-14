@@ -3,424 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký - Maxion</title>
-    
+    <title>Đăng ký tài khoản</title>
     <link rel="stylesheet" href="resgister.css">
 </head>
 <body>
-    <!-- Back button -->
-    <a href="index.html" class="back-btn">
-        ← Về trang chủ
-    </a>
-
     <div class="register-container">
-        <div class="register-header">
-            <a href="index.html" class="logo">Maxion</a>
-            <h1 class="register-title">Tạo tài khoản</h1>
-            <p class="register-subtitle">Tham gia cộng đồng yêu phim của chúng tôi</p>
-        </div>
-
-        <div class="success-message" id="successMessage">
-            🎉 Đăng ký thành công! Chào mừng bạn đến với Maxion!
-        </div>
-
-        <form class="register-form" id="registerForm">
-            <div class="form-row">
-                <div class="form-group">
-                    <input type="text" class="form-input" placeholder="Tên" id="firstName" required>
-                    <span class="input-icon">👤</span>
-                    <div class="error-message" id="firstNameError"></div>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-input" placeholder="Họ" id="lastName" required>
-                    <span class="input-icon">👤</span>
-                    <div class="error-message" id="lastNameError"></div>
-                </div>
-            </div>
-
+        <div class="register-title">Đăng ký tài khoản</div>
+        <form id="registerForm" autocomplete="off">
             <div class="form-group">
-                <input type="email" class="form-input" placeholder="Email" id="email" required>
-                <span class="input-icon">📧</span>
-                <div class="error-message" id="emailError"></div>
+                <label for="username">Tên đăng nhập</label>
+                <input type="text" id="username" class="form-input" required>
             </div>
-
             <div class="form-group">
-                <input type="tel" class="form-input" placeholder="Số điện thoại" id="phone">
-                <span class="input-icon">📱</span>
-                <div class="error-message" id="phoneError"></div>
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" class="form-input" required>
             </div>
-
             <div class="form-group">
-                <input type="password" class="form-input" placeholder="Mật khẩu" id="password" required>
-                <span class="input-icon">🔒</span>
-                <div class="password-strength" id="passwordStrength">
-                    <div class="strength-bar">
-                        <div class="strength-fill" id="strengthFill"></div>
-                    </div>
-                    <div class="strength-text" id="strengthText">Nhập mật khẩu</div>
-                </div>
-                <div class="error-message" id="passwordError"></div>
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-input" required>
             </div>
-
             <div class="form-group">
-                <input type="password" class="form-input" placeholder="Xác nhận mật khẩu" id="confirmPassword" required>
-                <span class="input-icon">🔒</span>
-                <div class="error-message" id="confirmPasswordError"></div>
+                <label for="avatar">Avatar (URL ảnh)</label>
+                <input type="url" id="avatar" class="form-input" placeholder="https://...">
             </div>
-
-            <div class="checkbox-group">
-                <label class="custom-checkbox">
-                    <input type="checkbox" id="terms" required>
-                    <span class="checkbox-mark"></span>
-                </label>
-                <label class="checkbox-label" for="terms">
-                    Tôi đồng ý với <a href="#" onclick="showTerms()">Điều khoản sử dụng</a> và <a href="#" onclick="showPrivacy()">Chính sách bảo mật</a>
-                </label>
+            <div class="form-group">
+                <label for="fullName">Họ và tên</label>
+                <input type="text" id="fullName" class="form-input" required>
             </div>
-
-            <div class="checkbox-group">
-                <label class="custom-checkbox">
-                    <input type="checkbox" id="newsletter">
-                    <span class="checkbox-mark"></span>
-                </label>
-                <label class="checkbox-label" for="newsletter">
-                    Nhận thông báo về phim mới và ưu đãi đặc biệt
-                </label>
+            <div class="form-group">
+                <label for="phone">Số điện thoại</label>
+                <input type="tel" id="phone" class="form-input" required pattern="[0-9]{10,11}">
             </div>
-
-            <button type="submit" class="submit-btn" id="submitBtn">
-                <span class="btn-text">Tạo tài khoản</span>
-                <div class="loading-spinner"></div>
-            </button>
+            <div class="form-group">
+                <label for="gender">Giới tính</label>
+                <select id="gender" class="form-input" required>
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="nam">Nam</option>
+                    <option value="nữ">Nữ</option>
+                    <option value="khác">Khác</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dateOfBirth">Ngày sinh</label>
+                <input type="date" id="dateOfBirth" class="form-input" required>
+            </div>
+            <button type="submit" class="submit-btn" id="submitBtn">Đăng ký</button>
         </form>
-
-        <div class="social-login">
-            <div class="social-divider">
-                <span>Hoặc đăng ký với</span>
-            </div>
-            <div class="social-buttons">
-                <a href="#" class="social-btn" onclick="socialLogin('google')">
-                    🚀 Google
-                </a>
-                <a href="#" class="social-btn" onclick="socialLogin('facebook')">
-                    📘 Facebook
-                </a>
-            </div>
-        </div>
-
-        <div class="login-link">
-            <p>Đã có tài khoản? <a href="./login.html">Đăng nhập ngay</a></p>
-        </div>
-    </div>
-
-    <script>
-        // Form elements
+        <div class="message" id="messageBox"></div>
+    </div>    <script>
         const form = document.getElementById('registerForm');
+        const messageBox = document.getElementById('messageBox');
         const submitBtn = document.getElementById('submitBtn');
-        const successMessage = document.getElementById('successMessage');
-        const inputs = {
-            firstName: document.getElementById('firstName'),
-            lastName: document.getElementById('lastName'),
-            email: document.getElementById('email'),
-            phone: document.getElementById('phone'),
-            password: document.getElementById('password'),
-            confirmPassword: document.getElementById('confirmPassword'),
-            terms: document.getElementById('terms')
-        };
-
-        // Password strength elements
-        const passwordStrength = document.getElementById('passwordStrength');
-        const strengthFill = document.getElementById('strengthFill');
-        const strengthText = document.getElementById('strengthText');
-
-        // Validation rules
-        const validation = {
-            firstName: {
-                required: true,
-                minLength: 2,
-                pattern: /^[a-zA-ZÀ-ỹ\s]+$/,
-                message: 'Tên phải có ít nhất 2 ký tự và chỉ chứa chữ cái'
-            },
-            lastName: {
-                required: true,
-                minLength: 2,
-                pattern: /^[a-zA-ZÀ-ỹ\s]+$/,
-                message: 'Họ phải có ít nhất 2 ký tự và chỉ chứa chữ cái'
-            },
-            email: {
-                required: true,
-                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: 'Email không hợp lệ'
-            },
-            phone: {
-                required: false,
-                pattern: /^[0-9]{10,11}$/,
-                message: 'Số điện thoại phải có 10-11 chữ số'
-            },
-            password: {
-                required: true,
-                minLength: 8,
-                message: 'Mật khẩu phải có ít nhất 8 ký tự'
-            },
-            confirmPassword: {
-                required: true,
-                match: 'password',
-                message: 'Mật khẩu xác nhận không khớp'
-            }
-        };
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
-        });
-
-        function setupEventListeners() {
-            // Form submission
-            form.addEventListener('submit', handleSubmit);
-
-            // Real-time validation
-            Object.keys(inputs).forEach(key => {
-                if (inputs[key] && key !== 'terms') {
-                    inputs[key].addEventListener('blur', () => validateField(key));
-                    inputs[key].addEventListener('input', () => clearError(key));
-                }
-            });
-
-            // Password strength
-            inputs.password.addEventListener('input', checkPasswordStrength);
-
-            // Show password strength on focus
-            inputs.password.addEventListener('focus', () => {
-                passwordStrength.classList.add('show');
-            });
-        }
-
-        function validateField(fieldName) {
-            const field = inputs[fieldName];
-            const rules = validation[fieldName];
-            const value = field.value.trim();
-            
-            // Check required
-            if (rules.required && !value) {
-                showFieldError(fieldName, `${getFieldLabel(fieldName)} là bắt buộc`);
-                return false;
-            }
-
-            // Check pattern
-            if (value && rules.pattern && !rules.pattern.test(value)) {
-                showFieldError(fieldName, rules.message);
-                return false;
-            }
-
-            // Check min length
-            if (value && rules.minLength && value.length < rules.minLength) {
-                showFieldError(fieldName, rules.message);
-                return false;
-            }
-
-            // Check match
-            if (rules.match && value !== inputs[rules.match].value) {
-                showFieldError(fieldName, rules.message);
-                return false;
-            }
-
-            // Field is valid
-            clearFieldError(fieldName);
-            field.classList.remove('error');
-            field.classList.add('success');
-            return true;
-        }
-
-        function showFieldError(fieldName, message) {
-            const field = inputs[fieldName];
-            const errorElement = document.getElementById(fieldName + 'Error');
-            
-            field.classList.add('error');
-            field.classList.remove('success');
-            
-            if (errorElement) {
-                errorElement.textContent = message;
-                errorElement.classList.add('show');
-            }
-        }
-
-        function clearFieldError(fieldName) {
-            const field = inputs[fieldName];
-            const errorElement = document.getElementById(fieldName + 'Error');
-            
-            field.classList.remove('error');
-            
-            if (errorElement) {
-                errorElement.classList.remove('show');
-                setTimeout(() => {
-                    errorElement.textContent = '';
-                }, 300);
-            }
-        }
-
-        function clearError(fieldName) {
-            const field = inputs[fieldName];
-            field.classList.remove('error');
-        }
-
-        function getFieldLabel(fieldName) {
-            const labels = {
-                firstName: 'Tên',
-                lastName: 'Họ',
-                email: 'Email',
-                phone: 'Số điện thoại',
-                password: 'Mật khẩu',
-                confirmPassword: 'Xác nhận mật khẩu'
-            };
-            return labels[fieldName] || fieldName;
-        }
-
-        function checkPasswordStrength() {
-            const password = inputs.password.value;
-            const strength = calculatePasswordStrength(password);
-            
-            strengthFill.className = 'strength-fill';
-            
-            if (password.length === 0) {
-                strengthText.textContent = 'Nhập mật khẩu';
-                return;
-            }
-            
-            if (strength < 3) {
-                strengthFill.classList.add('weak');
-                strengthText.textContent = 'Mật khẩu yếu';
-            } else if (strength < 5) {
-                strengthFill.classList.add('medium');
-                strengthText.textContent = 'Mật khẩu trung bình';
-            } else {
-                strengthFill.classList.add('strong');
-                strengthText.textContent = 'Mật khẩu mạnh';
-            }
-        }
-
-        function calculatePasswordStrength(password) {
-            let score = 0;
-            
-            // Length
-            if (password.length >= 8) score++;
-            if (password.length >= 12) score++;
-            
-            // Character types
-            if (/[a-z]/.test(password)) score++;
-            if (/[A-Z]/.test(password)) score++;
-            if (/[0-9]/.test(password)) score++;
-            if (/[^A-Za-z0-9]/.test(password)) score++;
-            
-            return score;
-        }
-
-        async function handleSubmit(e) {
+        
+        form.addEventListener('submit', async function(e) {
+            console.log('Form submit event triggered');
             e.preventDefault();
             
-            // Validate all fields
-            let isValid = true;
-            Object.keys(validation).forEach(fieldName => {
-                if (!validateField(fieldName)) {
-                    isValid = false;
-                }
-            });
-
-            // Check terms agreement
-            if (!inputs.terms.checked) {
-                showNotification('Vui lòng đồng ý với điều khoản sử dụng', 'error');
-                isValid = false;
+            // Ngăn submit nhiều lần
+            if (submitBtn.disabled) {
+                console.log('Form already being processed, ignoring...');
+                return;
             }
+            
+            messageBox.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang xử lý...';
 
-            if (!isValid) {
-                showNotification('Vui lòng kiểm tra lại thông tin', 'error');
+            // Lấy dữ liệu từ form
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value.trim();
+            const avatar = document.getElementById('avatar').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const gender = document.getElementById('gender').value;
+            const dateInput = document.getElementById('dateOfBirth').value;
+
+            // Validate form
+            if (!username || !password || !email || !fullName || !phone || !gender || !dateInput) {
+                showMessage('Vui lòng điền đầy đủ tất cả thông tin bắt buộc', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng ký';
                 return;
             }
 
-            // Show loading
-            setLoading(true);
-
-            try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Success
-                showSuccess();
-                
-                // Redirect after success
-                setTimeout(() => {
-                    window.location.href = '../index.html';
-                }, 2000);
-                
-            } catch (error) {
-                showNotification('Đã xảy ra lỗi. Vui lòng thử lại.', 'error');
-            } finally {
-                setLoading(false);
+            // Định dạng ngày sinh yyyy-MM-ddTHH:mm:ss
+            let dateOfBirth = '';
+            if (dateInput) {
+                dateOfBirth = dateInput + 'T00:00:00';
             }
-        }
 
-        function setLoading(loading) {
-            if (loading) {
-                submitBtn.classList.add('loading');
-                submitBtn.disabled = true;
-            } else {
-                submitBtn.classList.remove('loading');
+            const data = {
+                username,
+                password,
+                email,
+                avatar,
+                fullName,
+                phone,
+                gender,
+                dateOfBirth
+            };try {
+                console.log('Sending data:', data); // Debug: xem dữ liệu gửi đi
+                const res = await fetch('http://localhost:8080/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                  console.log('Response status:', res.status); // Debug: xem status
+                console.log('Response headers:', res.headers); // Debug: xem headers
+                
+                const result = await res.text(); // Thay đổi từ json() thành text()
+                console.log('Response data:', result); // Debug: xem response
+                  if (res.ok) {
+                    showMessage('Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...', 'success');
+                    form.reset();
+                    
+                    // Chuyển hướng đến trang đăng nhập sau 2 giây
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    showMessage(result || 'Đăng ký thất bại', 'error');
+                }
+            } catch (err) {
+                console.error('Error:', err); // Debug: xem lỗi chi tiết
+                showMessage('Không thể kết nối đến máy chủ: ' + err.message, 'error');            } finally {
                 submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng ký';
             }
-        }
-
-        function showSuccess() {
-            successMessage.classList.add('show');
-            form.style.display = 'none';
-        }
-
-        function showNotification(message, type = 'error') {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'error' ? 'var(--error-color)' : 'var(--success-color)'};
-                color: white;
-                padding: 16px 20px;
-                border-radius: 12px;
-                font-weight: 500;
-                box-shadow: var(--shadow-lg);
-                z-index: 10000;
-                transform: translateX(400px);
-                transition: var(--transition);
-                max-width: 300px;
-            `;
-            notification.textContent = message;
+        });        function showMessage(msg, type) {
+            messageBox.textContent = msg;
+            messageBox.className = 'message ' + type;
+            messageBox.style.display = 'block';
             
-            document.body.appendChild(notification);
-            
-            // Show notification
+            // Add animation class after a small delay
             setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-            
-            // Hide notification
-            setTimeout(() => {
-                notification.style.transform = 'translateX(400px)';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-
-        // Social login
-        function socialLogin(provider) {
-            showNotification(`Đăng ký với ${provider} sẽ được triển khai sớm`, 'success');
-        }
-
-        // Terms and privacy
-        function showTerms() {
-            showNotification('Điều khoản sử dụng sẽ được hiển thị ở đây', 'success');
-        }
-
-        function showPrivacy() {
-            showNotification('Chính sách bảo mật sẽ được hiển thị ở đây', 'success');
+                messageBox.classList.add('show');
+            }, 10);
         }
     </script>
 </body>

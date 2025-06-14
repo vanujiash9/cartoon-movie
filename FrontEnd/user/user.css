@@ -340,14 +340,25 @@ a{
     margin-top: 5px;
 }
 
-/* Profile Actions */
+/* Profile Actions - căn giữa và đều trên mọi màn hình */
 .profile-actions {
-    margin-left: auto;
+    margin-left: 0;
+    margin-right: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     gap: 15px;
 }
 
+@media screen and (max-width: 768px) {
+    .profile-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* Buttons */
 .btn {
     padding: 12px 24px;
     border-radius: 25px;

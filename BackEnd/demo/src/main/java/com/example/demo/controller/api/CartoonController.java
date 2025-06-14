@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/cartoons")
-@CrossOrigin(origins = "*")
 public class CartoonController {
     
     private final CartoonService cartoonService;
@@ -24,7 +23,7 @@ public class CartoonController {
     }
     
     // Chỉ USER, VIP, ADMIN đều xem được danh sách phim thường
-    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
+    // @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')") // Tạm thời comment để public API
     @GetMapping
     public ResponseEntity<List<Cartoon>> getAllCartoons() {
         List<Cartoon> cartoons = cartoonService.getAll();
@@ -102,7 +101,7 @@ public ResponseEntity<Cartoon> createCartoon(@RequestBody Cartoon cartoon) {
     }
     
     // Chỉ VIP và ADMIN mới xem được phim VIP
-    @PreAuthorize("hasAnyRole('VIP','ADMIN')")
+    // @PreAuthorize("hasAnyRole('VIP','ADMIN')") // Tạm thời comment để public API
     @GetMapping("/vip-content")
     public ResponseEntity<List<Cartoon>> getVipCartoons() {
         System.out.println("===> getVipCartoons() called!"); // Log để kiểm tra

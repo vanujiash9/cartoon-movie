@@ -45,16 +45,18 @@
 
                 <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
                     <span>🎤</span>
-                </button>
-
-                <a href="#" class="navbar-signin" id="signInBtn" onclick="navigateToLogin()">
-                    <span>Đăng nhập</span>
+                </button>                <a href="./login_register/login.html" target="_top" class="navbar-signin" id="signInBtn">
+                    <span id="signInText">Đăng nhập</span>
                     <span style="margin-left: 8px;">➡️</span>
                 </a>
 
                 <!-- User menu (hidden by default) -->
                 <div class="user-menu" id="userMenu">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+Cjx0ZXh0IHg9IjEwIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPC9zdmc+Cjwvc3ZnPg==" alt="User Avatar" class="user-avatar" id="userAvatar">
+                    <div class="user-info-display" id="userInfoDisplay">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+Cjx0ZXh0IHg9IjEwIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPC9zdmc+Cjwvc3ZnPg==" alt="User Avatar" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="displayUserName">Người dùng</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-item" onclick="viewProfile()">
                             <span>👤</span>
@@ -79,27 +81,48 @@
     </header>
 
     <script>
-        'use strict';
-
-        // Header specific functionality
-        const loadingScreen = document.getElementById('loadingScreen');
-        const notification = document.getElementById('notification');
-        const navbar = document.getElementById('navbar');
-        const searchInput = document.getElementById('searchInput');
-        const searchSuggestions = document.getElementById('searchSuggestions');
-        const signInBtn = document.getElementById('signInBtn');
-        const userMenu = document.getElementById('userMenu');
-        const userAvatar = document.getElementById('userAvatar');
-        const userDropdown = document.getElementById('userDropdown');
-        const voiceBtn = document.getElementById('voiceBtn');
-
-        // State variables - Reset login state for demo
-        let isLoggedIn = false; // Set to false by default
+        'use strict';        // Header specific functionality
+        let loadingScreen, notification, navbar, searchInput, searchSuggestions, signInBtn, userMenu, userAvatar, userDropdown, voiceBtn;
+        
+        // Initialize DOM elements when ready
+        function initializeDOMElements() {
+            loadingScreen = document.getElementById('loadingScreen');
+            notification = document.getElementById('notification');
+            navbar = document.getElementById('navbar');
+            searchInput = document.getElementById('searchInput');
+            searchSuggestions = document.getElementById('searchSuggestions');
+            signInBtn = document.getElementById('signInBtn');
+            userMenu = document.getElementById('userMenu');
+            userAvatar = document.getElementById('userAvatar');
+            userDropdown = document.getElementById('userDropdown');
+            voiceBtn = document.getElementById('voiceBtn');
+            
+            console.log('📋 DOM Elements initialized:', {
+                signInBtn: !!signInBtn,
+                userMenu: !!userMenu,
+                userAvatar: !!userAvatar,
+                userDropdown: !!userDropdown
+            });
+        }// State variables - Check for actual login state from localStorage
+        let isLoggedIn = checkUserLoginState(); 
+        let currentUser = getCurrentUserInfo();
         let bookmarkedMovies = JSON.parse(localStorage.getItem('bookmarkedMovies') || '[]');
         let watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
         
-        // Clear any existing login state for fresh demo
-        localStorage.removeItem('isLoggedIn');
+        // Helper functions to check login state
+        function checkUserLoginState() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            return !!(token && username);
+        }
+        
+        function getCurrentUserInfo() {
+            return {
+                username: localStorage.getItem('username') || '',
+                email: localStorage.getItem('email') || '',
+                token: localStorage.getItem('token') || ''
+            };
+        }
 
         // Sample movie data for search suggestions
         const movies = [
@@ -115,23 +138,79 @@
             { title: 'Black Panther', year: '2018', genre: 'Hành động/Phiêu lưu' },
             { title: 'Venom', year: '2018', genre: 'Hành động/Phiêu lưu' },
             { title: 'Interstellar', year: '2014', genre: 'Khoa học viễn tưởng/Phiêu lưu' }
-        ];
-
-        // Initialize header
+        ];        // Initialize header
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Header DOM loaded');
+            
+            // Initialize DOM elements first
+            initializeDOMElements();
+            
+            // Hide loading screen faster
             setTimeout(() => {
                 if (loadingScreen) {
                     loadingScreen.classList.add('hidden');
                 }
-            }, 1000);
+            }, 300);
 
             initializeHeader();
-        });
-
-        function initializeHeader() {
+            
+            // Log initial login state
+            console.log('📊 Initial header state - isLoggedIn:', isLoggedIn, 'username:', currentUser.username);
+            
+            // Listen for storage changes (when user logs in from another tab/window)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'username' || e.key === 'token') {
+                    console.log('🔄 Storage changed, rechecking login status');
+                    setTimeout(() => {
+                        isLoggedIn = checkUserLoginState();
+                        currentUser = getCurrentUserInfo();
+                        checkLoginStatus();
+                    }, 100);
+                }
+            });
+              // Also listen for message from parent window
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.type === 'userLoggedIn') {
+                    console.log('📢 Received login message from parent');
+                    setTimeout(() => {
+                        isLoggedIn = checkUserLoginState();
+                        currentUser = getCurrentUserInfo();
+                        checkLoginStatus();
+                    }, 100);
+                } else if (e.data && e.data.type === 'refreshLoginStatus') {
+                    console.log('📢 Received refresh request from parent');
+                    refreshLoginStatus();
+                }
+            });
+        });        function initializeHeader() {
             setupEventListeners();
             checkLoginStatus();
             setupScrollEffects();
+            updateLoginButtonHref(); // Update login link href
+            
+            // Set up periodic check for login status (every 5 seconds)
+            setInterval(() => {
+                const newLoginState = checkUserLoginState();
+                const newUserInfo = getCurrentUserInfo();
+                
+                // Only update if state has changed
+                if (newLoginState !== isLoggedIn || newUserInfo.username !== currentUser.username) {
+                    console.log('🔄 Login state changed, updating header...');
+                    isLoggedIn = newLoginState;
+                    currentUser = newUserInfo;
+                    checkLoginStatus();
+                }
+            }, 5000);
+        }
+        
+        // Update login button href based on current path
+        function updateLoginButtonHref() {
+            const signInBtn = document.getElementById('signInBtn');
+            if (signInBtn) {
+                const loginUrl = getLoginUrl();
+                signInBtn.href = loginUrl;
+                console.log('Updated login button href to:', loginUrl);
+            }
         }
 
         // ====================================
@@ -189,14 +268,36 @@
             }
             
             showNotification('Đang về trang chủ...', 'success');
-        }
-
-        function navigateToLogin() {
+        }        function navigateToLogin() {
             const loginUrl = getLoginUrl();
+            console.log('Navigating to login URL:', loginUrl);
             showNotification('Đang chuyển đến trang đăng nhập...', 'success');
             
             setTimeout(() => {
-                window.top.location.href = loginUrl;
+                // Try multiple navigation methods
+                try {
+                    // Method 1: Direct window.top navigation
+                    if (window.top) {
+                        window.top.location.href = loginUrl;
+                    } else {
+                        // Method 2: Parent window navigation
+                        if (window.parent && window.parent !== window) {
+                            window.parent.location.href = loginUrl;
+                        } else {
+                            // Method 3: Current window navigation
+                            window.location.href = loginUrl;
+                        }
+                    }
+                } catch (e) {
+                    console.log('Navigation error:', e);
+                    // Fallback: Send message to parent to handle navigation
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'navigateToLogin',
+                            url: loginUrl
+                        }, '*');
+                    }
+                }
             }, 500);
         }
 
@@ -244,23 +345,29 @@
                 }
             } catch (e) {
                 return './index.html';
-            }
-        }
-
+            }        }
+        
         function getLoginUrl() {
             try {
                 const currentPath = window.top.location.pathname;
                 const pathParts = currentPath.split('/');
                 
-                if (pathParts.includes('user')) {
-                    return '../login_register/login.html';
-                } else if (pathParts.includes('movie-details')) {
+                console.log('Current path for login navigation:', currentPath);
+                
+                // Check if we're in any subfolder
+                if (pathParts.includes('achievements') || 
+                    pathParts.includes('genres') || 
+                    pathParts.includes('profile') ||
+                    pathParts.includes('movie') ||
+                    pathParts.includes('admin')) {
                     return '../login_register/login.html';
                 } else {
+                    // Default case for index.html or root level
                     return './login_register/login.html';
                 }
             } catch (e) {
-                return '../login_register/login.html';
+                console.log('Error getting login URL, using fallback');
+                return './login_register/login.html';
             }
         }
 
@@ -285,9 +392,7 @@
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }
-        }
-
-        // ====================================
+        }        // ====================================
         // REST OF HEADER FUNCTIONALITY
         // ====================================
 
@@ -297,16 +402,10 @@
                 searchInput.addEventListener('input', handleSearch);
                 searchInput.addEventListener('focus', showSearchSuggestions);
             }
-            
-            // User menu
-            if (userAvatar) {
-                userAvatar.addEventListener('click', toggleUserDropdown);
-            }
-            
-            // Voice search
-            if (voiceBtn) {
-                voiceBtn.addEventListener('click', initVoiceSearch);
-            }
+              // User menu - CLICK ONLY for better usability
+            const userInfoDisplay = document.getElementById('userInfoDisplay');
+            if (userInfoDisplay) {
+                userInfoDisplay.addEventListener('click', toggleUserDropdown);            }
             
             // Close dropdowns when clicking outside
             document.addEventListener('click', function(e) {
@@ -320,18 +419,153 @@
                     hideSearchSuggestions();
                 }
             });
-        }
-
-        function checkLoginStatus() {
-            if (isLoggedIn) {
-                if (signInBtn) signInBtn.style.display = 'none';
-                if (userMenu) userMenu.style.display = 'block';
-            } else {
-                if (signInBtn) signInBtn.style.display = 'flex';
-                if (userMenu) userMenu.style.display = 'none';
+        }        function checkLoginStatus() {
+            // Update state from localStorage with more robust checking
+            isLoggedIn = checkUserLoginState();
+            currentUser = getCurrentUserInfo();
+            
+            console.log('🔍 Checking login status:', { 
+                isLoggedIn, 
+                username: currentUser.username,
+                hasSignInBtn: !!signInBtn,
+                hasUserMenu: !!userMenu 
+            });
+            
+            // Wait for DOM elements to be available
+            const signInBtn = document.getElementById('signInBtn');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (!signInBtn || !userMenu) {
+                console.warn('⏳ Header elements not ready yet, retrying...');
+                setTimeout(() => checkLoginStatus(), 100);
+                return;
+            }
+              if (isLoggedIn && currentUser.username) {
+                console.log('✅ User is logged in, showing user menu');
+                
+                // FORCE HIDE sign in button
+                signInBtn.style.display = 'none !important';
+                signInBtn.style.visibility = 'hidden';
+                signInBtn.style.opacity = '0';
+                signInBtn.classList.add('hidden');
+                
+                // FORCE SHOW user menu
+                userMenu.style.display = 'flex !important';
+                userMenu.style.visibility = 'visible';
+                userMenu.style.opacity = '1';
+                userMenu.classList.remove('hidden');
+                userMenu.classList.add('visible');
+                
+                console.log('🔄 FORCED visibility: signIn=hidden, userMenu=visible');
+                
+                // Update user name display
+                const displayUserName = document.getElementById('displayUserName');
+                if (displayUserName) {
+                    displayUserName.textContent = currentUser.username;
+                    displayUserName.style.display = 'block';
+                    console.log('✅ Updated username display to:', currentUser.username);
+                } else {
+                    console.error('❌ displayUserName element not found!');
+                }
+                
+                // Update avatar with first letter
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar && currentUser.username) {
+                    const firstLetter = currentUser.username.charAt(0).toUpperCase();
+                    // Create dynamic avatar with first letter
+                    userAvatar.src = `data:image/svg+xml;base64,${btoa(`
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="20" fill="#3498db"/>
+                            <text x="20" y="26" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="white">${firstLetter}</text>
+                        </svg>
+                    `)}`;
+                    console.log('✅ Updated avatar for:', firstLetter);
+                }
+                
+                // FORCE refresh display
+                signInBtn.offsetHeight; // Force reflow
+                userMenu.offsetHeight; // Force reflow
+                  } else {
+                console.log('❌ User not logged in, showing sign in button');
+                
+                // FORCE SHOW sign in button
+                signInBtn.style.display = 'flex !important';
+                signInBtn.style.visibility = 'visible';
+                signInBtn.style.opacity = '1';
+                signInBtn.classList.remove('hidden');
+                
+                // FORCE HIDE user menu
+                userMenu.style.display = 'none !important';
+                userMenu.style.visibility = 'hidden';
+                userMenu.style.opacity = '0';
+                userMenu.classList.add('hidden');
+                userMenu.classList.remove('visible');
+                
+                console.log('🔄 FORCED visibility: signIn=visible, userMenu=hidden');
+                
+                // Force refresh display
+                signInBtn.offsetHeight; // Force reflow
+                userMenu.offsetHeight; // Force reflow
             }
         }
-
+        
+        // Function to refresh header from external sources
+        function refreshLoginStatus() {
+            console.log('🔄 Refreshing header login status...');
+            isLoggedIn = checkUserLoginState();
+            currentUser = getCurrentUserInfo();
+            checkLoginStatus();
+        }
+        
+        // Make function globally accessible for parent window
+        window.refreshHeaderLoginStatus = refreshLoginStatus;
+        
+        // DEBUG: Create visible console on header for testing
+        function createDebugConsole() {
+            const debugDiv = document.createElement('div');
+            debugDiv.id = 'headerDebug';
+            debugDiv.style.cssText = `
+                position: fixed; 
+                top: 0; 
+                right: 0; 
+                width: 300px; 
+                height: 100px; 
+                background: rgba(0,0,0,0.8); 
+                color: white; 
+                font-size: 10px; 
+                padding: 5px; 
+                z-index: 10000; 
+                font-family: monospace;
+                overflow-y: auto;
+                border-left: 3px solid #00ff00;
+            `;
+            debugDiv.innerHTML = '<strong>🔍 Header Debug:</strong><br>';
+            document.body.appendChild(debugDiv);
+            
+            return debugDiv;
+        }
+        
+        // DEBUG: Log to visible console
+        function debugLog(message) {
+            console.log(message);
+            const debugDiv = document.getElementById('headerDebug');
+            if (debugDiv) {
+                const time = new Date().toLocaleTimeString();
+                debugDiv.innerHTML += `[${time}] ${message}<br>`;
+                debugDiv.scrollTop = debugDiv.scrollHeight;
+            }
+        }
+        
+        // Create debug console if in debug mode
+        if (window.location.search.includes('debug') || window.location.href.includes('test') || window.location.href.includes('debug')) {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    createDebugConsole();
+                    debugLog('Header debug console active');
+                }, 1000);
+            });
+        }
+        
         function initializeTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -432,46 +666,148 @@
             } else {
                 showNotification('Trình duyệt không hỗ trợ tìm kiếm bằng giọng nói', 'error');
             }
-        }
-
-        function toggleUserDropdown() {
+        }        function toggleUserDropdown() {
             if (userDropdown) {
-                userDropdown.classList.toggle('active');
+                const isActive = userDropdown.classList.contains('active');
+                
+                if (isActive) {
+                    userDropdown.classList.remove('active');
+                    // Also notify parent to hide any external dropdown
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'hideUserDropdown'
+                        }, '*');
+                    }
+                } else {
+                    // Calculate position and show dropdown
+                    const userMenuRect = userMenu.getBoundingClientRect();
+                    
+                    // Try to show dropdown inside iframe first
+                    userDropdown.classList.add('active');
+                    
+                    // Also notify parent with position info for external dropdown if needed
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'showUserDropdown',
+                            position: {
+                                top: userMenuRect.bottom + 10,
+                                right: window.innerWidth - userMenuRect.right,
+                                username: currentUser.username
+                            }
+                        }, '*');
+                    }
+                }
             }
-        }
-
-        function viewProfile() {
+        }function viewProfile() {
             showNotification('Đang chuyển đến trang hồ sơ...', 'success');
             if (userDropdown) {
                 userDropdown.classList.remove('active');
             }
+            
+            // Get correct profile URL based on current path
+            const profileUrl = getProfileUrl();
+            
             setTimeout(() => {
-                window.top.location.href = '../user/user.html';
+                window.top.location.href = profileUrl;
             }, 1000);
         }
 
-        function viewBookmarks() {
-            showNotification(`Bạn có ${bookmarkedMovies.length} phim yêu thích`, 'success');
+        function getProfileUrl() {
+            try {
+                const currentPath = window.top.location.pathname;
+                const pathParts = currentPath.split('/');
+                
+                console.log('Current path for profile navigation:', currentPath);
+                
+                // Check if we're in any subfolder
+                if (pathParts.includes('achievements') || 
+                    pathParts.includes('genres') || 
+                    pathParts.includes('movie') ||
+                    pathParts.includes('admin')) {
+                    return '../user/user.html';
+                } else if (pathParts.includes('login_register')) {
+                    return '../user/user.html';
+                } else {
+                    // Default case for index.html or root level
+                    return './user/user.html';
+                }
+            } catch (e) {
+                console.log('Error getting profile URL, using fallback');
+                return './user/user.html';
+            }
+        }        function viewBookmarks() {
             if (userDropdown) {
                 userDropdown.classList.remove('active');
+            }
+            
+            const bookmarkedCount = bookmarkedMovies.length;
+            if (bookmarkedCount > 0) {
+                showNotification(`Bạn có ${bookmarkedCount} phim yêu thích. Đang chuyển đến danh sách...`, 'success');
+                
+                // Navigate to bookmarks section on profile page
+                setTimeout(() => {
+                    const profileUrl = getProfileUrl() + '#bookmarks';
+                    window.top.location.href = profileUrl;
+                }, 1000);
+            } else {
+                showNotification('Bạn chưa có phim yêu thích nào. Hãy thêm phim vào danh sách yêu thích!', 'info');
             }
         }
 
         function viewHistory() {
-            showNotification(`Bạn đã xem ${watchHistory.length} phim`, 'success');
             if (userDropdown) {
                 userDropdown.classList.remove('active');
             }
-        }
-
-        function logout() {
+            
+            const historyCount = watchHistory.length;
+            if (historyCount > 0) {
+                showNotification(`Bạn đã xem ${historyCount} phim. Đang chuyển đến lịch sử...`, 'success');
+                
+                // Navigate to history section on profile page
+                setTimeout(() => {
+                    const profileUrl = getProfileUrl() + '#history';
+                    window.top.location.href = profileUrl;
+                }, 1000);
+            } else {
+                showNotification('Bạn chưa xem phim nào. Hãy bắt đầu khám phá!', 'info');
+            }
+        }function logout() {
+            // Show confirmation
+            if (!confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                return;
+            }
+            
+            // Clear user data from localStorage
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('email');
+            localStorage.removeItem('bookmarkedMovies');
+            localStorage.removeItem('watchHistory');
+            
+            // Update state
             isLoggedIn = false;
-            localStorage.setItem('isLoggedIn', 'false');
+            currentUser = { username: '', email: '', token: '' };
+            
+            // Update UI
             checkLoginStatus();
             showNotification('Đã đăng xuất thành công!', 'success');
+            
             if (userDropdown) {
                 userDropdown.classList.remove('active');
             }
+            
+            // Send logout message to parent window
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'userLoggedOut'
+                }, '*');
+            }
+            
+            // Redirect to login page
+            setTimeout(() => {
+                const loginUrl = getLoginUrl();
+                window.top.location.href = loginUrl;
+            }, 1500);
         }
 
         function setupScrollEffects() {
@@ -537,14 +873,76 @@
                     userDropdown.classList.remove('active');
                 }
             }
-        });
-
-        // Listen for login status updates from parent window
+        });        // Listen for login status updates from parent window or storage changes
         window.addEventListener('message', function(event) {
-            if (event.data.type === 'loginStatusChanged') {
+            console.log('📥 Header received message:', event.data);
+            
+            if (event.data.type === 'ping') {
+                // Respond to ping and trigger immediate login status check
+                console.log('📍 Header received ping, responding and checking login status...');
+                event.source.postMessage({ type: 'pong' }, '*');
+                
+                // Force immediate update with aggressive timing
+                setTimeout(() => checkLoginStatus(), 5);
+                setTimeout(() => checkLoginStatus(), 25);
+                setTimeout(() => checkLoginStatus(), 50);
+                setTimeout(() => checkLoginStatus(), 100);
+                setTimeout(() => checkLoginStatus(), 200);
+                return;
+            }
+            
+            if (event.data.type === 'updateLoginStatus') {
+                // Update login state from parent
+                console.log('📦 Updating header login status from message:', event.data);
                 isLoggedIn = event.data.isLoggedIn;
-                localStorage.setItem('isLoggedIn', isLoggedIn);
-                checkLoginStatus();
+                
+                if (event.data.userInfo) {
+                    currentUser = event.data.userInfo;
+                    // Also update localStorage in iframe for consistency
+                    if (event.data.userInfo.token) {
+                        localStorage.setItem('token', event.data.userInfo.token);
+                    }
+                    if (event.data.userInfo.username) {
+                        localStorage.setItem('username', event.data.userInfo.username);
+                    }
+                    if (event.data.userInfo.email) {
+                        localStorage.setItem('email', event.data.userInfo.email);
+                    }
+                }
+                
+                // Force immediate UI update with aggressive timing
+                setTimeout(() => checkLoginStatus(), 5);
+                setTimeout(() => checkLoginStatus(), 25);
+                setTimeout(() => checkLoginStatus(), 50);
+                setTimeout(() => checkLoginStatus(), 100);
+                setTimeout(() => checkLoginStatus(), 200);
+                setTimeout(() => checkLoginStatus(), 500);
+                
+                console.log('✅ Header login status updated - isLoggedIn:', isLoggedIn, 'username:', currentUser.username);
+            }
+            
+            if (event.data.type === 'loginStatusChanged') {
+                console.log('🔄 Received loginStatusChanged signal');
+                // Force refresh from localStorage and update UI
+                isLoggedIn = checkUserLoginState();
+                currentUser = getCurrentUserInfo();
+                
+                // Force immediate UI update with aggressive timing
+                setTimeout(() => checkLoginStatus(), 5);
+                setTimeout(() => checkLoginStatus(), 25);
+                setTimeout(() => checkLoginStatus(), 50);
+                setTimeout(() => checkLoginStatus(), 100);
+                setTimeout(() => checkLoginStatus(), 200);
+            }
+            
+            if (event.data.type === 'forceRefresh') {
+                console.log('Received forceRefresh signal');
+                isLoggedIn = checkUserLoginState();
+                currentUser = getCurrentUserInfo();
+                console.log('Force refresh - isLoggedIn:', isLoggedIn, 'username:', currentUser.username);
+                setTimeout(() => checkLoginStatus(), 50);
+                setTimeout(() => checkLoginStatus(), 200);
+                setTimeout(() => checkLoginStatus(), 500);
             }
             
             if (event.data.type === 'updateUserData') {
@@ -553,7 +951,12 @@
             }
         });
 
-        // Export header functions for use by main page
+        // Listen for localStorage changes (when user logs in from another tab)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'token' || e.key === 'username') {
+                checkLoginStatus();
+            }
+        });        // Export header functions for use by main page
         window.HeaderApp = {
             showNotification,
             checkLoginStatus,
@@ -565,7 +968,32 @@
             viewHistory,
             logout,
             selectSuggestion,
-            hideSearchSuggestions
+            hideSearchSuggestions,
+            updateLoginStatus: checkLoginStatus, // Export for manual refresh
+            forceRefresh: function() {
+                // Force refresh login status with multiple attempts
+                isLoggedIn = checkUserLoginState();
+                currentUser = getCurrentUserInfo();
+                console.log('Force refresh - isLoggedIn:', isLoggedIn, 'username:', currentUser.username);
+                setTimeout(() => checkLoginStatus(), 50);
+                setTimeout(() => checkLoginStatus(), 200);
+                setTimeout(() => checkLoginStatus(), 500);
+            }
+        };
+        
+        // Add a way to manually refresh login status (for debugging)
+        window.refreshLoginStatus = function() {
+            console.log('Manual refresh login status called');
+            isLoggedIn = checkUserLoginState();
+            currentUser = getCurrentUserInfo();
+            console.log('Refreshed state - isLoggedIn:', isLoggedIn, 'username:', currentUser.username);
+            
+            // Multiple check attempts
+            setTimeout(() => checkLoginStatus(), 50);
+            setTimeout(() => checkLoginStatus(), 200);
+            setTimeout(() => checkLoginStatus(), 500);
+            
+            showNotification('Đã làm mới trạng thái đăng nhập', 'success');
         };
     </script>
 </body>

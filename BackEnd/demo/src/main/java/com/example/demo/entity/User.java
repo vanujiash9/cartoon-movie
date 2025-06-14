@@ -29,6 +29,12 @@ public class User {
     @Column(name = "ban_comment_until")
     private LocalDateTime banCommentUntil;
 
+    private String avatar;
+
+    private String phone;
+    private String gender;
+    private LocalDateTime dateOfBirth;
+
     // Getters and setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -59,4 +65,16 @@ public class User {
 
     public LocalDateTime getBanCommentUntil() { return banCommentUntil; }
     public void setBanCommentUntil(LocalDateTime banCommentUntil) { this.banCommentUntil = banCommentUntil; }
+
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+
+    public LocalDateTime getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(LocalDateTime dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 }

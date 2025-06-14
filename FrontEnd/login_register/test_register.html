@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Đăng ký</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .debug {
+            background: #e2e3e5;
+            color: #383d41;
+            border: 1px solid #d6d8db;
+            margin-top: 20px;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Đăng ký API</h1>
+        <form id="testForm">
+            <div class="form-group">
+                <label for="username">Tên đăng nhập:</label>
+                <input type="text" id="username" value="testuser123" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" id="password" value="123456" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="testuser123@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="fullName">Họ và tên:</label>
+                <input type="text" id="fullName" value="Nguyễn Văn Test" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Số điện thoại:</label>
+                <input type="tel" id="phone" value="0123456789" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">Giới tính:</label>
+                <select id="gender" required>
+                    <option value="">-- Chọn --</option>
+                    <option value="nam" selected>Nam</option>
+                    <option value="nữ">Nữ</option>
+                    <option value="khác">Khác</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dateOfBirth">Ngày sinh:</label>
+                <input type="date" id="dateOfBirth" value="1990-01-01" required>
+            </div>
+            <div class="form-group">
+                <label for="avatar">Avatar (URL):</label>
+                <input type="url" id="avatar" value="https://via.placeholder.com/150">
+            </div>
+            <button type="submit" id="submitBtn">Test Đăng ký</button>
+        </form>
+        <div class="message" id="messageBox"></div>
+        <div class="debug" id="debugBox"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('testForm');
+        const messageBox = document.getElementById('messageBox');
+        const debugBox = document.getElementById('debugBox');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        function logDebug(message) {
+            const timestamp = new Date().toISOString();
+            debugBox.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+        
+        function showMessage(msg, type) {
+            messageBox.textContent = msg;
+            messageBox.className = 'message ' + type;
+            messageBox.style.display = 'block';
+            logDebug(`Message: ${type} - ${msg}`);
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            logDebug('=== STARTING REGISTRATION TEST ===');
+            
+            if (submitBtn.disabled) {
+                logDebug('Form already processing, ignoring...');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang test...';
+            messageBox.style.display = 'none';
+            
+            // Lấy dữ liệu từ form
+            const formData = {
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value,
+                email: document.getElementById('email').value.trim(),
+                avatar: document.getElementById('avatar').value.trim(),
+                fullName: document.getElementById('fullName').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                gender: document.getElementById('gender').value,
+                dateOfBirth: document.getElementById('dateOfBirth').value + 'T00:00:00'
+            };
+            
+            logDebug('Form data collected:');
+            logDebug(JSON.stringify(formData, null, 2));
+            
+            try {
+                logDebug('Sending request to: http://localhost:8080/api/auth/register');
+                
+                const response = await fetch('http://localhost:8080/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                logDebug(`Response status: ${response.status}`);
+                logDebug(`Response status text: ${response.statusText}`);
+                
+                const responseData = await response.text();
+                logDebug(`Response body: ${responseData}`);
+                
+                if (response.ok) {
+                    showMessage('Đăng ký thành công!', 'success');
+                    logDebug('Registration successful');
+                } else {
+                    showMessage(`Lỗi: ${responseData}`, 'error');
+                    logDebug(`Registration failed: ${responseData}`);
+                }
+                
+            } catch (error) {
+                logDebug(`Network error: ${error.message}`);
+                logDebug(`Error stack: ${error.stack}`);
+                showMessage(`Lỗi kết nối: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Test Đăng ký';
+                logDebug('=== REGISTRATION TEST COMPLETED ===');
+            }
+        });
+        
+        logDebug('Test page loaded successfully');
+    </script>
+</body>
+</html>

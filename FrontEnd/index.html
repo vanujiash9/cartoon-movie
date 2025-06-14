@@ -4,11 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maxion - Trang phim online tốt nhất</title>
+    
+    <!-- Favicon và Meta Tags -->
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREQAAAAAAAAABEAERERERERARAAERERERERERAQEREREREREQEQEREREREREQEBERERERERAQEAAREREREQEAAAEREREREAARAAAREREQAAEAEAAREQAAAQABAAEQAAAAEAAQAQAAAAEAARAAABAAAQEAAREAABABABEQEREQEBEQEREREQEBABEREREAAAERERERAAAAAREREREREQERERERERABEQERERERERAQEREREREREQEQERERERERERABERERERERERAREREREREREQEQEREREREREREQEREREREREREQERERERERERERAREREREREREREAERERERERERABAAAAABAAAAAEAABAABAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAAABAAAAAQAAAAEAAAABAAAAAgAAAAIAAAACAAAAAg">
+    <meta name="description" content="Xem phim online chất lượng cao tại Maxion">
+    <meta name="keywords" content="phim online, xem phim, maxion">
+      <!-- CSS -->
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./header.css">
 </head>
 <body>
-    <!-- Include Header -->
-    <iframe src="./header.html" class="header-frame" id="headerFrame" onload="initHeaderIframe()"></iframe>
+    <!-- Integrated Header (No iframe) -->
+    <header>
+        <div class="navbar" id="navbar">
+            <a href="#" class="navbar-brand" onclick="scrollToTop()">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTQwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIyMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+" alt="Maxion Logo">
+            </a>
+
+            <nav id="navMenu">
+                <ul class="navbar-nav">
+                    <li><a href="#" class="navbar-link" onclick="scrollToSection('top')">Trang chủ</a></li>
+                    <li><a href="#" class="navbar-link" onclick="scrollToSection('movies')">Danh sách phim</a></li>
+                    <li><a href="#" class="navbar-link indicator" onclick="scrollToSection('achievements')">Thành tựu</a></li>
+                    <li><a href="#" class="navbar-link" onclick="scrollToSection('category')">Thể loại</a></li>
+                    <li><a href="#" class="navbar-link" onclick="scrollToSection('live')">TV Trực tiếp</a></li>
+                </ul>
+            </nav>
+
+            <div class="navbar-actions">
+                <form class="navbar-form" id="searchForm">
+                    <input type="text" name="search" placeholder="Tìm kiếm phim..." class="navbar-form-search" id="searchInput">
+                    <button type="button" class="navbar-form-btn" id="searchBtn">
+                        <span style="font-size: 18px;">🔍</span>
+                    </button>
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </form>
+
+                <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
+                    <span>🎤</span>
+                </button>
+
+                <!-- Sign In Button (shown when NOT logged in) -->
+                <a href="./login_register/login.html" class="navbar-signin" id="signInBtn">
+                    <span id="signInText">Đăng nhập</span>
+                    <span style="margin-left: 8px;">➡️</span>
+                </a>
+
+                <!-- User Menu (shown when logged in) -->
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <div class="user-info-display" id="userInfoDisplay">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+Cjx0ZXh0IHg9IjEwIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPC9zdmc+Cjwvc3ZnPg==" alt="User Avatar" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="displayUserName">Người dùng</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="viewProfile()">
+                            <span>👤</span>
+                            Hồ sơ của tôi
+                        </div>
+                        <div class="dropdown-item" onclick="viewBookmarks()">
+                            <span>❤️</span>
+                            Danh sách yêu thích
+                        </div>
+                        <div class="dropdown-item" onclick="viewHistory()">
+                            <span>⏰</span>
+                            Lịch sử xem
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <span>🚪</span>
+                            Đăng xuất
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <div class="container">
         <main>
@@ -205,7 +275,7 @@
                         </div>
 
                         <div class="card-body">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNDI4NWY0IiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkJCQzwvdGV4dD4KPC9zdmc+" alt="BBC America" class="avatar">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNDI4NWY0IiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkJCQzwvdGV4dD4KPC9zdmc+" alt="BBC America" class="avatar">
                             <h3 class="card-title">Planet Earth II <br> Season 1 - Islands</h3>
                         </div>
                     </div>
@@ -221,7 +291,7 @@
                         </div>
 
                         <div class="card-body">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
                             <h3 class="card-title">Game of Thrones <br> Season 5 - Mother's Mercy</h3>
                         </div>
                     </div>
@@ -237,13 +307,12 @@
                         </div>
 
                         <div class="card-body">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
                             <h3 class="card-title">Vikings <br> Season 4 - What Might Have Been</h3>
                         </div>
                     </div>
                 </div>
-            </section>
-        </main>
+            </section>        </main>
     </div>
 
     <!-- Include Footer -->
@@ -251,5 +320,248 @@
 
     <!-- Load JavaScript -->
     <script src="./script.js"></script>
+    
+    <!-- Integrated Header JavaScript -->
+    <script>
+        // Header Variables
+        let isHeaderLoggedIn = false;
+        let currentHeaderUser = {};
+        
+        // Check login status
+        function checkHeaderLoginStatus() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            
+            console.log('🔍 Checking header login status:', { token: !!token, username });
+            
+            isHeaderLoggedIn = !!(token && username);
+            currentHeaderUser = {
+                username: username || '',
+                email: localStorage.getItem('email') || '',
+                fullName: localStorage.getItem('fullName') || '',
+                token: token || ''
+            };
+            
+            updateHeaderUI();
+        }
+        
+        // Update header UI
+        function updateHeaderUI() {
+            const signInBtn = document.getElementById('signInBtn');
+            const userMenu = document.getElementById('userMenu');
+            const displayUserName = document.getElementById('displayUserName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            console.log('🔄 Updating header UI - isLoggedIn:', isHeaderLoggedIn, 'username:', currentHeaderUser.username);
+            
+            // Luôn xóa style inline cũ để tránh lỗi hiển thị menu user
+            if (isHeaderLoggedIn && currentHeaderUser.username) {
+                signInBtn.style.display = 'none';
+                userMenu.style.display = '';
+                userMenu.classList.add('visible');
+                
+                // Update username
+                displayUserName.textContent = currentHeaderUser.username;
+                
+                // Update avatar
+                const firstLetter = currentHeaderUser.username.charAt(0).toUpperCase();
+                userAvatar.src = `data:image/svg+xml;base64,${btoa(`
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="20" fill="#3498db"/>
+                        <text x="20" y="26" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="white">${firstLetter}</text>
+                    </svg>
+                `)}`;
+                
+                console.log('✅ Header updated for user:', currentHeaderUser.username);
+            } else {
+                signInBtn.style.display = 'flex';
+                userMenu.style.display = 'none';
+                userMenu.classList.remove('visible');
+                
+                console.log('❌ Header showing sign in button');
+            }
+        }
+        
+        // Header functions
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function viewProfile() {
+            // Lưu thông tin user vào localStorage (nếu cần)
+            // Chuyển hướng sang trang user.html
+            window.location.href = './user/user.html';
+        }
+        
+        function viewBookmarks() {
+            alert('Tính năng đang phát triển!');
+        }
+        
+        function viewHistory() {
+            alert('Tính năng đang phát triển!');
+        }
+        
+        function logout() {
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                localStorage.clear();
+                checkHeaderLoginStatus();
+                alert('Đã đăng xuất thành công!');
+                window.location.reload();
+            }
+        }
+        
+        // Search functionality
+        function setupHeaderSearch() {
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        alert(`Tìm kiếm: ${query}`);
+                        // Implement search logic here
+                    }
+                });
+            }
+            
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchBtn.click();
+                    }
+                });
+            }
+        }
+        
+        // Voice search
+        function setupVoiceSearch() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            if (voiceBtn) {
+                voiceBtn.addEventListener('click', function() {
+                    alert('Tính năng tìm kiếm bằng giọng nói đang phát triển!');
+                });
+            }
+        }
+        
+        // Initialize header
+        function initializeIntegratedHeader() {
+            console.log('🎯 Initializing integrated header...');
+            
+            // Check login status immediately
+            checkHeaderLoginStatus();
+            
+            // Setup search
+            setupHeaderSearch();
+            setupVoiceSearch();
+            
+            // Listen for storage changes
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'username' || e.key === 'token') {
+                    console.log('🔄 Storage changed, updating header...');
+                    checkHeaderLoginStatus();
+                }
+            });
+            
+            // Auto-check every 3 seconds
+            setInterval(checkHeaderLoginStatus, 3000);
+            
+            console.log('✅ Integrated header initialized');
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeIntegratedHeader, 500);
+        });
+        
+        // Manual refresh function for external use
+        window.refreshHeaderStatus = checkHeaderLoginStatus;
+        
+        console.log('🎯 Header script loaded');
+    </script>
+    
+    <!-- Check login status and refresh header -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏠 Index page loaded, checking login status...');
+            
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            
+            if (token && username) {
+                console.log('✅ User is logged in:', username);
+                
+                // Force update header after delay
+                setTimeout(() => {
+                    if (window.refreshHeaderStatus) {
+                        window.refreshHeaderStatus();
+                    }
+                }, 1000);
+            } else {
+                console.log('❌ User not logged in');
+            }
+        });
+    </script>
+
+    <script>
+        // Hiển thị drop menu khi click vào user-info-display
+        const userInfoDisplay = document.getElementById('userInfoDisplay');
+        const userDropdown = document.getElementById('userDropdown');
+
+        if (userInfoDisplay && userDropdown) {
+            userInfoDisplay.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+            // Ẩn dropdown khi click ra ngoài
+            document.addEventListener('click', function(e) {
+                if (!userDropdown.contains(e.target) && !userInfoDisplay.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // Luôn gọi updateHeaderLoginStatus khi trang vừa load
+    updateHeaderLoginStatus();
+    // Kiểm tra lại sau 1 giây (phòng trường hợp localStorage vừa được cập nhật)
+    setTimeout(updateHeaderLoginStatus, 1000);
+    // Lắng nghe sự kiện thay đổi localStorage từ tab khác
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
+            updateHeaderLoginStatus();
+        }
+    });
+});
+    </script>
+
+    <!-- ĐẢM BẢO HEADER LUÔN CẬP NHẬT NGAY KHI LOAD TRANG -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+    console.log('== DOMContentLoaded: Gọi checkHeaderLoginStatus ==');
+    checkHeaderLoginStatus();
+    // Log giá trị localStorage
+    console.log('localStorage token:', localStorage.getItem('token'));
+    console.log('localStorage username:', localStorage.getItem('username'));
+});
+window.addEventListener('storage', function(e) {
+    if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
+        console.log('== storage event: Gọi lại checkHeaderLoginStatus ==');
+        checkHeaderLoginStatus();
+        // Log giá trị localStorage
+        console.log('localStorage token:', localStorage.getItem('token'));
+        console.log('localStorage username:', localStorage.getItem('username'));
+    }
+});
+    </script>
 </body>
 </html>

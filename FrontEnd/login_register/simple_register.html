@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký đơn giản</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background: #007bff;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .message {
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Đăng ký tài khoản</h1>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="username">Tên đăng nhập *</label>
+                <input type="text" id="username" required placeholder="Nhập tên đăng nhập">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mật khẩu *</label>
+                <input type="password" id="password" required placeholder="Nhập mật khẩu">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" required placeholder="Nhập email">
+            </div>
+            
+            <div class="form-group">
+                <label for="fullName">Họ và tên *</label>
+                <input type="text" id="fullName" required placeholder="Nhập họ và tên">
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Số điện thoại *</label>
+                <input type="tel" id="phone" required placeholder="0123456789" pattern="[0-9]{10,11}">
+            </div>
+            
+            <div class="form-group">
+                <label for="gender">Giới tính *</label>
+                <select id="gender" required>
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="nam">Nam</option>
+                    <option value="nữ">Nữ</option>
+                    <option value="khác">Khác</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="dateOfBirth">Ngày sinh *</label>
+                <input type="date" id="dateOfBirth" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="avatar">Avatar (URL ảnh)</label>
+                <input type="url" id="avatar" placeholder="https://...">
+            </div>
+            
+            <button type="submit" id="submitBtn">Đăng ký</button>
+        </form>
+        
+        <div class="message" id="messageBox"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const messageBox = document.getElementById('messageBox');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        function showMessage(msg, type) {
+            messageBox.textContent = msg;
+            messageBox.className = 'message ' + type;
+            messageBox.style.display = 'block';
+            console.log(`${type.toUpperCase()}: ${msg}`);
+        }
+        
+        // Chỉ một event listener duy nhất
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('=== FORM SUBMISSION STARTED ===');
+            
+            // Ngăn submit nhiều lần
+            if (submitBtn.disabled) {
+                console.log('Form already processing, ignoring...');
+                return;
+            }
+            
+            // Disable button và thay đổi text
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang xử lý...';
+            messageBox.style.display = 'none';
+            
+            try {
+                // Lấy dữ liệu từ form
+                const formData = {
+                    username: document.getElementById('username').value.trim(),
+                    password: document.getElementById('password').value,
+                    email: document.getElementById('email').value.trim(),
+                    avatar: document.getElementById('avatar').value.trim(),
+                    fullName: document.getElementById('fullName').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    gender: document.getElementById('gender').value,
+                    dateOfBirth: document.getElementById('dateOfBirth').value + 'T00:00:00'
+                };
+                
+                console.log('Form data:', formData);
+                
+                // Validation
+                if (!formData.username || !formData.password || !formData.email || 
+                    !formData.fullName || !formData.phone || !formData.gender || 
+                    !formData.dateOfBirth) {
+                    showMessage('Vui lòng điền đầy đủ tất cả thông tin bắt buộc!', 'error');
+                    return;
+                }
+                
+                console.log('Sending request to backend...');
+                
+                // Gửi request
+                const response = await fetch('http://localhost:8080/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (response.ok) {
+                    const result = await response.text();
+                    console.log('Success response:', result);
+                    showMessage('Đăng ký thành công! Đang chuyển về trang đăng nhập...', 'success');
+                    form.reset();
+                    
+                    // Chuyển hướng sau 2 giây
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    const errorText = await response.text();
+                    console.log('Error response:', errorText);
+                    showMessage(`Lỗi: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Network error:', error);
+                showMessage(`Lỗi kết nối: ${error.message}`, 'error');
+            } finally {
+                // Luôn enable lại button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng ký';
+                console.log('=== FORM SUBMISSION COMPLETED ===');
+            }
+        });
+        
+        console.log('Page loaded, form listener attached');
+    </script>
+</body>
+</html>

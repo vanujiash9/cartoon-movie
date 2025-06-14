@@ -34,8 +34,8 @@
         <!-- Login Form -->
         <form class="login-form" id="loginForm">
             <div class="form-group">
-                <input type="email" class="form-input" id="email" placeholder=" " required>
-                <label class="form-label" for="email">Email</label>
+                <input type="text" class="form-input" id="username" placeholder=" " required>
+                <label class="form-label" for="username">Tên đăng nhập</label>
             </div>
 
             <div class="form-group">
@@ -84,48 +84,69 @@
 
     <script>
         // Form validation and submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
             // Reset messages
             hideMessages();
             
             // Basic validation
-            if (!email || !password) {
+            if (!username || !password) {
                 showError('Vui lòng điền đầy đủ thông tin');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showError('Email không hợp lệ');
                 return;
             }
             
             // Show loading
             showLoading(true);
             
-            // Simulate API call
-            setTimeout(() => {
-                showLoading(false);
-                
-                // Demo: Check hardcoded credentials
-                if (email === 'admin@maxion.com' && password === 'password') {
-                    showSuccess('Đăng nhập thành công! Đang chuyển hướng...');
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                showLoading(false);                if (response.ok) {
+                    const data = await response.json();
+                    // Lưu token và thông tin user nếu có
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                    } else {
+                        // Nếu không có token từ backend, set tạm token để header nhận biết đăng nhập
+                        localStorage.setItem('token', 'dummy-token-' + Date.now());
+                    }
+                    
+                    // Lưu username từ form input
+                    localStorage.setItem('username', username);
+                    
+                    // Lưu thông tin khác từ response nếu có
+                    if (data.email) {
+                        localStorage.setItem('email', data.email);
+                    }
+                    if (data.fullName) {
+                        localStorage.setItem('fullName', data.fullName);
+                    }
+                      showSuccess('Đăng nhập thành công! Đang chuyển hướng...');
                     setTimeout(() => {
-                        window.location.href = '../index.html';
+                        window.location.replace('/FrontEnd/index.html');
                     }, 1500);
                 } else {
-                    showError('Email hoặc mật khẩu không chính xác');
+                    const err = await response.json().catch(() => ({}));
+                    showError(err.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
                     // Add shake animation to form
                     document.querySelector('.login-container').style.animation = 'shake 0.5s ease-in-out';
                     setTimeout(() => {
                         document.querySelector('.login-container').style.animation = '';
                     }, 500);
                 }
-            }, 2000);
+            } catch (error) {
+                showLoading(false);
+                showError('Không thể kết nối tới máy chủ.');
+            }
         });
 
         // Toggle password visibility

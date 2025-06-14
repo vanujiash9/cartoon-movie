@@ -32,9 +32,11 @@ public class Cartoon {
     private String status;
 
     @OneToMany(mappedBy = "cartoon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Episode> episodes = new ArrayList<>();
 
     @OneToMany(mappedBy = "cartoon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Review> reviews;
 
     public Integer getId() { return id; }

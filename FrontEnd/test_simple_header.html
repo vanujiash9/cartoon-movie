@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple Header</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header-test { border: 2px solid #007bff; border-radius: 10px; margin: 20px 0; background: white; overflow: hidden; }
+        .header-test iframe { width: 100%; height: 60px; border: none; }
+        .btn { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .btn.success { background: #28a745; }
+        .btn.danger { background: #dc3545; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Simple Header</h1>
+        
+        <div class="header-test">
+            <iframe src="simple_header.html" id="headerFrame"></iframe>
+        </div>
+        
+        <div>
+            <button class="btn success" onclick="testLogin()">✅ Test Login</button>
+            <button class="btn danger" onclick="testLogout()">❌ Test Logout</button>
+            <button class="btn" onclick="refreshHeader()">🔄 Refresh Header</button>
+        </div>
+        
+        <div id="status" class="status">Ready to test</div>
+        
+        <div style="margin-top: 20px;">
+            <h3>Real Pages:</h3>
+            <a href="index.html" class="btn">🏠 Main Page (Original Header)</a>
+            <a href="login_register/login.html" class="btn">🔐 Login Page</a>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message, type = 'success') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function testLogin() {
+            // Create test login data
+            localStorage.setItem('token', 'test-token-' + Date.now());
+            localStorage.setItem('username', 'testuser');
+            localStorage.setItem('email', 'test@example.com');
+            
+            updateStatus('✅ Login data created! Header should update automatically.', 'success');
+            
+            // Force refresh header
+            const headerFrame = document.getElementById('headerFrame');
+            headerFrame.contentWindow.postMessage({ type: 'refreshLoginStatus' }, '*');
+        }
+
+        function testLogout() {
+            localStorage.clear();
+            updateStatus('❌ Login data cleared! Header should update automatically.', 'error');
+            
+            // Force refresh header
+            const headerFrame = document.getElementById('headerFrame');
+            headerFrame.contentWindow.postMessage({ type: 'refreshLoginStatus' }, '*');
+        }
+
+        function refreshHeader() {
+            const headerFrame = document.getElementById('headerFrame');
+            headerFrame.src = headerFrame.src; // Force reload
+            updateStatus('🔄 Header refreshed manually');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                updateStatus(`Found existing login: ${username}`, 'success');
+            } else {
+                updateStatus('No login data found', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

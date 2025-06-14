@@ -25,6 +25,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cartoon_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Cartoon cartoon;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)

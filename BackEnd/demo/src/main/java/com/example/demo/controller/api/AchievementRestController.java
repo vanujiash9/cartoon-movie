@@ -7,7 +7,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/achievements")
-@CrossOrigin(origins = "*")
 public class AchievementRestController {
     private final AchievementRepository achievementRepository;
 

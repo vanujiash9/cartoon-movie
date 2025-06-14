@@ -1,5 +1,20 @@
 'use strict';
 
+// ====================================
+// IFRAME INITIALIZATION FUNCTIONS
+// ====================================
+
+// Initialize functions that need to be available immediately
+function initHeaderIframe() {
+    console.log('🎯 Header is now integrated, no iframe needed');
+    // Header is now integrated directly into index.html
+}
+
+function initFooterIframe() {
+    console.log('🎯 Footer iframe initialized');
+    // Function content will be handled later in script
+}
+
 // Movie data
 const movies = [
     {
@@ -146,7 +161,44 @@ let watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if coming from login page
+    const referrer = document.referrer;
+    const urlParams = new URLSearchParams(window.location.search);
+      if (referrer.includes('login-success') || urlParams.get('login') === 'success') {
+        console.log('Detected return from login, forcing header update...');
+        console.log('URL params:', Array.from(urlParams.entries()));
+        console.log('Referrer:', referrer);
+        
+        // Clear the URL parameters to avoid repeated detection
+        if (urlParams.get('login') === 'success') {
+            const newUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+        
+        // Immediate attempts
+        setTimeout(() => updateHeaderLoginStatus(), 100);
+        setTimeout(() => updateHeaderLoginStatus(), 300);
+        
+        // Medium delay attempts
+        setTimeout(() => updateHeaderLoginStatus(), 800);
+        setTimeout(() => updateHeaderLoginStatus(), 1500);
+        
+        // Long delay attempts for stubborn cases
+        setTimeout(() => updateHeaderLoginStatus(), 3000);
+        setTimeout(() => updateHeaderLoginStatus(), 5000);
+    }
+    
     initializeApp();
+    
+    // Additional check after DOM fully loaded
+    setTimeout(() => {
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+        if (token && username) {
+            console.log('Found user login data after DOM load, updating header...');
+            updateHeaderLoginStatus();
+        }
+    }, 2000);
 });
 
 // Initialize application
@@ -158,10 +210,77 @@ function initializeApp() {
     setupEventListeners();
     updateQuickStats();
     
+    // Check and update header login status after a short delay
+    setTimeout(() => {
+        updateHeaderLoginStatus();
+    }, 1000);
+    
+    // Update debug panel
+    updateDebugPanel();
+    
+    // Additional check for login status after longer delay
+    setTimeout(() => {
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+        if (token && username) {
+            console.log('Found login data after app init, force updating header...');
+            updateHeaderLoginStatus();
+        }
+    }, 2000);
+    
     // Initialize hash navigation
     initializeHashNavigation();
     
     // Show welcome message for first-time visitors
+    if (!localStorage.getItem('hasVisited')) {
+        setTimeout(() => {
+            showNotification('Chào mừng đến với Maxion! Khám phá hàng nghìn bộ phim chất lượng cao.', 'success');
+            localStorage.setItem('hasVisited', 'true');
+        }, 2000);
+    }
+}
+
+// Tích hợp API backend lấy danh sách phim
+function fetchMoviesFromAPI() {
+    fetch('http://localhost:8080/api/cartoons')
+        .then(res => res.json())
+        .then(data => {
+            console.log('[API] Dữ liệu trả về:', data);
+            if (Array.isArray(data) && data.length > 0) {
+                window.movies = data.map(item => ({
+                    title: item.title || '',
+                    description: item.description || '',
+                    year: item.releaseYear ? String(item.releaseYear) : '',
+                    imageUrl: item.imageUrl || '',
+                    genre: item.genre || '',
+                    status: item.status || '',
+                    trailerUrl: item.trailerUrl || '',
+                    videoUrl: item.videoUrl || '',
+                    totalEpisodes: item.totalEpisodes || '',
+                }));
+                currentMovies = [...window.movies];
+                console.log('[API] Đã lấy dữ liệu phim từ backend:', currentMovies);
+                displayMovies();
+            } else {
+                console.warn('[API] API trả về mảng rỗng hoặc không hợp lệ, dùng dữ liệu mẫu.');
+                currentMovies = [...movies];
+                displayMovies();
+            }
+        })
+        .catch(err => {
+            console.error('[API] Không thể lấy dữ liệu từ backend, dùng dữ liệu mẫu.', err);
+            currentMovies = [...movies];
+            displayMovies();
+        });
+}
+
+// Gọi hàm fetchMoviesFromAPI khi khởi tạo app
+function initializeApp() {
+    fetchMoviesFromAPI();
+    animateProgressBars();
+    setupEventListeners();
+    updateQuickStats();
+    initializeHashNavigation();
     if (!localStorage.getItem('hasVisited')) {
         setTimeout(() => {
             showNotification('Chào mừng đến với Maxion! Khám phá hàng nghìn bộ phim chất lượng cao.', 'success');
@@ -427,46 +546,59 @@ function loadMoreMovies() {
 function createMovieCard(movie, index) {
     const movieCard = document.createElement('div');
     movieCard.className = 'movie-card';
+    // Ưu tiên dùng ảnh từ backend nếu có (không chỉ kiểm tra http)
+    let imgSrc = '';
+    let useSVG = false;
+    if (movie.imageUrl && typeof movie.imageUrl === 'string' && movie.imageUrl.trim() !== '') {
+        imgSrc = movie.imageUrl.trim();
+    } else {
+        useSVG = true;
+    }
+    // Fallback SVG: luôn hiển thị tên phim lớn, năm và thể loại nhỏ hơn, căn giữa
+    const fallbackSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+        <svg width=\"200\" height=\"280\" viewBox=\"0 0 200 280\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+
+            <rect width=\"200\" height=\"280\" fill=\"#3498db\"/>
+            <text x=\"100\" y=\"120\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"18\" fill=\"white\" font-weight=\"bold\">${(movie.title||'').slice(0,32)}</text>
+            <text x=\"100\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"13\" fill=\"#e0e0e0\">${movie.year||''}</text>
+            <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"12\" fill=\"#e0e0e0\">${(movie.genre||'').slice(0,32)}</text>
+        </svg>`);
+    // Badge màu theo trạng thái
+    let statusBadge = '';
+    if (movie.status) {
+        let badgeColor = 'gray';
+        let badgeText = '';
+        switch (movie.status.toLowerCase()) {
+            case 'active':
+                badgeColor = '#27ae60'; badgeText = 'Đang chiếu'; break;
+            case 'inactive':
+                badgeColor = '#e74c3c'; badgeText = 'Ngừng chiếu'; break;
+            case 'coming soon':
+                badgeColor = '#f1c40f'; badgeText = 'Sắp ra mắt'; break;
+            default:
+                badgeColor = '#7f8c8d'; badgeText = movie.status;
+        }
+        statusBadge = `<span class=\"movie-status-badge\" style=\"background:${badgeColor};color:#fff;padding:2px 10px;border-radius:8px;font-size:12px;position:absolute;bottom:10px;right:10px;z-index:2;\">${badgeText}</span>`;
+    }
     movieCard.innerHTML = `
-        <div class="card-head">
-            <img src="data:image/svg+xml;base64,${btoa(`
-                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="200" height="280" fill="#3498db"/>
-                    <text x="100" y="110" text-anchor="middle" font-family="Arial" font-size="14" fill="white" font-weight="bold">${movie.title}</text>
-                    <text x="100" y="140" text-anchor="middle" font-family="Arial" font-size="12" fill="white">${movie.year}</text>
-                    <text x="100" y="160" text-anchor="middle" font-family="Arial" font-size="11" fill="white">${movie.genre}</text>
-                    <rect x="160" y="15" width="30" height="20" fill="rgba(0,0,0,0.7)" rx="10"/>
-                    <text x="175" y="28" text-anchor="middle" font-family="Arial" font-size="12" fill="white" font-weight="bold">⭐${movie.rating}</text>
-                </svg>
-            `)}" alt="${movie.title}" class="card-img">
-            
-            <div class="card-overlay">
-                <div class="bookmark ${bookmarkedMovies.includes(movie.title) ? 'active' : ''}" 
-                     onclick="toggleBookmark('${movie.title}', this)">
-                    <span>❤️</span>
-                </div>
-                
-                <div class="rating">
-                    <span>⭐</span>
-                    <span>${movie.rating}</span>
-                </div>
-                
-                <div class="play" onclick="playMovie('${movie.title}')">
+        <div class=\"card-head\">
+            <img src=\"${useSVG ? fallbackSVG : imgSrc}\" alt=\"${movie.title || ''}\" class=\"card-img\" style=\"object-fit:cover;width:100%;height:100%;border-radius:15px;\" onerror=\"this.onerror=null;this.src='${fallbackSVG}'\">
+            <div class=\"card-overlay\">
+                <div class=\"play\" onclick=\"playMovie('${movie.title}')\">
                     <span>▶️</span>
                 </div>
             </div>
+            ${statusBadge}
         </div>
-        
-        <div class="card-body">
-            <h3 class="card-title">${movie.title}</h3>
-            
-            <div class="card-info">
-                <span class="genre">${movie.genre}</span>
-                <span class="year">${movie.year}</span>
+        <div class=\"card-body\">
+            <h3 class=\"card-title\">${movie.title || ''}</h3>
+            <div class=\"card-info\">
+                <span class=\"genre\">${movie.genre || ''}</span>
+                <span class=\"year\">${movie.year || ''}</span>
             </div>
+            <p class=\"card-desc\">${movie.description || ''}</p>
         </div>
     `;
-    
     return movieCard;
 }
 
@@ -653,6 +785,195 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
+// ============================================================
+// EXTERNAL USER DROPDOWN (Outside iframe)
+// ============================================================
+
+let externalDropdown = null;
+
+function showExternalUserDropdown(position) {
+    // Remove existing dropdown if any
+    hideExternalUserDropdown();
+    
+    // Create dropdown element
+    externalDropdown = document.createElement('div');
+    externalDropdown.className = 'external-user-dropdown';
+    externalDropdown.innerHTML = `
+        <div class="dropdown-item" onclick="navigateToProfile()">
+            <span>👤</span>
+            Hồ sơ của tôi
+        </div>
+        <div class="dropdown-item" onclick="viewBookmarksExternal()">
+            <span>❤️</span>
+            Danh sách yêu thích
+        </div>
+        <div class="dropdown-item" onclick="viewHistoryExternal()">
+            <span>⏰</span>
+            Lịch sử xem
+        </div>
+        <div class="dropdown-item" onclick="logoutExternal()">
+            <span>🚪</span>
+            Đăng xuất
+        </div>
+    `;
+    
+    // Apply styles
+    externalDropdown.style.cssText = `
+        position: fixed;
+        top: ${position.top}px;
+        right: ${position.right}px;
+        background: #2a2d3a;
+        border-radius: 15px;
+        min-width: 200px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        z-index: 10001;
+        border: 1px solid rgba(52, 152, 219, 0.2);
+        animation: fadeInUp 0.3s ease-out;
+    `;
+      // Add to document
+    document.body.appendChild(externalDropdown);
+    
+    // Add click outside listener để đóng dropdown
+    setTimeout(() => {
+        document.addEventListener('click', handleExternalDropdownOutsideClick);
+    }, 100); // Delay to prevent immediate close
+}
+
+// Handle click outside external dropdown
+function handleExternalDropdownOutsideClick(event) {
+    if (externalDropdown && !externalDropdown.contains(event.target)) {
+        // Also check if click is on header iframe area
+        const headerFrame = document.getElementById('headerFrame') || document.querySelector('iframe[src*="header.html"]');
+        let isHeaderClick = false;
+        
+        if (headerFrame) {
+            const rect = headerFrame.getBoundingClientRect();
+            const clickX = event.clientX;
+            const clickY = event.clientY;
+            
+            isHeaderClick = (
+                clickX >= rect.left && 
+                clickX <= rect.right && 
+                clickY >= rect.top && 
+                clickY <= rect.bottom
+            );
+        }
+        
+        if (!isHeaderClick) {
+            hideExternalUserDropdown();
+            document.removeEventListener('click', handleExternalDropdownOutsideClick);
+        }
+    }
+}
+
+function hideExternalUserDropdown() {
+    if (externalDropdown) {
+        externalDropdown.remove();
+        externalDropdown = null;
+        document.removeEventListener('click', handleExternalDropdownOutsideClick);
+    }
+}
+
+// External dropdown actions
+function navigateToProfile() {
+    hideExternalUserDropdown();
+    showNotification('Đang chuyển đến trang hồ sơ...', 'success');
+    setTimeout(() => {
+        window.location.href = './user/user.html';
+    }, 1000);
+}
+
+function viewBookmarksExternal() {
+    hideExternalUserDropdown();
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarkedMovies') || '[]');
+    if (bookmarks.length > 0) {
+        showNotification(`Bạn có ${bookmarks.length} phim yêu thích. Đang chuyển đến danh sách...`, 'success');
+        setTimeout(() => {
+            window.location.href = './user/user.html#bookmarks';
+        }, 1000);
+    } else {
+        showNotification('Bạn chưa có phim yêu thích nào. Hãy thêm phim vào danh sách yêu thích!', 'info');
+    }
+}
+
+function viewHistoryExternal() {
+    hideExternalUserDropdown();
+    const history = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+    if (history.length > 0) {
+        showNotification(`Bạn đã xem ${history.length} phim. Đang chuyển đến lịch sử...`, 'success');
+        setTimeout(() => {
+            window.location.href = './user/user.html#history';
+        }, 1000);
+    } else {
+        showNotification('Bạn chưa xem phim nào. Hãy bắt đầu khám phá!', 'info');
+    }
+}
+
+function logoutExternal() {
+    hideExternalUserDropdown();
+    
+    if (!confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        return;
+    }
+    
+    // Clear user data
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('bookmarkedMovies');
+    localStorage.removeItem('watchHistory');
+    
+    showNotification('Đã đăng xuất thành công!', 'success');
+    
+    // Update header
+    updateHeaderLoginStatus();
+    
+    // Redirect to login
+    setTimeout(() => {
+        window.location.href = './login_register/login.html';
+    }, 1500);
+}
+
+// Add CSS for external dropdown
+const dropdownCSS = `
+    .external-user-dropdown .dropdown-item {
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        font-size: 14px;
+    }
+    
+    .external-user-dropdown .dropdown-item:hover {
+        background: rgba(52, 152, 219, 0.2);
+        color: #3498db;
+    }
+    
+    .external-user-dropdown .dropdown-item:last-child {
+        border-bottom: none;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+
+// Inject CSS
+const dropdownStyle = document.createElement('style');
+dropdownStyle.textContent = dropdownCSS;
+document.head.appendChild(dropdownStyle);
+
 // ====================================
 // IFRAME COMMUNICATION SYSTEM
 // ====================================
@@ -662,21 +983,71 @@ function initHeaderIframe() {
     const headerFrame = document.getElementById('headerFrame');
     console.log('Header iframe loaded');
     
+    let headerReadyRetries = 0;
+    const maxRetries = 10;
+    
+    // Ping header repeatedly until it responds
+    function pingHeader() {
+        if (headerFrame && headerFrame.contentWindow) {
+            console.log(`Pinging header (attempt ${headerReadyRetries + 1}/${maxRetries})`);
+            headerFrame.contentWindow.postMessage({ type: 'ping' }, '*');
+            headerReadyRetries++;
+            
+            if (headerReadyRetries < maxRetries) {
+                setTimeout(pingHeader, 500);
+            }
+        }
+    }
+    
+    // Start pinging immediately and repeatedly
+    setTimeout(pingHeader, 200);
+    
+    // Also try updating login status multiple times with different delays
+    setTimeout(() => updateHeaderLoginStatus(), 800);
+    setTimeout(() => updateHeaderLoginStatus(), 1500);
+    setTimeout(() => updateHeaderLoginStatus(), 3000);
+    
     // Handle header iframe communication
     window.addEventListener('message', function(event) {
         if (event.source === headerFrame.contentWindow) {
             console.log('Message from header:', event.data);
+            
+            if (event.data.type === 'pong') {
+                console.log('Header is ready! Stopping ping attempts and updating login status...');
+                headerReadyRetries = maxRetries; // Stop further pings
+                
+                // Multiple update attempts when header is ready
+                setTimeout(() => updateHeaderLoginStatus(), 50);
+                setTimeout(() => updateHeaderLoginStatus(), 200);
+                setTimeout(() => updateHeaderLoginStatus(), 500);
+                return;
+            }
+            
+            // Handle login navigation from header
+            if (event.data.type === 'navigateToLogin') {
+                console.log('Navigating to login from header:', event.data.url);
+                window.location.href = event.data.url;
+                return;
+            }
             
             // Handle navigation messages from header
             if (event.data.type === 'navigateToSection') {
                 const sectionId = event.data.sectionId;
                 navigateToSection(sectionId);
             }
-            
-            // Handle search messages from header
+              // Handle search messages from header
             if (event.data.type === 'searchMovie') {
                 const query = event.data.query;
                 performSearch(query);
+            }
+            
+            // Handle user dropdown messages from header
+            if (event.data.type === 'showUserDropdown') {
+                showExternalUserDropdown(event.data.position);
+            }
+            
+            if (event.data.type === 'hideUserDropdown') {
+                hideExternalUserDropdown();
             }
         }
     });
@@ -692,6 +1063,188 @@ function initHeaderIframe() {
         }
     });
 }
+
+// GHI ĐÈ HÀM updateHeaderLoginStatus để cập nhật trực tiếp header tích hợp (không còn dùng iframe)
+function updateHeaderLoginStatus() {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    const email = localStorage.getItem('email') || '';
+    const fullName = localStorage.getItem('fullName') || '';
+    // Lấy các phần tử header
+    const signInBtn = document.getElementById('signInBtn');
+    const userMenu = document.getElementById('userMenu');
+    const displayUserName = document.getElementById('displayUserName');
+    const userAvatar = document.getElementById('userAvatar');
+    // Kiểm tra trạng thái đăng nhập
+    if (token && username) {
+        signInBtn.style.display = 'none';
+        userMenu.style.display = '';
+        userMenu.classList.add('visible');
+        displayUserName.textContent = username;
+        // Avatar chữ cái đầu
+        const firstLetter = username.charAt(0).toUpperCase();
+        userAvatar.src = `data:image/svg+xml;base64,${btoa(`
+            <svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <circle cx='20' cy='20' r='20' fill='#3498db'/>
+                <text x='20' y='26' text-anchor='middle' font-family='Arial' font-size='16' font-weight='bold' fill='white'>${firstLetter}</text>
+            </svg>
+        `)}`;
+    } else {
+        signInBtn.style.display = 'flex';
+        userMenu.style.display = 'none';
+        userMenu.classList.remove('visible');
+    }
+}
+
+// Debug functions (kept for development, can be removed in production)
+function updateDebugPanel() {
+    // Function kept for potential future debugging needs
+    console.log('Debug info - Token:', localStorage.getItem('token') ? 'Present' : 'None',
+                'Username:', localStorage.getItem('username') || 'None');
+}
+
+function manualRefreshHeader() {
+    console.log('Manual header refresh triggered');
+    updateHeaderLoginStatus();
+    
+    // Also try to call header's refresh function directly
+    const headerFrame = document.getElementById('headerFrame');
+    if (headerFrame && headerFrame.contentWindow) {
+        // Try multiple methods to refresh
+        if (headerFrame.contentWindow.refreshLoginStatus) {
+            headerFrame.contentWindow.refreshLoginStatus();
+        }
+        if (headerFrame.contentWindow.HeaderApp && headerFrame.contentWindow.HeaderApp.forceRefresh) {
+            headerFrame.contentWindow.HeaderApp.forceRefresh();
+        }
+        
+        // Also send message-based refresh
+        headerFrame.contentWindow.postMessage({
+            type: 'forceRefresh'
+        }, '*');
+    }
+    
+    console.log('Manual refresh completed');
+}
+
+function clearLoginData() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username'); 
+    localStorage.removeItem('email');
+    updateHeaderLoginStatus();
+    console.log('Login data cleared');
+}
+
+function testLogin() {
+    console.log('Test login - navigating to login page');
+    window.location.href = './login_register/login.html';
+}
+
+function simulateLogin() {
+    // Simulate a successful login for testing
+    localStorage.setItem('token', 'test-token-123');
+    localStorage.setItem('username', 'TestUser');
+    localStorage.setItem('email', 'test@example.com');
+    updateHeaderLoginStatus();
+    console.log('Simulated login completed');
+}
+
+// Global login status checker - can be called from console for debugging
+window.checkGlobalLoginStatus = function() {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    const email = localStorage.getItem('email');
+    
+    console.log('=== Global Login Status Check ===');
+    console.log('Token:', token ? 'Present (' + token.substring(0, 10) + '...)' : 'None');
+    console.log('Username:', username || 'None');
+    console.log('Email:', email || 'None');
+    console.log('Is Logged In:', !!(token && username));
+    
+    // Force header update
+    updateHeaderLoginStatus();
+    
+    // Try manual header refresh
+    const headerFrame = document.getElementById('headerFrame');
+    if (headerFrame && headerFrame.contentWindow && headerFrame.contentWindow.refreshLoginStatus) {
+        headerFrame.contentWindow.refreshLoginStatus();
+    }
+    
+    return {
+        isLoggedIn: !!(token && username),
+        token: token,
+        username: username,
+        email: email
+    };
+};
+
+// Listen for storage changes (when user logs in/out from another tab)
+window.addEventListener('storage', function(e) {
+    console.log('Storage changed:', e.key, e.newValue);
+    if (e.key === 'token' || e.key === 'username' || e.key === 'loginStatusChanged') {
+        setTimeout(() => {
+            console.log('Updating header due to storage change');
+            updateHeaderLoginStatus();
+        }, 100);
+        
+        // Multiple attempts for storage changes
+        setTimeout(() => updateHeaderLoginStatus(), 500);
+        setTimeout(() => updateHeaderLoginStatus(), 1000);
+    }
+});
+
+// Force check login status every 5 seconds (for debugging)
+setInterval(() => {
+    const currentToken = localStorage.getItem('token');
+    const currentUsername = localStorage.getItem('username');
+    if (currentToken && currentUsername) {
+        console.log('Periodic check - user is logged in:', currentUsername);
+        updateHeaderLoginStatus();
+    }
+}, 5000);
+
+// Listen for login success from popup/child windows
+window.addEventListener('message', function(e) {
+    console.log('Received message:', e.data);
+    
+    if (e.data.type === 'userLoggedIn') {
+        console.log('User logged in from child window/popup');
+        console.log('User info:', e.data.userInfo);
+        
+        // Multiple aggressive update attempts
+        setTimeout(() => updateHeaderLoginStatus(), 50);
+        setTimeout(() => updateHeaderLoginStatus(), 200);
+        setTimeout(() => updateHeaderLoginStatus(), 500);
+        setTimeout(() => updateHeaderLoginStatus(), 1000);
+        setTimeout(() => updateHeaderLoginStatus(), 2000);
+    }
+});
+
+// Update header login status when page becomes visible
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        console.log('Page became visible, checking login status...');
+        setTimeout(() => {
+            updateHeaderLoginStatus();
+        }, 100);
+    }
+});
+
+// Also check when window regains focus
+window.addEventListener('focus', function() {
+    console.log('Window gained focus, checking login status...');
+    setTimeout(() => {
+        updateHeaderLoginStatus();
+    }, 100);
+});
+
+// Check for URL hash changes that might indicate return from login
+window.addEventListener('hashchange', function() {
+    console.log('Hash changed, checking login status...');
+    setTimeout(() => {
+        updateHeaderLoginStatus();
+    }, 100);
+});
 
 // Navigation function for header communication
 function navigateToSection(sectionId) {
@@ -867,8 +1420,7 @@ document.addEventListener('keydown', function(e) {
             case '5':
                 e.preventDefault();
                 window.location.hash = 'live';
-                break;
-        }
+                break;        }
     }
     
     // Random recommendation shortcut (Ctrl/Cmd + R)
@@ -879,8 +1431,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Add CSS for smooth section targeting
-const style = document.createElement('style');
-style.textContent = `
+const smoothScrollCSS = `
     /* Smooth scroll offset for sections */
     section[id] {
         scroll-margin-top: 100px;
@@ -902,4 +1453,7 @@ style.textContent = `
     }
 `;
 
-document.head.appendChild(style);
+// Inject the CSS
+const smoothScrollStyle = document.createElement('style');
+smoothScrollStyle.textContent = smoothScrollCSS;
+document.head.appendChild(smoothScrollStyle);

@@ -39,6 +39,7 @@ public class Episode {
 
     @ManyToOne
     @JoinColumn(name = "cartoonn_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Cartoon cartoon;
 
     public Episode() {}
