@@ -372,7 +372,10 @@ main {
     transition: var(--transition);
 }
 
-.filter-radios input:checked + label, .filter-radios label:hover {
+.filter-radios input:checked + label{
+    color:var(--white);
+}
+.filter-radios label:hover {
     color: var(--light-azure);
 }
 
@@ -906,130 +909,102 @@ input ~ .checked-radio-bg{
     opacity: 0.8;
 }
 
-/*MEDIA QUERIES*/
-@media screen and (max-width: 1200px){
-    :root{
-        --padding-x: 80px;
-        --section-heading: 36px;
-    }
-
-    .banner-card .card-title{ 
-        font-size: 2.5em;
-    }
-
-    .category-grid{ 
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
+/* Popup detail styling */
+.movie-detail-popup {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    z-index: 10;
+    background: rgba(20, 24, 36, 0.97);
+    color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+    padding: 28px 24px 18px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
-@media screen and (max-width: 900px){
-    :root{
-        --padding-x: 60px;
-    }
-
-    .banner-card .card-content{
-        bottom: 40px;
-        left: 60px;
-        right: 60px;
-    }
-
-    .movies-grid{
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 25px;
-    }
+.movie-detail-popup.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
 }
 
-@media screen and (max-width: 768px){
-    :root{
-        --padding-x: 40px;
-        --section-heading: 32px;
-    }
-
-    .banner{ display: none;}
-
-    .movies{ margin-top: 100px;}
-
-    .filter-bar{
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .filter-dropdowns {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .category-grid{ 
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .achievement-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .achievements {
-        margin-left: 0;
-        margin-right: 0;
-        border-radius: 0;
-    }
+.movie-detail-popup .popup-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
 }
 
-@media screen and (max-width: 575px){
-    :root{
-        --padding-x: 20px;
-        --section-heading: 28px;
-        --font-size-large: 18px;
-    }
-
-    .movies-grid{
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 20px;
-    }
-
-    .movie-card .card-head{
-        height: 200px;
-    }
-
-    .category-grid{ 
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .category-card {
-        height: 120px;
-    }
-
-    .live-grid{
-        grid-template-columns: 1fr;
-    }
+.movie-detail-popup .popup-title {
+    display: block;
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
-/* Global layout fixes to prevent horizontal scrollbar */
-html {
-    max-width: 100%;
-    overflow-x: hidden;
+.movie-detail-popup .popup-subtitle {
+    display: block;
+    font-size: 0.95em;
+    color: #ffd700;
+    margin-bottom: 6px;
 }
 
-* {
-    max-width: 100%;
+.movie-detail-popup .popup-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
-/* Ensure no elements cause horizontal overflow */
-.container,
-section,
-div,
-main,
-article,
-aside,
-header,
-nav,
-footer {
-    max-width: 100%;
-    box-sizing: border-box;
+.movie-detail-popup .popup-btn {
+    background: #ffd700;
+    color: #222;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
 }
 
-/* Hidden utility class */
-.hidden {
-    display: none !important;
+.movie-detail-popup .popup-btn.popup-like {
+    background: #fff;
+    color: #e74c3c;
+}
+
+.movie-detail-popup .popup-btn.popup-detail {
+    background: #222;
+    color: #fff;
+    border: 1px solid #fff;
+}
+
+.movie-detail-popup .popup-info {
+    display: flex;
+    gap: 10px;
+    font-size: 0.95em;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.movie-detail-popup .popup-genres {
+    font-size: 0.95em;
+    color: #ffd700;
+    margin-bottom: 8px;
+}
+
+.movie-detail-popup .popup-desc {
+    font-size: 0.95em;
+    color: #eee;
+    margin-bottom: 0;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-card {
+    position: relative;
 }

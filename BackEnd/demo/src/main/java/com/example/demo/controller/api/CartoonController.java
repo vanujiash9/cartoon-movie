@@ -1,11 +1,18 @@
 package com.example.demo.controller.api;
 
+import com.example.demo.entity.User;
 import com.example.demo.entity.Cartoon;
+import com.example.demo.service.UserWatchHistoryService;
+import com.example.demo.service.UserAchievementService;
+import com.example.demo.service.UserService;
 import com.example.demo.service.CartoonService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +24,13 @@ import java.util.stream.Collectors;
 public class CartoonController {
     
     private final CartoonService cartoonService;
+    
+    @Autowired
+    private UserWatchHistoryService userWatchHistoryService;
+    @Autowired
+    private UserAchievementService userAchievementService;
+    @Autowired
+    private UserService userService;
     
     public CartoonController(CartoonService cartoonService) {
         this.cartoonService = cartoonService;
@@ -41,6 +55,20 @@ public class CartoonController {
         try {
             Cartoon cartoon = cartoonService.getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cartoon not found with id: " + id));
+            // Ghi nhận lượt xem nếu user đã đăng nhập
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+                String username = auth.getName();
+                User user = userService.findByUsername(username);
+                if (user != null) {
+                    userWatchHistoryService.recordWatch(user, cartoon);
+                    int watched = userWatchHistoryService.countUniqueWatched(user);
+                    // Giả sử id thành tựu "xem 10 phim" là 2
+                    if (watched >= 10) {
+                        userAchievementService.grantAchievementIfNotExists(user, 2);
+                    }
+                }
+            }
             return ResponseEntity.ok(cartoon);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

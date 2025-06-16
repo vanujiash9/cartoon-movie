@@ -3,6 +3,7 @@ package com.example.demo.controller.api;
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
+import com.example.demo.service.UserAchievementService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,8 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserAchievementService userAchievementService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -32,21 +35,20 @@ public class AuthController {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
-        user.setAvatar(request.getAvatar()); // Set avatar nếu có
+        user.setAvatar(request.getAvatar());
         user.setRole("USER");
         user.setEnabled(true);
-        user.setFullName(request.getFullName()); // Nếu muốn nhận full_name từ FE
+        user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setGender(request.getGender());
-        // Xử lý dateOfBirth (String -> LocalDateTime)
         if (request.getDateOfBirth() != null && !request.getDateOfBirth().isEmpty()) {
             try {
                 user.setDateOfBirth(java.time.LocalDateTime.parse(request.getDateOfBirth()));
-            } catch (Exception e) {
-                // Nếu FE gửi sai format, có thể bỏ qua hoặc trả về lỗi
-            }
+            } catch (Exception e) {}
         }
         userService.save(user);
+        // Gán thành tựu "Đăng ký tài khoản" (giả sử id = 1)
+        userAchievementService.grantAchievementIfNotExists(user, 1);
         return ResponseEntity.ok("Register success");
     }
 
@@ -56,7 +58,9 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // Trả về JSON thay vì text
+        User user = userService.findByUsername(request.getUsername());
+        // Gán thành tựu "Đăng nhập lần đầu" (giả sử id = 5)
+        userAchievementService.grantAchievementIfNotExists(user, 5);
         return ResponseEntity.ok(java.util.Collections.singletonMap("message", "Login success"));
     }
 }

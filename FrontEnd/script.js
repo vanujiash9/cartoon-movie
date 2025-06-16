@@ -546,7 +546,6 @@ function loadMoreMovies() {
 function createMovieCard(movie, index) {
     const movieCard = document.createElement('div');
     movieCard.className = 'movie-card';
-    // Ưu tiên dùng ảnh từ backend nếu có (không chỉ kiểm tra http)
     let imgSrc = '';
     let useSVG = false;
     if (movie.imageUrl && typeof movie.imageUrl === 'string' && movie.imageUrl.trim() !== '') {
@@ -554,16 +553,8 @@ function createMovieCard(movie, index) {
     } else {
         useSVG = true;
     }
-    // Fallback SVG: luôn hiển thị tên phim lớn, năm và thể loại nhỏ hơn, căn giữa
     const fallbackSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-        <svg width=\"200\" height=\"280\" viewBox=\"0 0 200 280\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
-
-            <rect width=\"200\" height=\"280\" fill=\"#3498db\"/>
-            <text x=\"100\" y=\"120\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"18\" fill=\"white\" font-weight=\"bold\">${(movie.title||'').slice(0,32)}</text>
-            <text x=\"100\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"13\" fill=\"#e0e0e0\">${movie.year||''}</text>
-            <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"12\" fill=\"#e0e0e0\">${(movie.genre||'').slice(0,32)}</text>
-        </svg>`);
-    // Badge màu theo trạng thái
+        <svg width=\"200\" height=\"280\" viewBox=\"0 0 200 280\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n\n            <rect width=\"200\" height=\"280\" fill=\"#3498db\"/>\n            <text x=\"100\" y=\"120\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"18\" fill=\"white\" font-weight=\"bold\">${(movie.title||'').slice(0,32)}</text>\n            <text x=\"100\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"13\" fill=\"#e0e0e0\">${movie.year||''}</text>\n            <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"12\" fill=\"#e0e0e0\">${(movie.genre||'').slice(0,32)}</text>\n        </svg>`);
     let statusBadge = '';
     if (movie.status) {
         let badgeColor = 'gray';
@@ -583,6 +574,7 @@ function createMovieCard(movie, index) {
     movieCard.innerHTML = `
         <div class=\"card-head\">
             <img src=\"${useSVG ? fallbackSVG : imgSrc}\" alt=\"${movie.title || ''}\" class=\"card-img\" style=\"object-fit:cover;width:100%;height:100%;border-radius:15px;\" onerror=\"this.onerror=null;this.src='${fallbackSVG}'\">
+            ${movie.trailerUrl ? `<video class=\"trailer-video\" src=\"${movie.trailerUrl}\" muted loop preload=\"none\" style=\"display:none;width:100%;height:100%;object-fit:cover;border-radius:15px;\"></video>` : ''}
             <div class=\"card-overlay\">
                 <div class=\"play\" onclick=\"playMovie('${movie.title}')\">
                     <span>▶️</span>
@@ -598,7 +590,54 @@ function createMovieCard(movie, index) {
             </div>
             <p class=\"card-desc\">${movie.description || ''}</p>
         </div>
+        <div class=\"movie-detail-popup\">
+            <div class=\"popup-header\">
+                <span class=\"popup-title\">${movie.title || ''}</span>
+                <span class=\"popup-subtitle\">${movie.englishTitle || ''}</span>
+            </div>
+            <div class=\"popup-actions\">
+                <button class=\"popup-btn popup-watch\">▶ Xem ngay</button>
+                <button class=\"popup-btn popup-like\">❤ Thích</button>
+                <button class=\"popup-btn popup-detail\">Chi tiết</button>
+            </div>
+            <div class=\"popup-info\">
+                <span class=\"imdb\">IMDb ${movie.imdb || ''}</span>
+                <span class=\"quality\">${movie.quality || '4K'}</span>
+                <span class=\"age\">${movie.age || 'T16'}</span>
+                <span class=\"year\">${movie.year || ''}</span>
+                <span class=\"season\">${movie.season ? 'Phần ' + movie.season : ''}</span>
+                <span class=\"episode\">${movie.episode ? 'Tập ' + movie.episode : ''}</span>
+            </div>
+            <div class=\"popup-genres\">${movie.categories ? movie.categories.map(c => `<span>${c}</span>`).join(' • ') : ''}</div>
+            <div class=\"popup-desc\">${movie.description || ''}</div>
+        </div>
     `;
+    // Hiệu ứng hover: show video, hide img
+    movieCard.addEventListener('mouseenter', function() {
+        const video = movieCard.querySelector('.trailer-video');
+        const img = movieCard.querySelector('.card-img');
+        if (video) {
+            video.style.display = 'block';
+            video.play();
+            if (img) img.style.display = 'none';
+        }
+        // Hiện popup
+        const popup = movieCard.querySelector('.movie-detail-popup');
+        if (popup) popup.classList.add('show');
+    });
+    movieCard.addEventListener('mouseleave', function() {
+        const video = movieCard.querySelector('.trailer-video');
+        const img = movieCard.querySelector('.card-img');
+        if (video) {
+            video.pause();
+            video.currentTime = 0;
+            video.style.display = 'none';
+            if (img) img.style.display = 'block';
+        }
+        // Ẩn popup
+        const popup = movieCard.querySelector('.movie-detail-popup');
+        if (popup) popup.classList.remove('show');
+    });
     return movieCard;
 }
 
@@ -781,7 +820,7 @@ function showNotification(message, type = 'success') {
     notification.style.transform = 'translateX(0)';
     
     setTimeout(() => {
-        notification.style.transform = 'translateX(400px)';
+        notification.style.transform = 'translateX(700px)';
     }, 3000);
 }
 

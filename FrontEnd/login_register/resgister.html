@@ -23,10 +23,6 @@
                 <input type="email" id="email" class="form-input" required>
             </div>
             <div class="form-group">
-                <label for="avatar">Avatar (URL ảnh)</label>
-                <input type="url" id="avatar" class="form-input" placeholder="https://...">
-            </div>
-            <div class="form-group">
                 <label for="fullName">Họ và tên</label>
                 <input type="text" id="fullName" class="form-input" required>
             </div>
@@ -73,7 +69,6 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const email = document.getElementById('email').value.trim();
-            const avatar = document.getElementById('avatar').value.trim();
             const fullName = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const gender = document.getElementById('gender').value;
@@ -117,6 +112,7 @@
                   if (res.ok) {
                     showMessage('Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...', 'success');
                     form.reset();
+                    clearRegisterFormData(); // Xóa dữ liệu tạm khi đăng ký thành công
                     
                     // Chuyển hướng đến trang đăng nhập sau 2 giây
                     setTimeout(() => {
@@ -140,6 +136,34 @@
             setTimeout(() => {
                 messageBox.classList.add('show');
             }, 10);
+        }
+
+        // TỰ ĐỘNG LƯU VÀ KHÔI PHỤC DỮ LIỆU FORM
+        const formFields = ['username', 'password', 'email', 'fullName', 'phone', 'gender', 'dateOfBirth'];
+        // Khôi phục dữ liệu khi load lại trang
+        window.addEventListener('DOMContentLoaded', function() {
+            const saved = JSON.parse(localStorage.getItem('registerFormData') || '{}');
+            formFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && saved[id]) {
+                    el.value = saved[id];
+                }
+            });
+        });
+        // Lưu dữ liệu mỗi khi thay đổi
+        formFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', function() {
+                    const saved = JSON.parse(localStorage.getItem('registerFormData') || '{}');
+                    saved[id] = el.value;
+                    localStorage.setItem('registerFormData', JSON.stringify(saved));
+                });
+            }
+        });
+        // Xóa dữ liệu tạm khi submit thành công
+        function clearRegisterFormData() {
+            localStorage.removeItem('registerFormData');
         }
     </script>
 </body>

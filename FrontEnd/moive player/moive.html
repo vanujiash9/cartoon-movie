@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>John Wick: Chapter 3 - Parabellum | Maxion</title>
-    
-    <link rel="stylesheet" href="moive.css">
+    <link rel="stylesheet" href="../moive player/moive.css">
+<!--     
+    <style>
+        
+        
+    </style> -->
 </head>
 <body>
     <!-- Notification -->
@@ -19,7 +23,12 @@
                 <span>Quay lại</span>
             </button>
             
-            <div class="logo">Maxion</div>
+            <a href="../index.html" class="logo">MAXION</a>
+            <style>
+                a{
+                     text-decoration: none;
+                }
+            </style>
             
             <div class="header-actions">
                 <button class="action-btn" onclick="toggleTheaterMode()" title="Chế độ rạp">
@@ -147,6 +156,47 @@
                 <p class="description">
                     John Wick bị truy nã với mức tiền thưởng 14 triệu đô la trên đầu và một đội quân sát thủ đang truy đuổi anh ta. Sau khi giết một thành viên của High Table - tổ chức sát thủ bí mật quốc tế, John Wick bị trục xuất khỏi mọi dịch vụ và cảnh báo trong ngành. Anh ta phải chiến đấu để thoát khỏi New York khi mà các sát thủ giỏi nhất thế giới đang săn lùng anh.
                 </p>
+                <div id="episode-list">
+    <h2>Danh sách tập</h2>
+    <div id="episodes-container"></div>
+</div>
+
+<script>
+    const cartoonId = 1; // Thay đổi ID theo cartoon
+
+    fetch(`/api/episodes/cartoon/${cartoonId}`)
+        .then(res => res.json())
+        .then(episodes => {
+            const container = document.getElementById('episodes-container');
+
+            // Nếu chưa có tập nào, tạo danh sách "placeholder" (giả)
+            if (episodes.length === 0) {
+                for (let i = 1; i <= 10; i++) {
+                    const epDiv = document.createElement('div');
+                    epDiv.className = 'episode-item disabled';
+                    epDiv.innerHTML = `<strong>Tập ${i}:</strong> Chưa có dữ liệu`;
+                    container.appendChild(epDiv);
+                }
+            } else {
+                // Có dữ liệu thật từ DB
+                episodes.sort((a, b) => a.episode_number - b.episode_number);
+                episodes.forEach(ep => {
+                    const epDiv = document.createElement('div');
+                    epDiv.className = 'episode-item';
+                    epDiv.innerHTML = `
+                        <strong>Tập ${ep.episode_number}:</strong> ${ep.title}<br>
+                        <a href="${ep.video_url}" target="_blank">Xem ngay</a>
+                    `;
+                    container.appendChild(epDiv);
+                });
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi tải danh sách tập:", err);
+            document.getElementById('episodes-container').innerText = "Không thể tải danh sách tập.";
+        });
+</script>
+
 
                 <div class="movie-actions">
                     <button class="action-button btn-primary" onclick="restartMovie()">
