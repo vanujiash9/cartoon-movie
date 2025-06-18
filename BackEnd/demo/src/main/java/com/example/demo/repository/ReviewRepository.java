@@ -13,4 +13,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     
     @Query("SELECT r FROM Review r LEFT JOIN FETCH r.cartoon")
     List<Review> findAllWithCartoon();
+
+    @Query("SELECT AVG(r.rating), COUNT(r) FROM Review r WHERE r.cartoon.id = :cartoonId")
+    Object[] findAverageRatingAndCountByCartoonId(@Param("cartoonId") Integer cartoonId);
 }

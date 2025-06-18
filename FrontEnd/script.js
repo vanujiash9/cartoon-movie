@@ -15,136 +15,6 @@ function initFooterIframe() {
     // Function content will be handled later in script
 }
 
-// Movie data
-const movies = [
-    {
-        title: 'Red Notice',
-        genre: 'Hành động/Hài',
-        year: '2021',
-        rating: '6.3',
-        categories: ['action', 'comedy']
-    },
-    {
-        title: 'Spider-Man: Homecoming',
-        genre: 'Hành động/Thám hiểm',
-        year: '2017',
-        rating: '7.4',
-        categories: ['action', 'adventure']
-    },
-    {
-        title: 'Ma Trận: Hồi Sinh',
-        genre: 'Khoa học viễn tưởng/Hành động',
-        year: '2021',
-        rating: '5.6',
-        categories: ['scifi', 'action']
-    },
-    {
-        title: 'Bất Tử',
-        genre: 'Phiêu lưu/Hành động',
-        year: '2021',
-        rating: '6.3',
-        categories: ['adventure', 'action']
-    },
-    {
-        title: 'Dune: Phần Một',
-        genre: 'Khoa học viễn tưởng/Phiêu lưu',
-        year: '2021',
-        rating: '8.0',
-        categories: ['scifi', 'adventure']
-    },
-    {
-        title: '1917',
-        genre: 'Chiến tranh/Chính kịch',
-        year: '2019',
-        rating: '8.2',
-        categories: ['war', 'drama']
-    },
-    {
-        title: 'Shang-Chi và Huyền Thoại Mười Chiếc Nhẫn',
-        genre: 'Hành động/Giả tưởng',
-        year: '2021',
-        rating: '7.4',
-        categories: ['action', 'fantasy']
-    },
-    {
-        title: 'Casino Royale',
-        genre: 'Hành động/Phiêu lưu',
-        year: '2006',
-        rating: '8.0',
-        categories: ['action', 'adventure']
-    },
-    {
-        title: 'The Dark Knight',
-        genre: 'Hành động/Phiêu lưu',
-        year: '2008',
-        rating: '9.0',
-        categories: ['action', 'adventure']
-    },
-    {
-        title: 'Black Panther',
-        genre: 'Hành động/Phiêu lưu',
-        year: '2018',
-        rating: '7.3',
-        categories: ['action', 'adventure']
-    },
-    {
-        title: 'Venom',
-        genre: 'Hành động/Phiêu lưu',
-        year: '2018',
-        rating: '6.6',
-        categories: ['action', 'adventure']
-    },
-    {
-        title: 'Chúa Nhẫn: Sự Trở Về Của Nhà Vua',
-        genre: 'Giả tưởng/Phiêu lưu',
-        year: '2003',
-        rating: '9.0',
-        categories: ['fantasy', 'adventure']
-    },
-    {
-        title: 'Saving Private Ryan',
-        genre: 'Chiến tranh/Hành động',
-        year: '1998',
-        rating: '8.6',
-        categories: ['war', 'action']
-    },
-    {
-        title: 'Interstellar',
-        genre: 'Khoa học viễn tưởng/Phiêu lưu',
-        year: '2014',
-        rating: '8.7',
-        categories: ['scifi', 'adventure']
-    },
-    {
-        title: 'Gladiator',
-        genre: 'Hành động/Phiêu lưu',
-        year: '2000',
-        rating: '8.5',
-        categories: ['action', 'adventure']
-    },
-    {
-        title: 'Avengers: Endgame',
-        genre: 'Hành động/Khoa học viễn tưởng',
-        year: '2019',
-        rating: '8.5',
-        categories: ['action', 'scifi']
-    },
-    {
-        title: 'Wonder Woman 1984',
-        genre: 'Hành động/Phiêu lưu',
-        year: '2020',
-        rating: '5.4',
-        categories: ['action', 'adventure']
-    },
-    {
-        title: 'Captain Marvel',
-        genre: 'Hành động/Khoa học viễn tưởng',
-        year: '2019',
-        rating: '5.4',
-        categories: ['action', 'scifi']
-    }
-];
-
 // DOM elements
 const genreFilter = document.getElementById('genreFilter');
 const yearFilter = document.getElementById('yearFilter');
@@ -191,8 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     
     // Additional check after DOM fully loaded
-    setTimeout(() => {
-        const token = localStorage.getItem('token');
+    setTimeout(() => {        const token = localStorage.getItem('token');
         const username = localStorage.getItem('username');
         if (token && username) {
             console.log('Found user login data after DOM load, updating header...');
@@ -201,11 +70,91 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
 
-// Initialize application
-function initializeApp() {
-    console.log('Initializing app with', movies.length, 'movies');
-    currentMovies = [...movies];
+// Tích hợp API backend lấy danh sách phim
+function fetchMoviesFromAPI() {
+    fetch('http://localhost:8080/api/cartoons')
+        .then(res => res.json())
+        .then(data => {
+            console.log('[API] Dữ liệu trả về:', data);
+            if (Array.isArray(data) && data.length > 0) {
+                window.movies = data.map(item => ({
+                    id: item.id, // Quan trọng: phải có id để watchFirstEpisode hoạt động
+                    title: item.title || '',
+                    description: item.description || '',
+                    year: item.releaseYear ? String(item.releaseYear) : '',
+                    imageUrl: item.imageUrl || '',
+                    genre: item.genre || '',
+                    status: item.status || '',
+                    trailerUrl: item.trailerUrl || '',
+                    videoUrl: item.videoUrl || '',
+                    totalEpisodes: item.totalEpisodes || '',
+                }));
+                currentMovies = [...window.movies];
+                console.log('[API] Đã lấy dữ liệu phim từ backend:', currentMovies);
+                displayMovies();
+            } else {
+                console.warn('[API] API trả về mảng rỗng hoặc không hợp lệ, dùng dữ liệu mẫu.');
+                useBackupMovieData();
+            }
+        })
+        .catch(err => {
+            console.error('[API] Không thể lấy dữ liệu từ backend, dùng dữ liệu mẫu.', err);
+            useBackupMovieData();
+        });
+}
+
+// Sử dụng dữ liệu mẫu khi API không khả dụng
+function useBackupMovieData() {
+    // Định nghĩa dữ liệu mẫu với ID động
+    const backupMovies = [
+        {
+            id: 1,
+            title: 'One Piece',
+            description: 'Cuộc phiêu lưu của Monkey D. Luffy và băng hải tặc Mũ Rơm',
+            year: '1999',
+            imageUrl: 'https://via.placeholder.com/300x400?text=One+Piece',
+            genre: 'Phiêu lưu',
+            status: 'Đang phát sóng',
+            trailerUrl: '',
+            videoUrl: '',
+            totalEpisodes: '1000+'
+        },
+        {
+            id: 2,
+            title: 'Naruto',
+            description: 'Câu chuyện về ninja trẻ Uzumaki Naruto',
+            year: '2002',
+            imageUrl: 'https://via.placeholder.com/300x400?text=Naruto',
+            genre: 'Hành động',
+            status: 'Hoàn thành',
+            trailerUrl: '',
+            videoUrl: '',
+            totalEpisodes: '720'
+        },
+        {
+            id: 3,
+            title: 'Dragon Ball Z',
+            description: 'Cuộc chiến bảo vệ Trái Đất của Son Goku',
+            year: '1989',
+            imageUrl: 'https://via.placeholder.com/300x400?text=Dragon+Ball+Z',
+            genre: 'Hành động',
+            status: 'Hoàn thành',
+            trailerUrl: '',
+            videoUrl: '',
+            totalEpisodes: '291'
+        }
+    ];
+    
+    window.movies = backupMovies;
+    currentMovies = [...window.movies];
+    console.log('[BACKUP] Sử dụng dữ liệu phim mẫu:', currentMovies);
     displayMovies();
+}
+
+// Gọi hàm fetchMoviesFromAPI khi khởi tạo app
+function initializeApp() {
+    console.log('Initializing app...');
+    fetchMoviesFromAPI();
     animateProgressBars();
     setupEventListeners();
     updateQuickStats();
@@ -228,59 +177,8 @@ function initializeApp() {
         }
     }, 2000);
     
-    // Initialize hash navigation
     initializeHashNavigation();
     
-    // Show welcome message for first-time visitors
-    if (!localStorage.getItem('hasVisited')) {
-        setTimeout(() => {
-            showNotification('Chào mừng đến với Maxion! Khám phá hàng nghìn bộ phim chất lượng cao.', 'success');
-            localStorage.setItem('hasVisited', 'true');
-        }, 2000);
-    }
-}
-
-// Tích hợp API backend lấy danh sách phim
-function fetchMoviesFromAPI() {
-    fetch('http://localhost:8080/api/cartoons')
-        .then(res => res.json())
-        .then(data => {
-            console.log('[API] Dữ liệu trả về:', data);
-            if (Array.isArray(data) && data.length > 0) {
-                window.movies = data.map(item => ({
-                    title: item.title || '',
-                    description: item.description || '',
-                    year: item.releaseYear ? String(item.releaseYear) : '',
-                    imageUrl: item.imageUrl || '',
-                    genre: item.genre || '',
-                    status: item.status || '',
-                    trailerUrl: item.trailerUrl || '',
-                    videoUrl: item.videoUrl || '',
-                    totalEpisodes: item.totalEpisodes || '',
-                }));
-                currentMovies = [...window.movies];
-                console.log('[API] Đã lấy dữ liệu phim từ backend:', currentMovies);
-                displayMovies();
-            } else {
-                console.warn('[API] API trả về mảng rỗng hoặc không hợp lệ, dùng dữ liệu mẫu.');
-                currentMovies = [...movies];
-                displayMovies();
-            }
-        })
-        .catch(err => {
-            console.error('[API] Không thể lấy dữ liệu từ backend, dùng dữ liệu mẫu.', err);
-            currentMovies = [...movies];
-            displayMovies();
-        });
-}
-
-// Gọi hàm fetchMoviesFromAPI khi khởi tạo app
-function initializeApp() {
-    fetchMoviesFromAPI();
-    animateProgressBars();
-    setupEventListeners();
-    updateQuickStats();
-    initializeHashNavigation();
     if (!localStorage.getItem('hasVisited')) {
         setTimeout(() => {
             showNotification('Chào mừng đến với Maxion! Khám phá hàng nghìn bộ phim chất lượng cao.', 'success');
@@ -469,12 +367,12 @@ function sortMovies() {
             currentMovies.sort((a, b) => parseInt(b.year) - parseInt(a.year));
             break;
         case 'featured':
-        default:
-            // Reset to original filtered list
+        default:            // Reset to original filtered list
             const selectedGenre = genreFilter ? genreFilter.value : 'all';
             const selectedYear = yearFilter ? yearFilter.value : 'all';
             
-            currentMovies = [...movies].filter(movie => {
+            const allMovies = window.movies || [];
+            currentMovies = [...allMovies].filter(movie => {
                 const genreMatch = selectedGenre === 'all' || movie.categories.includes(selectedGenre);
                 const yearMatch = selectedYear === 'all' || checkYearRange(movie.year, selectedYear);
                 
@@ -544,6 +442,7 @@ function loadMoreMovies() {
 }
 
 function createMovieCard(movie, index) {
+    console.log('Creating card for movie:', movie.title, 'ID:', movie.id, 'Full movie object:', movie);
     const movieCard = document.createElement('div');
     movieCard.className = 'movie-card';
     let imgSrc = '';
@@ -555,88 +454,97 @@ function createMovieCard(movie, index) {
     }
     const fallbackSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
         <svg width=\"200\" height=\"280\" viewBox=\"0 0 200 280\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n\n            <rect width=\"200\" height=\"280\" fill=\"#3498db\"/>\n            <text x=\"100\" y=\"120\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"18\" fill=\"white\" font-weight=\"bold\">${(movie.title||'').slice(0,32)}</text>\n            <text x=\"100\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"13\" fill=\"#e0e0e0\">${movie.year||''}</text>\n            <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"12\" fill=\"#e0e0e0\">${(movie.genre||'').slice(0,32)}</text>\n        </svg>`);
-    let statusBadge = '';
+
+    let statusBadgeHTML = '';
     if (movie.status) {
         let badgeColor = 'gray';
         let badgeText = '';
         switch (movie.status.toLowerCase()) {
             case 'active':
-                badgeColor = '#27ae60'; badgeText = 'Đang chiếu'; break;
+            case 'đang chiếu':
+                badgeColor = 'var(--gradient-success)'; badgeText = 'Đang chiếu'; break;
             case 'inactive':
+            case 'ngừng chiếu':
                 badgeColor = '#e74c3c'; badgeText = 'Ngừng chiếu'; break;
             case 'coming soon':
+            case 'sắp ra mắt':
                 badgeColor = '#f1c40f'; badgeText = 'Sắp ra mắt'; break;
             default:
                 badgeColor = '#7f8c8d'; badgeText = movie.status;
         }
-        statusBadge = `<span class=\"movie-status-badge\" style=\"background:${badgeColor};color:#fff;padding:2px 10px;border-radius:8px;font-size:12px;position:absolute;bottom:10px;right:10px;z-index:2;\">${badgeText}</span>`;
+        statusBadgeHTML = `<span class=\"status-badge-on-card\" style=\"background:${badgeColor};\">${badgeText}</span>`;
     }
+
+    // Fallback cho các trường thông tin
+    const genre = movie.genre || 'Không rõ thể loại';
+    const year = movie.year || 'N/A';
+    const description = movie.description || 'Không có mô tả.';
+
+    // Detect YouTube link
+    let trailerEmbed = '';
+    if (movie.trailerUrl && (movie.trailerUrl.includes('youtube.com') || movie.trailerUrl.includes('youtu.be'))) {
+        // Convert to embed link
+        let youtubeId = '';
+        const ytMatch = movie.trailerUrl.match(/(?:youtu.be\/|youtube.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
+        if (ytMatch && ytMatch[1]) youtubeId = ytMatch[1];
+        if (youtubeId) {
+            trailerEmbed = `<iframe class=\"trailer-iframe\" src=\"https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen style=\"display:none;width:100%;height:100%;border-radius:15px 15px 0 0;\"></iframe>`;
+        }
+    }
+
     movieCard.innerHTML = `
         <div class=\"card-head\">
-            <img src=\"${useSVG ? fallbackSVG : imgSrc}\" alt=\"${movie.title || ''}\" class=\"card-img\" style=\"object-fit:cover;width:100%;height:100%;border-radius:15px;\" onerror=\"this.onerror=null;this.src='${fallbackSVG}'\">
-            ${movie.trailerUrl ? `<video class=\"trailer-video\" src=\"${movie.trailerUrl}\" muted loop preload=\"none\" style=\"display:none;width:100%;height:100%;object-fit:cover;border-radius:15px;\"></video>` : ''}
-            <div class=\"card-overlay\">
-                <div class=\"play\" onclick=\"playMovie('${movie.title}')\">
-                    <span>▶️</span>
-                </div>
-            </div>
-            ${statusBadge}
+            <img src=\"${useSVG ? fallbackSVG : imgSrc}\" alt=\"${movie.title || ''}\" class=\"card-img\" style=\"object-fit:cover;width:100%;height:100%;border-radius:15px 15px 0 0;\">
+            ${movie.trailerUrl && !trailerEmbed ? `<video class=\"trailer-video\" src=\"${movie.trailerUrl}\" muted loop preload=\"none\" style=\"display:none;width:100%;height:100%;object-fit:cover;border-radius:15px 15px 0 0;\"></video>` : ''}
+            ${trailerEmbed}
+            ${statusBadgeHTML}
         </div>
         <div class=\"card-body\">
-            <h3 class=\"card-title\">${movie.title || ''}</h3>
-            <div class=\"card-info\">
-                <span class=\"genre\">${movie.genre || ''}</span>
-                <span class=\"year\">${movie.year || ''}</span>
+            <h3 class=\"card-title\">${movie.title || ''}</h3>            <div class=\"card-info card-extra-info\" style=\"display:none\">
+                <span class=\"genre\">${genre}</span>
+                <span class=\"year\">${year}</span>
+            </div>            <div class=\"card-actions card-extra-info\" style=\"display:none\">
+                <button class=\"popup-btn popup-watch\" onclick=\"watchFirstEpisode(${movie.id}, '${movie.title}')\">▶ Xem ngay</button>
+                <button class=\"popup-btn popup-like\" onclick=\"toggleBookmark('${movie.title}', this)\">❤ Thích</button>
+                <button class=\"popup-btn popup-detail\" onclick=\"showMovieDetails('${movie.title}')\">Chi tiết</button>
             </div>
-            <p class=\"card-desc\">${movie.description || ''}</p>
-        </div>
-        <div class=\"movie-detail-popup\">
-            <div class=\"popup-header\">
-                <span class=\"popup-title\">${movie.title || ''}</span>
-                <span class=\"popup-subtitle\">${movie.englishTitle || ''}</span>
-            </div>
-            <div class=\"popup-actions\">
-                <button class=\"popup-btn popup-watch\">▶ Xem ngay</button>
-                <button class=\"popup-btn popup-like\">❤ Thích</button>
-                <button class=\"popup-btn popup-detail\">Chi tiết</button>
-            </div>
-            <div class=\"popup-info\">
-                <span class=\"imdb\">IMDb ${movie.imdb || ''}</span>
-                <span class=\"quality\">${movie.quality || '4K'}</span>
-                <span class=\"age\">${movie.age || 'T16'}</span>
-                <span class=\"year\">${movie.year || ''}</span>
-                <span class=\"season\">${movie.season ? 'Phần ' + movie.season : ''}</span>
-                <span class=\"episode\">${movie.episode ? 'Tập ' + movie.episode : ''}</span>
-            </div>
-            <div class=\"popup-genres\">${movie.categories ? movie.categories.map(c => `<span>${c}</span>`).join(' • ') : ''}</div>
-            <div class=\"popup-desc\">${movie.description || ''}</div>
+            <p class=\"card-description-overlay card-extra-info\" style=\"display:none\">${description}</p>
         </div>
     `;
-    // Hiệu ứng hover: show video, hide img
+    // Hiệu ứng hover: show trailer (video hoặc iframe), hide img, show info
     movieCard.addEventListener('mouseenter', function() {
         const video = movieCard.querySelector('.trailer-video');
+        const iframe = movieCard.querySelector('.trailer-iframe');
         const img = movieCard.querySelector('.card-img');
         if (video) {
             video.style.display = 'block';
             video.play();
             if (img) img.style.display = 'none';
         }
-        // Hiện popup
-        const popup = movieCard.querySelector('.movie-detail-popup');
-        if (popup) popup.classList.add('show');
+        if (iframe) {
+            iframe.style.display = 'block';
+            if (img) img.style.display = 'none';
+        }
+        // Hiện info dưới ảnh khi hover
+        movieCard.querySelectorAll('.card-extra-info').forEach(e => e.style.display = 'block');
     });
     movieCard.addEventListener('mouseleave', function() {
         const video = movieCard.querySelector('.trailer-video');
+        const iframe = movieCard.querySelector('.trailer-iframe');
         const img = movieCard.querySelector('.card-img');
         if (video) {
             video.pause();
             video.currentTime = 0;
             video.style.display = 'none';
-            if (img) img.style.display = 'block';
         }
-        // Ẩn popup
-        const popup = movieCard.querySelector('.movie-detail-popup');
-        if (popup) popup.classList.remove('show');
+        if (iframe) {
+            iframe.style.display = 'none';
+        }
+        if (img) {
+            img.style.removeProperty('display');
+        }
+        // Ẩn info dưới ảnh khi không hover
+        movieCard.querySelectorAll('.card-extra-info').forEach(e => e.style.display = 'none');
     });
     return movieCard;
 }
@@ -1277,6 +1185,7 @@ window.addEventListener('focus', function() {
     }, 100);
 });
 
+
 // Check for URL hash changes that might indicate return from login
 window.addEventListener('hashchange', function() {
     console.log('Hash changed, checking login status...');
@@ -1496,3 +1405,11 @@ const smoothScrollCSS = `
 const smoothScrollStyle = document.createElement('style');
 smoothScrollStyle.textContent = smoothScrollCSS;
 document.head.appendChild(smoothScrollStyle);
+
+// Hàm xem tập phim đầu tiên
+function watchFirstEpisode(cartoonId, title) {
+    console.log(`Đang chuyển tới trang xem phim ${title} (Cartoon ID: ${cartoonId})`);
+    
+    // Chuyển thẳng tới trang movie.html với ID phim
+    window.location.href = `moive player/moive.html?id=${cartoonId}`;
+}

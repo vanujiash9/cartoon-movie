@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Episodes</title>
+    <style>
+        .episodes-horizontal {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .episode-number-btn {
+            padding: 10px 15px;
+            background: #333;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .episode-number-btn.active {
+            background: #007bff;
+        }
+        .episode-number-btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Naruto Episodes Debug</h1>
+    <div id="episodes-container">Loading episodes...</div>
+    
+    <script>
+        const movieId = 2;
+        let currentEpisodes = [];
+        
+        console.log('Starting to load episodes for movie ID:', movieId);
+        
+        fetch(`http://localhost:8080/api/cartoons/${movieId}/episodes`)
+            .then(res => {
+                console.log('Response status:', res.status);
+                return res.json();
+            })
+            .then(episodes => {
+                console.log('Episodes loaded:', episodes);
+                
+                const container = document.getElementById('episodes-container');
+                
+                if (!episodes || episodes.length === 0) {
+                    container.innerHTML = '<p>No episodes found</p>';
+                    return;
+                }
+                
+                // Sort and save
+                episodes.sort((a, b) => a.episode_number - b.episode_number);
+                currentEpisodes = episodes;
+                
+                // Create buttons
+                const buttonsHtml = episodes.map((ep, index) => `
+                    <button class="episode-number-btn ${index === 0 ? 'active' : ''}" 
+                            onclick="selectEpisode(${index})"
+                            data-episode-number="${ep.episode_number}">
+                        Tập ${ep.episode_number}
+                    </button>
+                `).join('');
+                
+                container.innerHTML = `
+                    <div class="episodes-horizontal">
+                        ${buttonsHtml}
+                    </div>
+                    <div id="current-episode">
+                        <h3>Đang xem: Tập ${episodes[0].episode_number} - ${episodes[0].title}</h3>
+                    </div>
+                `;
+                
+                console.log('Episodes UI created successfully');
+            })
+            .catch(err => {
+                console.error('Error loading episodes:', err);
+                document.getElementById('episodes-container').innerHTML = 
+                    '<p style="color: red;">Error loading episodes: ' + err.message + '</p>';
+            });
+        
+        function selectEpisode(index) {
+            console.log('Selecting episode index:', index);
+            
+            if (!currentEpisodes || !currentEpisodes[index]) {
+                console.error('Episode not found at index:', index);
+                return;
+            }
+            
+            const episode = currentEpisodes[index];
+            console.log('Selected episode:', episode);
+            
+            // Update active button
+            document.querySelectorAll('.episode-number-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.episode-number-btn').forEach(btn => {
+                const epNum = btn.getAttribute('data-episode-number');
+                if (epNum && parseInt(epNum) === episode.episode_number) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Update current episode display
+            document.getElementById('current-episode').innerHTML = 
+                `<h3>Đang xem: Tập ${episode.episode_number} - ${episode.title}</h3>
+                 <p>Video URL: ${episode.video_url}</p>`;
+        }
+    </script>
+</body>
+</html>

@@ -23,7 +23,13 @@ public class EpisodeService {
     }
 
     public List<Episode> getByCartoonId(Integer cartoonId) {
-        return episodeRepository.findByCartoonId(cartoonId);
+        try {
+            return episodeRepository.findByCartoonId(cartoonId);
+        } catch (Exception e) {
+            // Fallback to native query if JPA query fails
+            System.err.println("JPA query failed, using native query: " + e.getMessage());
+            return episodeRepository.findByCartoonIdNative(cartoonId);
+        }
     }
 
     public int countByCartoonId(Integer cartoonId) {

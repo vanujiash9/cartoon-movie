@@ -111,9 +111,13 @@
                             <span id="fullscreenIcon">⛶</span>
                         </button>
                     </div>
-                </div>
-            </div>
+                </div>            </div>
         </div>
+    </div>
+
+    <!-- Current Episode Info -->
+    <div class="current-episode-info">
+        <h3 class="current-episode-title">Đang tải...</h3>
     </div>
 
     <!-- Picture in Picture Container -->
@@ -127,95 +131,283 @@
     <!-- Content Section -->
     <div class="content-section" id="contentSection">
         <div class="movie-info">
-            <div class="movie-details">
-                <h1>John Wick: Chapter 3 - Parabellum</h1>
+            <div class="movie-details">                <h1>John Wick: Chapter 3 - Parabellum</h1>
                 
-                <div class="movie-meta">
-                    <div class="meta-item rating">
+                <p class="description">
+                    John Wick bị truy nã với mức tiền thưởng 14 triệu đô la trên đầu và một đội quân sát thủ đang truy đuổi anh ta. Sau khi giết một thành viên của High Table - tổ chức sát thủ bí mật quốc tế, John Wick bị trục xuất khỏi mọi dịch vụ và cảnh báo trong ngành. Anh ta phải chiến đấu để thoát khỏi New York khi mà các sát thủ giỏi nhất thế giới đang săn lùng anh.
+                </p>
+
+                <!-- Movie Meta Information -->
+                <div class="movie-meta" id="movieMeta">                    <div class="meta-item rating">
                         <span>⭐</span>
-                        <span>7.4</span>
+                        <span id="movieRating">7.4</span>
+                        <span id="reviewCount" style="font-size: 0.9em; opacity: 0.8;"></span>
                     </div>
-                    <div class="meta-item">
+                    <div class="meta-item year">
                         <span>📅</span>
-                        <span>2019</span>
+                        <span id="movieYear">2002</span>
                     </div>
-                    <div class="meta-item">
+                    <div class="meta-item duration">
                         <span>⏱️</span>
-                        <span>2h 11phút</span>
+                        <span id="movieDuration">2h 11phút</span>
                     </div>
-                    <div class="meta-item">
-                        <span>🎬</span>
-                        <span>Hành động, Thriller</span>
+                    <div class="meta-item genre">
+                        <span>🎭</span>
+                        <span id="movieGenre">Hành động</span>
                     </div>
-                    <div class="meta-item">
+                    <div class="meta-item age-rating">
                         <span>🔞</span>
                         <span>R - 17+</span>
                     </div>
                 </div>
 
-                <p class="description">
-                    John Wick bị truy nã với mức tiền thưởng 14 triệu đô la trên đầu và một đội quân sát thủ đang truy đuổi anh ta. Sau khi giết một thành viên của High Table - tổ chức sát thủ bí mật quốc tế, John Wick bị trục xuất khỏi mọi dịch vụ và cảnh báo trong ngành. Anh ta phải chiến đấu để thoát khỏi New York khi mà các sát thủ giỏi nhất thế giới đang săn lùng anh.
-                </p>
+                <!-- Like/Dislike Actions -->
+                <div class="rating-actions">
+                    <button class="rating-btn" id="likeBtn" onclick="toggleLike()">
+                        <span>👍</span>
+                        <span>Thích</span>
+                        <span class="count" id="likeCount">0</span>
+                    </button>
+                    <button class="rating-btn" id="dislikeBtn" onclick="toggleDislike()">
+                        <span>👎</span>
+                        <span>Không thích</span>
+                        <span class="count" id="dislikeCount">0</span>
+                    </button>
+                </div>
+
+                <!-- Movie Actions -->
+                <div class="movie-actions">
+                    <button class="action-btn primary" onclick="restartMovie()">
+                        <span>🔄</span>
+                        <span>Xem lại từ đầu</span>
+                    </button>
+                    <button class="action-btn" onclick="toggleFavorite()">
+                        <span>❤️</span>
+                        <span id="favoriteText">Thêm vào yêu thích</span>
+                    </button>
+                    <button class="action-btn" onclick="downloadMovie()">
+                        <span>⬇️</span>
+                        <span>Tải xuống</span>
+                    </button>
+                    <button class="action-btn" onclick="shareMovie()">
+                        <span>📤</span>
+                        <span>Chia sẻ</span>
+                    </button>
+                    <button class="action-btn" onclick="toggleComments()">
+                        <span>💬</span>
+                        <span>Bình luận</span>
+                    </button>
+                </div>
                 <div id="episode-list">
     <h2>Danh sách tập</h2>
     <div id="episodes-container"></div>
 </div>
 
 <script>
-    const cartoonId = 1; // Thay đổi ID theo cartoon
+// Lấy id phim từ URL
+function getMovieIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+const movieId = getMovieIdFromUrl();
 
-    fetch(`/api/episodes/cartoon/${cartoonId}`)
+// Global variable để lưu danh sách episodes
+let currentEpisodes = [];
+
+// Lấy thông tin phim và cập nhật tiêu đề động
+if (movieId) {
+    fetch(`http://localhost:8080/api/cartoons/${movieId}`)
         .then(res => res.json())
-        .then(episodes => {
-            const container = document.getElementById('episodes-container');
+        .then(movie => {
+            // Cập nhật tiêu đề trang
+            document.title = movie.title + ' | Maxion';
+            // Cập nhật tiêu đề hiển thị
+            const h1 = document.querySelector('.movie-details h1');
+            if (h1) h1.textContent = movie.title;
+            
+            // Cập nhật thông tin meta phim
+            updateMovieInfo(movie);
+            
+            // Cập nhật mô tả phim
+            const description = document.querySelector('.movie-details .description');
+            if (description && movie.description) {
+                description.textContent = movie.description;
+            }
+            
+            // Cập nhật năm phát hành
+            const yearElement = document.querySelector('.meta-item:nth-child(2) span:nth-child(2)');
+            if (yearElement && movie.releaseYear) {
+                yearElement.textContent = movie.releaseYear;
+            }
+            
+            // Cập nhật thể loại
+            const genreElement = document.querySelector('.meta-item:nth-child(4) span:nth-child(2)');
+            if (genreElement && movie.genre) {
+                genreElement.textContent = movie.genre;
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi tải thông tin phim:", err);
+        });
+}
 
-            // Nếu chưa có tập nào, tạo danh sách "placeholder" (giả)
+if (!movieId) {
+    document.getElementById('episodes-container').innerText = "Không tìm thấy id phim!";
+} else {
+    fetch(`http://localhost:8080/api/cartoons/${movieId}/episodes`)
+        .then(res => {
+            console.log('Episodes API status:', res.status);
+            console.log('Episodes API content-type:', res.headers.get('content-type'));
+            if (!res.ok) throw new Error("Không tìm thấy tập phim!");
+            
+            // Kiểm tra content-type trước khi parse JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('API không trả về JSON, có thể là trang lỗi HTML');
+            }
+            
+            return res.json();
+        })        .then(episodes => {
+            console.log('[DEBUG] Episodes received:', episodes);
+            const container = document.getElementById('episodes-container');
+            console.log('[DEBUG] Container found:', container);
+            
             if (episodes.length === 0) {
-                for (let i = 1; i <= 10; i++) {
-                    const epDiv = document.createElement('div');
-                    epDiv.className = 'episode-item disabled';
-                    epDiv.innerHTML = `<strong>Tập ${i}:</strong> Chưa có dữ liệu`;
-                    container.appendChild(epDiv);
-                }
+                // Nếu chưa có tập nào, hiển thị thông báo
+                container.innerHTML = '<p>Phim này chưa có tập nào để xem.</p>';
             } else {
-                // Có dữ liệu thật từ DB
+                // Sắp xếp tập theo thứ tự
                 episodes.sort((a, b) => a.episode_number - b.episode_number);
-                episodes.forEach(ep => {
-                    const epDiv = document.createElement('div');
-                    epDiv.className = 'episode-item';
-                    epDiv.innerHTML = `
-                        <strong>Tập ${ep.episode_number}:</strong> ${ep.title}<br>
-                        <a href="${ep.video_url}" target="_blank">Xem ngay</a>
-                    `;
-                    container.appendChild(epDiv);
-                });
+                console.log('[DEBUG] Episodes sorted:', episodes);
+                
+                // Lưu vào biến global
+                currentEpisodes = episodes;
+                console.log('[DEBUG] currentEpisodes saved:', currentEpisodes);
+                
+                // Tự động phát tập đầu tiên
+                const firstEpisode = episodes[0];
+                if (firstEpisode && firstEpisode.video_url) {
+                    console.log('Đang load tập đầu tiên:', firstEpisode);
+                    loadEpisode(firstEpisode);
+                }                
+                
+                // Hiển thị danh sách tập theo hàng ngang với onclick đơn giản hơn
+                const episodesHtml = episodes.map((ep, index) => `
+                    <div class="episode-number-btn ${ep.id === firstEpisode.id ? 'active' : ''}" 
+                         onclick="loadEpisodeByIndex(${index})"
+                         data-episode-id="${ep.id}"
+                         data-episode-number="${ep.episode_number}"
+                         title="${ep.title}">
+                        ${ep.episode_number}
+                    </div>
+                `).join('');
+                
+                console.log('[DEBUG] Episodes HTML:', episodesHtml);
+                
+                const finalHtml = `
+                    <div class="episodes-horizontal">
+                        ${episodesHtml}
+                    </div>
+                `;
+                console.log('[DEBUG] Final HTML:', finalHtml);
+                
+                container.innerHTML = finalHtml;
+                console.log('[DEBUG] Container updated');
             }
         })
         .catch(err => {
             console.error("Lỗi khi tải danh sách tập:", err);
             document.getElementById('episodes-container').innerText = "Không thể tải danh sách tập.";
         });
+}
+
+// Hàm load episode bằng index từ currentEpisodes array
+function loadEpisodeByIndex(index) {
+    if (currentEpisodes && currentEpisodes[index]) {
+        const episode = currentEpisodes[index];
+        console.log('Loading episode by index:', index, episode);
+        loadEpisode(episode);
+    } else {
+        console.error('Không tìm thấy episode với index:', index);
+    }
+}
+
+// Hàm load và phát một tập phim
+function loadEpisode(episode) {
+    console.log('Loading episode:', episode);
+    console.log('Episode number:', episode.episode_number);
+    console.log('Video URL:', episode.video_url);
+    
+    // Update active episode first
+    updateActiveEpisode(episode.episode_number);
+    
+    // Nếu là YouTube URL, chuyển đổi sang embed format
+    let videoUrl = episode.video_url;
+    if (videoUrl.includes('youtu.be/') || videoUrl.includes('youtube.com/watch')) {
+        // Chuyển YouTube URL sang embed format
+        let videoId = '';
+        if (videoUrl.includes('youtu.be/')) {
+            videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+        } else if (videoUrl.includes('youtube.com/watch?v=')) {
+            videoId = videoUrl.split('v=')[1].split('&')[0];
+        }
+        
+        if (videoId) {
+            console.log('Loading YouTube video:', videoId);
+            // Tạo iframe cho YouTube thay vì dùng video element
+            const videoContainer = document.querySelector('.video-player');
+            videoContainer.innerHTML = `
+                <iframe width="100%" height="100%" 
+                        src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            `;
+            
+            // Update episode title
+            updateEpisodeTitle(episode);
+            return;
+        }
+    }
+    
+    // Đối với video thông thường (MP4, etc.), restore video element if needed
+    let video = document.getElementById('videoElement');
+    if (!video) {
+        console.log('Restoring video element...');
+        const videoContainer = document.querySelector('.video-player');
+        videoContainer.innerHTML = `
+            <video class="video-element" id="videoElement" preload="metadata">
+                <source src="" type="video/mp4">
+                <track kind="captions" src="" srclang="vi" label="Tiếng Việt">
+                <track kind="captions" src="" srclang="en" label="English">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+            <!-- Add back other video player UI elements if needed -->
+        `;
+        video = document.getElementById('videoElement');
+    }    
+    // Đối với video thông thường (MP4, etc.)
+    video.src = videoUrl;
+    video.load();
+    
+    // Tự động phát
+    video.play().catch(err => {
+        console.log('Autoplay bị chặn:', err);
+    });
+    
+    // Update episode title
+    updateEpisodeTitle(episode);
+}
+
+// Helper function to update episode title
+function updateEpisodeTitle(episode) {
+    const currentEpisodeTitle = document.querySelector('.current-episode-title');
+    if (currentEpisodeTitle) {
+        currentEpisodeTitle.textContent = `Tập ${episode.episode_number}: ${episode.title}`;
+    }
+}
 </script>
-
-
-                <div class="movie-actions">
-                    <button class="action-button btn-primary" onclick="restartMovie()">
-                        <span>🔄</span>
-                        Xem lại từ đầu
-                    </button>
-                    <button class="action-button btn-secondary" onclick="addToWatchlist()">
-                        <span>❤️</span>
-                        Thêm vào yêu thích
-                    </button>
-                    <button class="action-button btn-secondary" onclick="downloadMovie()">
-                        <span>📥</span>
-                        Tải xuống
-                    </button>
-                    <button class="action-button btn-secondary" onclick="shareMovie()">
-                        <span>📤</span>
-                        Chia sẻ
-                    </button>
-                </div>
 
                 <div class="cast-crew">
                     <h3>Diễn viên & Đạo diễn</h3>
@@ -244,65 +436,63 @@
                 </div>
             </div>
 
-            <div class="sidebar">
-                <h3>Phim liên quan</h3>
+            <div class="sidebar">                <h3>Phim liên quan</h3>
                 <div class="related-movies">
-                    <div class="related-movie" onclick="playRelatedMovie('john-wick-1')">
-                        <div class="related-poster">JW1</div>
+                    <div class="related-movie" onclick="playRelatedMovie(2)">
+                        <div class="related-poster">NA</div>
                         <div class="related-info">
-                            <h4>John Wick</h4>
-                            <p>2014 • 1h 41phút</p>
+                            <h4>Naruto</h4>
+                            <p>2002 • Anime</p>
                             <div class="related-rating">
                                 <span>⭐</span>
-                                <span>7.4</span>
+                                <span>8.5</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="related-movie" onclick="playRelatedMovie('john-wick-2')">
-                        <div class="related-poster">JW2</div>
+                    <div class="related-movie" onclick="playRelatedMovie(6)">
+                        <div class="related-poster">JK</div>
                         <div class="related-info">
-                            <h4>John Wick: Chapter 2</h4>
-                            <p>2017 • 2h 2phút</p>
+                            <h4>Jujutsu Kaisen</h4>
+                            <p>2020 • Anime</p>
                             <div class="related-rating">
                                 <span>⭐</span>
-                                <span>7.5</span>
+                                <span>9.0</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="related-movie" onclick="playRelatedMovie('john-wick-4')">
-                        <div class="related-poster">JW4</div>
-                        <div class="related-info">
-                            <h4>John Wick: Chapter 4</h4>
-                            <p>2023 • 2h 49phút</p>
+                    <div class="related-movie" onclick="playRelatedMovie(5)">
+                        <div class="related-poster">AOT</div>                        <div class="related-info">
+                            <h4>Attack on Titan</h4>
+                            <p>2013 • Anime</p>
                             <div class="related-rating">
                                 <span>⭐</span>
-                                <span>7.7</span>
+                                <span>9.2</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="related-movie" onclick="playRelatedMovie('nobody')">
-                        <div class="related-poster">NBD</div>
+                    <div class="related-movie" onclick="playRelatedMovie(7)">
+                        <div class="related-poster">DS</div>
                         <div class="related-info">
-                            <h4>Nobody</h4>
-                            <p>2021 • 1h 32phút</p>
+                            <h4>Demon Slayer</h4>
+                            <p>2019 • Anime</p>
                             <div class="related-rating">
                                 <span>⭐</span>
-                                <span>7.4</span>
+                                <span>8.8</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="related-movie" onclick="playRelatedMovie('atomic-blonde')">
-                        <div class="related-poster">AB</div>
+                    <div class="related-movie" onclick="playRelatedMovie(9)">
+                        <div class="related-poster">MHA</div>
                         <div class="related-info">
-                            <h4>Atomic Blonde</h4>
-                            <p>2017 • 1h 55phút</p>
+                            <h4>My Hero Academia</h4>
+                            <p>2016 • Anime</p>
                             <div class="related-rating">
                                 <span>⭐</span>
-                                <span>6.7</span>
+                                <span>8.6</span>
                             </div>
                         </div>
                     </div>
@@ -878,8 +1068,8 @@
         }
 
         function playRelatedMovie(movieId) {
-            showNotification(`Đang tải ${movieId}...`, 'success');
-            // In a real app, this would load the selected movie
+            // Chuyển hướng sang trang phim mới với id
+            window.location.href = `moive.html?id=${movieId}`;
         }
 
         // Comments
@@ -934,11 +1124,201 @@
             if (!e.target.closest('.quality-selector') && !e.target.closest('[onclick*="toggleQuality"]')) {
                 qualitySelector.classList.remove('active');
             }
-        });
-
-        // Initialize focus for keyboard controls
+        });        // Initialize focus for keyboard controls
         videoPlayer.setAttribute('tabindex', '0');
         videoPlayer.focus();
+
+        // ===== NEW FUNCTIONS =====
+        
+        // Like/Dislike functionality
+        let isLiked = false;
+        let isDisliked = false;
+        let likeCount = 0;
+        let dislikeCount = 0;
+
+        function toggleLike() {
+            const likeBtn = document.getElementById('likeBtn');
+            const dislikeBtn = document.getElementById('dislikeBtn');
+            const likeCountEl = document.getElementById('likeCount');
+            
+            if (isLiked) {
+                // Unlike
+                isLiked = false;
+                likeCount = Math.max(0, likeCount - 1);
+                likeBtn.classList.remove('liked');
+            } else {
+                // Like
+                isLiked = true;
+                likeCount += 1;
+                likeBtn.classList.add('liked');
+                
+                // Remove dislike if exists
+                if (isDisliked) {
+                    isDisliked = false;
+                    dislikeCount = Math.max(0, dislikeCount - 1);
+                    dislikeBtn.classList.remove('disliked');
+                    document.getElementById('dislikeCount').textContent = dislikeCount;
+                }
+            }
+            
+            likeCountEl.textContent = likeCount;
+            showNotification(isLiked ? 'Đã thích!' : 'Đã bỏ thích!', 'success');
+        }
+
+        function toggleDislike() {
+            const likeBtn = document.getElementById('likeBtn');
+            const dislikeBtn = document.getElementById('dislikeBtn');
+            const dislikeCountEl = document.getElementById('dislikeCount');
+            
+            if (isDisliked) {
+                // Remove dislike
+                isDisliked = false;
+                dislikeCount = Math.max(0, dislikeCount - 1);
+                dislikeBtn.classList.remove('disliked');
+            } else {
+                // Dislike
+                isDisliked = true;
+                dislikeCount += 1;
+                dislikeBtn.classList.add('disliked');
+                
+                // Remove like if exists
+                if (isLiked) {
+                    isLiked = false;
+                    likeCount = Math.max(0, likeCount - 1);
+                    likeBtn.classList.remove('liked');
+                    document.getElementById('likeCount').textContent = likeCount;
+                }
+            }
+            
+            dislikeCountEl.textContent = dislikeCount;
+            showNotification(isDisliked ? 'Đã không thích!' : 'Đã bỏ không thích!', 'success');
+        }
+
+        // Restart movie
+        function restartMovie() {
+            const video = document.getElementById('videoElement');
+            if (video) {
+                video.currentTime = 0;
+                video.play();
+                showNotification('Đang phát lại từ đầu', 'success');
+            }
+        }
+
+        // Favorite functionality
+        let isFavorite = false;
+        function toggleFavorite() {
+            const favoriteText = document.getElementById('favoriteText');
+            isFavorite = !isFavorite;
+            
+            if (isFavorite) {
+                favoriteText.textContent = 'Đã thêm vào yêu thích';
+                showNotification('Đã thêm vào danh sách yêu thích!', 'success');
+            } else {
+                favoriteText.textContent = 'Thêm vào yêu thích';
+                showNotification('Đã xóa khỏi danh sách yêu thích!', 'warning');
+            }
+        }
+
+        // Download movie
+        function downloadMovie() {
+            showNotification('Tính năng tải xuống đang được phát triển', 'info');
+        }
+
+        // Share movie
+        function shareMovie() {
+            if (navigator.share && navigator.share.url) {
+                navigator.share({
+                    title: document.title,
+                    text: 'Xem phim tuyệt vời này!',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showNotification('Đã sao chép liên kết chia sẻ!', 'success');
+            }
+        }
+
+        // Comments toggle
+        let commentsVisible = false;
+        function toggleComments() {
+            commentsVisible = !commentsVisible;
+            if (commentsVisible) {
+                showNotification('Tính năng bình luận đang được phát triển', 'info');
+            }
+        }        // Update movie meta information from API
+        function updateMovieInfo(movie) {
+            document.getElementById('movieYear').textContent = movie.releaseYear || '2002';
+            document.getElementById('movieGenre').textContent = movie.genre || 'Hành động';
+            
+            // Tạm thời sử dụng rating tĩnh do API rating có vấn đề
+            const defaultRating = '7.4';
+            document.getElementById('movieRating').textContent = defaultRating;
+            
+            // TODO: Load rating from API when fixed
+            // loadMovieRating(movie.id);
+            
+            // Update description if available
+            const descEl = document.querySelector('.description');
+            if (movie.description && descEl) {
+                descEl.textContent = movie.description;
+            }
+        }
+
+        // Load rating from API
+        function loadMovieRating(movieId) {
+            // Fallback rating nếu không có ID hoặc API thất bại
+            const fallbackRating = '7.4';
+            const fallbackReviews = '0';
+            
+            if (!movieId) {
+                document.getElementById('movieRating').textContent = fallbackRating;
+                return;
+            }
+            
+            // Gọi API để lấy rating thực
+            fetch(`http://localhost:8080/api/cartoons/${movieId}/rating`)
+                .then(res => {
+                    if (!res.ok) throw new Error('API rating failed');
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.averageRating !== undefined) {
+                        const rating = data.averageRating > 0 ? data.averageRating.toFixed(1) : fallbackRating;
+                        const totalReviews = data.totalReviews || 0;
+                        
+                        document.getElementById('movieRating').textContent = rating;
+                        
+                        // Cập nhật số lượng reviews nếu có element
+                        const reviewCountEl = document.getElementById('reviewCount');
+                        if (reviewCountEl) {
+                            reviewCountEl.textContent = `(${totalReviews} đánh giá)`;
+                        }
+                        
+                        console.log(`[RATING] Loaded rating: ${rating}/10 from ${totalReviews} reviews`);
+                    } else {
+                        document.getElementById('movieRating').textContent = fallbackRating;
+                    }
+                })
+                .catch(err => {
+                    console.warn('[RATING] Failed to load rating from API, using fallback:', err);
+                    document.getElementById('movieRating').textContent = fallbackRating;                });
+        }
+        
+        // Update active episode button
+        function updateActiveEpisode(episodeNumber) {
+            // Remove active class from all episode buttons
+            document.querySelectorAll('.episode-number-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to current episode by data attribute
+            document.querySelectorAll('.episode-number-btn').forEach(btn => {
+                const btnEpisodeNumber = btn.getAttribute('data-episode-number');
+                if (btnEpisodeNumber && parseInt(btnEpisodeNumber) === episodeNumber) {                    btn.classList.add('active');
+                }
+            });
+        }
+        
     </script>
 </body>
 </html>

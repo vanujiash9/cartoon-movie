@@ -10,6 +10,10 @@ import java.util.List;
 public interface EpisodeRepository extends JpaRepository<Episode, Integer> {
     @Query("SELECT e FROM Episode e WHERE e.cartoon.id = :cartoonId")
     List<Episode> findByCartoonId(@Param("cartoonId") Integer cartoonId);
+    
+    // Backup query sử dụng native SQL
+    @Query(value = "SELECT * FROM episodes WHERE cartoonn_id = :cartoonId", nativeQuery = true)
+    List<Episode> findByCartoonIdNative(@Param("cartoonId") Integer cartoonId);
 
     @Query("SELECT COUNT(e) FROM Episode e WHERE e.cartoon.id = :cartoonId")
     int countByCartoonId(@Param("cartoonId") Integer cartoonId);

@@ -411,12 +411,18 @@
                 // For actual functionality, you'd pass episode data to the modal
                 openModal('video-player-modal');
             });
-        });
-        
-        // "Xem ngay" button
+        });        // "Xem ngay" button
         document.querySelector('.btn-lg.btn-primary').addEventListener('click', function() {
-             // For actual functionality, you'd likely go to the first episode or latest
-            openModal('video-player-modal');
+            // Get movie ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('id');
+            
+            if (movieId) {
+                // Chuyển tới trang xem phim
+                window.location.href = `../moive player/moive.html?id=${movieId}`;
+            } else {
+                alert('Không tìm thấy ID phim!');
+            }
         });
 
         // Modal functions (should be in script.js but included here if script.js is minimal)
