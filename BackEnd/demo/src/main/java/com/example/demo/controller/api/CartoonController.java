@@ -3,7 +3,7 @@ package com.example.demo.controller.api;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Cartoon;
 import com.example.demo.entity.Episode;
-import com.example.demo.repository.ReviewRepository;
+import com.example.demo.repository.CommentRepository;
 import com.example.demo.service.UserWatchHistoryService;
 import com.example.demo.service.UserAchievementService;
 import com.example.demo.service.UserService;
@@ -13,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +29,8 @@ import java.util.stream.Collectors;
 public class CartoonController {
     
     private final CartoonService cartoonService;
-    private final EpisodeService episodeService;
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final EpisodeService episodeService;    @Autowired
+    private CommentRepository commentRepository;
     @Autowired
     private UserWatchHistoryService userWatchHistoryService;
     @Autowired
@@ -153,32 +151,30 @@ public ResponseEntity<Cartoon> createCartoon(@RequestBody Cartoon cartoon) {
             // Kiểm tra cartoon có tồn tại không
             cartoonService.getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cartoon not found with id: " + id));
-            
-            // Lấy rating từ database
-            Object[] result = reviewRepository.findAverageRatingAndCountByCartoonId(id);
+              // Lấy rating từ database
+            Object[] result = commentRepository.findAverageRatingAndCountByCartoonId(id);
             
             System.out.println("Rating result: " + java.util.Arrays.toString(result));
             
             if (result != null && result.length >= 2) {
                 Object avgObj = result[0];
                 Object countObj = result[1];
-                
-                Double avgRating = 0.0;
-                Integer totalReviews = 0;
+                  Double avgRating = 0.0;
+                Integer totalComments = 0;
                 
                 if (avgObj != null) {
                     avgRating = Double.valueOf(avgObj.toString());
                 }
                 
                 if (countObj != null) {
-                    totalReviews = Integer.valueOf(countObj.toString());
+                    totalComments = Integer.valueOf(countObj.toString());
                 }
                 
                 rating.put("averageRating", Math.round(avgRating * 10.0) / 10.0);
-                rating.put("totalReviews", totalReviews);
+                rating.put("totalComments", totalComments);
             } else {
                 rating.put("averageRating", 0.0);
-                rating.put("totalReviews", 0);
+                rating.put("totalComments", 0);
             }
             
             return ResponseEntity.ok(rating);
@@ -190,7 +186,7 @@ public ResponseEntity<Cartoon> createCartoon(@RequestBody Cartoon cartoon) {
             e.printStackTrace();
             rating.put("error", "Server error: " + e.getMessage());
             rating.put("averageRating", 0.0);
-            rating.put("totalReviews", 0);
+            rating.put("totalComments", 0);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(rating);
         }
     }
@@ -206,6 +202,36 @@ public ResponseEntity<Cartoon> createCartoon(@RequestBody Cartoon cartoon) {
             // Lấy danh sách episodes
             List<Episode> episodes = episodeService.getByCartoonId(id);
             return ResponseEntity.ok(episodes);
+            
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    // API để lấy comments của một cartoon
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<List<Map<String, Object>>> getCartoonComments(@PathVariable Integer id) {
+        try {
+            // Kiểm tra cartoon có tồn tại không
+            cartoonService.getById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cartoon not found with id: " + id));
+              // Lấy danh sách comments từ CommentRepository
+            List<Object[]> results = commentRepository.findCommentsForCartoon(id);
+            
+            List<Map<String, Object>> comments = results.stream().map(row -> {
+                Map<String, Object> comment = new HashMap<>();
+                comment.put("id", row[0]);
+                comment.put("username", row[1]);
+                comment.put("content", row[2]);
+                comment.put("rating", row[3]);
+                comment.put("createdAt", row[4]);
+                return comment;
+            }).collect(Collectors.toList());
+            
+            return ResponseEntity.ok(comments);
             
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

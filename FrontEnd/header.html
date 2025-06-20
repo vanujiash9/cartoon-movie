@@ -41,11 +41,32 @@
                     </button>
 
                     <div class="search-suggestions" id="searchSuggestions"></div>
-                </form>
-
-                <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
+                </form>                <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
                     <span>🎤</span>
-                </button>                <a href="./login_register/login.html" target="_top" class="navbar-signin" id="signInBtn">
+                </button>
+
+                <!-- Notification Bell -->
+                <div class="notification-bell" id="notificationBell" title="Thông báo">
+                    <button class="notification-btn" id="notificationBtn">
+                        <span class="bell-icon">🔔</span>
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </button>
+                    
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h4>Thông báo</h4>
+                            <button class="mark-all-read" id="markAllRead">Đánh dấu tất cả đã đọc</button>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-item loading">
+                                <span>Đang tải...</span>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="#" onclick="viewAllNotifications()">Xem tất cả thông báo</a>
+                        </div>
+                    </div>
+                </div><a href="./login_register/login.html" target="_top" class="navbar-signin" id="signInBtn">
                     <span id="signInText">Đăng nhập</span>
                     <span style="margin-left: 8px;">➡️</span>
                 </a>
@@ -980,8 +1001,7 @@
                 setTimeout(() => checkLoginStatus(), 500);
             }
         };
-        
-        // Add a way to manually refresh login status (for debugging)
+          // Add a way to manually refresh login status (for debugging)
         window.refreshLoginStatus = function() {
             console.log('Manual refresh login status called');
             isLoggedIn = checkUserLoginState();
@@ -994,6 +1014,216 @@
             setTimeout(() => checkLoginStatus(), 500);
             
             showNotification('Đã làm mới trạng thái đăng nhập', 'success');
+        };
+
+        // Notification Bell Functionality
+        let notificationBell, notificationBtn, notificationDropdown, notificationBadge, notificationList;
+        let notifications = [];
+        let unreadCount = 0;
+
+        function initializeNotifications() {
+            notificationBell = document.getElementById('notificationBell');
+            notificationBtn = document.getElementById('notificationBtn');
+            notificationDropdown = document.getElementById('notificationDropdown');
+            notificationBadge = document.getElementById('notificationBadge');
+            notificationList = document.getElementById('notificationList');
+
+            if (!notificationBtn) {
+                console.log('Notification elements not found');
+                return;
+            }
+
+            // Toggle dropdown on click
+            notificationBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleNotificationDropdown();
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!notificationBell.contains(e.target)) {
+                    closeNotificationDropdown();
+                }
+            });
+
+            // Mark all as read
+            const markAllReadBtn = document.getElementById('markAllRead');
+            if (markAllReadBtn) {
+                markAllReadBtn.addEventListener('click', markAllNotificationsAsRead);
+            }
+
+            // Load notifications if user is logged in
+            if (isLoggedIn) {
+                loadNotifications();
+                // Auto refresh every 30 seconds
+                setInterval(loadNotifications, 30000);
+            }
+        }
+
+        function toggleNotificationDropdown() {
+            if (notificationDropdown.classList.contains('show')) {
+                closeNotificationDropdown();
+            } else {
+                openNotificationDropdown();
+            }
+        }
+
+        function openNotificationDropdown() {
+            notificationDropdown.classList.add('show');
+            if (isLoggedIn) {
+                loadNotifications();
+            }
+        }
+
+        function closeNotificationDropdown() {
+            notificationDropdown.classList.remove('show');
+        }
+
+        async function loadNotifications() {
+            if (!isLoggedIn) {
+                updateNotificationList([]);
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:8080/api/notifications', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    notifications = await response.json();
+                    updateNotificationList(notifications);
+                    updateNotificationBadge();
+                } else if (response.status === 401) {
+                    console.log('Unauthorized - user not logged in');
+                    updateNotificationList([]);
+                } else {
+                    console.error('Failed to load notifications:', response.status);
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function updateNotificationList(notificationArray) {
+            if (!notificationList) return;
+
+            if (notificationArray.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="notification-empty">
+                        <div class="notification-empty-icon">🔔</div>
+                        <div>Không có thông báo nào</div>
+                    </div>
+                `;
+                return;
+            }
+
+            notificationList.innerHTML = notificationArray.map(notification => `
+                <div class="notification-item ${!notification.isRead ? 'unread' : ''}" onclick="markNotificationAsRead(${notification.id})">
+                    <div class="notification-icon">
+                        ${getNotificationIcon(notification.content)}
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Thông báo mới</div>
+                        <div class="notification-message">${notification.content}</div>
+                        <div class="notification-time">${formatNotificationTime(notification.createdAt)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateNotificationBadge() {
+            unreadCount = notifications.filter(n => !n.isRead).length;
+            
+            if (notificationBadge) {
+                notificationBadge.textContent = unreadCount;
+                
+                if (unreadCount > 0) {
+                    notificationBadge.classList.add('show');
+                    notificationBadge.classList.add('pulse');
+                } else {
+                    notificationBadge.classList.remove('show');
+                    notificationBadge.classList.remove('pulse');
+                }
+            }
+        }
+
+        function getNotificationIcon(content) {
+            if (content.includes('like') || content.includes('thích')) return '👍';
+            if (content.includes('comment') || content.includes('bình luận')) return '💬';
+            if (content.includes('phim') || content.includes('movie')) return '🎬';
+            return '🔔';
+        }
+
+        function formatNotificationTime(dateString) {
+            if (!dateString) return 'Vừa xong';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Vừa xong';
+            if (diffMins < 60) return `${diffMins} phút trước`;
+            if (diffHours < 24) return `${diffHours} giờ trước`;
+            if (diffDays < 7) return `${diffDays} ngày trước`;
+            
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/notifications/read/${notificationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Update local state
+                    const notification = notifications.find(n => n.id === notificationId);
+                    if (notification) {
+                        notification.isRead = true;
+                        updateNotificationList(notifications);
+                        updateNotificationBadge();
+                    }
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        async function markAllNotificationsAsRead() {
+            const unreadNotifications = notifications.filter(n => !n.isRead);
+            
+            for (const notification of unreadNotifications) {
+                await markNotificationAsRead(notification.id);
+            }
+            
+            closeNotificationDropdown();
+        }
+
+        function viewAllNotifications() {
+            // Navigate to notifications page or open modal
+            console.log('View all notifications clicked');
+            closeNotificationDropdown();
+        }
+
+        // Add notification functionality to main initialization
+        const originalInitializeHeader = initializeHeader;
+        initializeHeader = function() {
+            originalInitializeHeader();
+            initializeNotifications();
         };
     </script>
 </body>

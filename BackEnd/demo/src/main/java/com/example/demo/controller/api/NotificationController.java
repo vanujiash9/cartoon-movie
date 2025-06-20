@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/notifications")
+@CrossOrigin(origins = "*")
 public class NotificationController {
     @Autowired
     private NotificationService notificationService;
@@ -39,5 +40,45 @@ public class NotificationController {
         if (notification == null) return ResponseEntity.badRequest().body("Không tìm thấy thông báo");
         notificationService.markAsRead(notification);
         return ResponseEntity.ok("Đã đánh dấu đã đọc");
+    }
+
+    // Đếm số thông báo chưa đọc
+    @GetMapping("/unread-count")
+    public ResponseEntity<?> getUnreadCount() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập để xem thông báo");
+        }
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+        Long count = notificationService.getUnreadCount(user);
+        return ResponseEntity.ok(count);
+    }
+
+    // Đánh dấu tất cả thông báo đã đọc
+    @PostMapping("/mark-all-read")
+    public ResponseEntity<?> markAllAsRead() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập để thực hiện hành động này");
+        }
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+        notificationService.markAllAsRead(user);
+        return ResponseEntity.ok("Đã đánh dấu tất cả thông báo đã đọc");
+    }
+
+    // Test endpoint để tạo thông báo
+    @PostMapping("/test")
+    public ResponseEntity<?> createTestNotification(@RequestBody java.util.Map<String, String> body) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập để tạo thông báo");
+        }
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+        String content = body.getOrDefault("content", "Đây là thông báo test");
+        notificationService.sendNotification(user, content);
+        return ResponseEntity.ok("Đã tạo thông báo test thành công");
     }
 }

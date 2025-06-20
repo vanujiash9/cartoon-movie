@@ -3,7 +3,7 @@ package com.example.demo.controller.admin;
 import com.example.demo.entity.Cartoon;
 import com.example.demo.service.CartoonService;
 import com.example.demo.service.EpisodeService;
-import com.example.demo.service.ReviewService;
+import com.example.demo.service.CommentService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,15 +19,15 @@ import java.util.List;
 @RequestMapping("/admin/movies")
 public class AdminMovieController {
 
-    private final ReviewService reviewService;
+    private final CommentService commentService;
     private final EpisodeService episodeService;
     
     private static final Logger logger = LoggerFactory.getLogger(AdminMovieController.class);
     private final CartoonService cartoonService;
     
-    public AdminMovieController(CartoonService cartoonService, ReviewService reviewService, EpisodeService episodeService) {
+    public AdminMovieController(CartoonService cartoonService, CommentService commentService, EpisodeService episodeService) {
         this.cartoonService = cartoonService;
-        this.reviewService = reviewService;
+        this.commentService = commentService;
         this.episodeService = episodeService;
     }
     
@@ -147,9 +147,9 @@ public class AdminMovieController {
         }
     }
     
-    @GetMapping("/reviews")
-    public String viewReviews(@RequestParam Integer cartoonId, RedirectAttributes redirectAttributes) {
-        // Redirect to the dedicated review controller with cartoon filter
-        return "redirect:/admin/reviews/cartoon/" + cartoonId;
+    @GetMapping("/comments")
+    public String viewComments(@RequestParam Integer cartoonId, RedirectAttributes redirectAttributes) {
+        // Redirect to the dedicated comments controller with cartoon filter
+        return "redirect:/admin/comments?cartoonId=" + cartoonId;
     }
 }

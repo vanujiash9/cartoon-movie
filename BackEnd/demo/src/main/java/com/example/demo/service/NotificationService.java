@@ -34,4 +34,16 @@ public class NotificationService {
     public Notification getById(Integer id) {
         return notificationRepository.findById(id).orElse(null);
     }
+
+    public Long getUnreadCount(User user) {
+        return notificationRepository.countUnreadByUser(user);
+    }
+
+    public void markAllAsRead(User user) {
+        List<Notification> unreadNotifications = notificationRepository.findUnreadByUserOrderByCreatedAtDesc(user);
+        for (Notification notification : unreadNotifications) {
+            notification.setIsRead(true);
+        }
+        notificationRepository.saveAll(unreadNotifications);
+    }
 }

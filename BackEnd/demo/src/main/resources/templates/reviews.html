@@ -14,9 +14,9 @@
     <!-- Admin CSS -->
     <link rel="stylesheet" th:href="@{/css/admin.css}">
     <link rel="stylesheet" th:href="@{/css/sidebar.css}">
-    <link rel="stylesheet" th:href="@{/css/reviews.css}">
+    <link rel="stylesheet" th:href="@{/css/comments.css}">
 <head>
-    <title>Manage Reviews - Cartoon Movie Management</title>
+    <title>Manage Comments - Cartoon Movie Management</title>
     
 </head>
 
@@ -24,13 +24,13 @@
     <nav th:replace="fragments/sidebar :: sidebar"></nav>
 
     <div layout:fragment="content">
-        <div class="reviews-main-content">
+        <div class="comments-main-content">
             <div class="page-header">
-                <h2>Manage Reviews</h2>
+                <h2>Manage Comments</h2>
                 <div class="page-actions">
                     <div class="stats-summary">
                         <span class="badge badge-info">
-                            <i class="fas fa-star"></i> Total Reviews: <strong th:text="${totalReviews}">0</strong>
+                            <i class="fas fa-star"></i> Total Comments: <strong th:text="${totalComments}">0</strong>
                         </span>
                         <span class="badge badge-warning" th:if="${averageRating != null}">
                             <i class="fas fa-chart-line"></i> Average Rating: <strong th:text="${#numbers.formatDecimal(averageRating, 0, 1)}">0.0</strong>
@@ -41,7 +41,7 @@
 
             <!-- Filter Toolbar -->
             <div class="toolbar">
-                <form class="filter-form" th:action="@{/admin/reviews}" method="get">
+                <form class="filter-form" th:action="@{/admin/comments}" method="get">
                     <select name="cartoonId" class="form-control">
                         <option value="">All Movies</option>
                         <option th:each="cartoon : ${cartoons}" 
@@ -73,18 +73,18 @@
                         <i class="fas fa-filter"></i> Filter
                     </button>
                     
-                    <a href="/admin/reviews" class="btn btn-outline-secondary">
+                    <a href="/admin/comments" class="btn btn-outline-secondary">
                         <i class="fas fa-refresh"></i> Reset
                     </a>
                 </form>
                 
-                <form class="search-form" th:action="@{/admin/reviews}" method="get">
+                <form class="search-form" th:action="@{/admin/comments}" method="get">
                     <input type="hidden" name="cartoonId" th:value="${param.cartoonId}" />
                     <input type="hidden" name="rating" th:value="${param.rating}" />
                     <input type="hidden" name="sort" th:value="${param.sort}" />
                     <div class="input-group">
                         <i class="fas fa-search"></i>
-                        <input type="text" name="keyword" placeholder="Search reviews..." th:value="${param.keyword}" />
+                        <input type="text" name="keyword" placeholder="Search comments..." th:value="${param.keyword}" />
                         <button type="submit" class="btn btn-outline-primary">Search</button>
                     </div>
                 </form>
@@ -107,72 +107,72 @@
                 </button>
             </div>
 
-            <!-- Reviews List -->
-            <div class="reviews-container">
-                <div th:each="review : ${reviews}" class="review-card">
-                    <div class="review-header">
-                        <div class="review-info">
+            <!-- Comments List -->
+            <div class="comments-container">
+                <div th:each="comment : ${comments}" class="comment-card">
+                    <div class="comment-header">
+                        <div class="comment-info">
                             <div class="username">
                                 <i class="fas fa-user"></i>
-                                <strong th:text="${review.username}">Username</strong>
+                                <strong th:text="${comment.user.fullName}">Username</strong>
                             </div>
                             <div class="rating">
                                 <span class="rating-stars">
                                     <i th:each="i : ${#numbers.sequence(1, 5)}" 
-                                       th:class="${i <= review.rating} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></i>
+                                       th:class="${i <= comment.rating} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></i>
                                 </span>
-                                <span class="rating-value" th:text="${review.rating} + '/5'">5/5</span>
+                                <span class="rating-value" th:text="${comment.rating} + '/5'">5/5</span>
                             </div>
-                            <div class="review-date">
+                            <div class="comment-date">
                                 <i class="fas fa-calendar"></i>
-                                <small th:text="${review.created_at != null ? #temporals.format(review.created_at, 'dd/MM/yyyy HH:mm') : 'N/A'}">Date</small>
+                                <small th:text="${comment.createdAt != null ? #temporals.format(comment.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}">Date</small>
                             </div>
                         </div>
-                        <div class="review-actions">
+                        <div class="comment-actions">
                             <button type="button" class="btn btn-sm btn-outline-danger"
-                                    th:attr="data-review-id=${review.id},data-review-username=${review.username}"
-                                    onclick="deleteReview(this.getAttribute('data-review-id'), this.getAttribute('data-review-username'))"
-                                    title="Delete Review">
+                                    th:attr="data-comment-id=${comment.id},data-comment-username=${comment.user.fullName}"
+                                    onclick="deleteComment(this.getAttribute('data-comment-id'), this.getAttribute('data-comment-username'))"
+                                    title="Delete Comment">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </div>
                     
-                    <div class="review-movie">
+                    <div class="comment-movie">
                         <div class="movie-info">
-                            <img th:src="${review.cartoon != null ? review.cartoon.imageUrl : '/images/placeholder-movie.png'}" 
-                                 th:alt="${review.cartoon != null ? review.cartoon.title : 'No Movie'}" class="movie-thumb" 
+                            <img th:src="${comment.cartoon != null ? comment.cartoon.imageUrl : '/images/placeholder-movie.png'}" 
+                                 th:alt="${comment.cartoon != null ? comment.cartoon.title : 'No Movie'}" class="movie-thumb" 
                                  onerror="this.src='/images/placeholder-movie.png'"/>
                             <div class="movie-details">
-                                <strong th:text="${review.cartoon != null ? review.cartoon.title : 'No Movie Assigned'}">Movie Title</strong>
-                                <small class="text-muted" th:text="${review.cartoon != null ? review.cartoon.releaseYear : ''}">Year</small>
+                                <strong th:text="${comment.cartoon != null ? comment.cartoon.title : 'No Movie Assigned'}">Movie Title</strong>
+                                <small class="text-muted" th:text="${comment.cartoon != null ? comment.cartoon.releaseYear : ''}">Year</small>
                             </div>
                         </div>
-                        <a th:href="${review.cartoon != null ? '/admin/movies/edit/' + review.cartoon.id : '#'}" 
+                        <a th:href="${comment.cartoon != null ? '/admin/movies/edit/' + comment.cartoon.id : '#'}" 
                            class="btn btn-sm btn-outline-primary"
-                           th:classappend="${review.cartoon == null ? ' disabled' : ''}">
+                           th:classappend="${comment.cartoon == null ? ' disabled' : ''}">
                             <i class="fas fa-edit"></i> Edit Movie
                         </a>
                     </div>
                     
-                    <div class="review-content">
-                        <p th:text="${review.content}">Review content goes here...</p>
+                    <div class="comment-content">
+                        <p th:text="${comment.content}">Comment content goes here...</p>
                     </div>
                 </div>
                 
                 <!-- Empty State -->
-                <div th:if="${#lists.isEmpty(reviews)}" class="empty-state">
+                <div th:if="${#lists.isEmpty(comments)}" class="empty-state">
                     <i class="fas fa-star fa-3x text-muted"></i>
-                    <h4>No Reviews Found</h4>
+                    <h4>No Comments Found</h4>
                     <p class="text-muted">
                         <span th:if="${(param.cartoonId != null and !param.cartoonId.isEmpty()) or (param.rating != null and !param.rating.isEmpty()) or (param.keyword != null and !param.keyword.isEmpty())}">
-                            Try adjusting your filters to see more reviews.
+                            Try adjusting your filters to see more comments.
                         </span>
                         <span th:unless="${(param.cartoonId != null and !param.cartoonId.isEmpty()) or (param.rating != null and !param.rating.isEmpty()) or (param.keyword != null and !param.keyword.isEmpty())}">
-                            No reviews have been submitted yet.
+                            No comments have been submitted yet.
                         </span>
                     </p>
-                    <a href="/admin/reviews" class="btn btn-primary" th:if="${(param.cartoonId != null and !param.cartoonId.isEmpty()) or (param.rating != null and !param.rating.isEmpty()) or (param.keyword != null and !param.keyword.isEmpty())}">
+                    <a href="/admin/comments" class="btn btn-primary" th:if="${(param.cartoonId != null and !param.cartoonId.isEmpty()) or (param.rating != null and !param.rating.isEmpty()) or (param.keyword != null and !param.keyword.isEmpty())}">
                         <i class="fas fa-refresh"></i> Clear Filters
                     </a>
                 </div>
@@ -180,22 +180,22 @@
 
             <!-- Pagination -->
             <div th:if="${totalPages > 1}" class="pagination-wrapper">
-                <nav aria-label="Reviews pagination">
+                <nav aria-label="Comments pagination">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/reviews(page=${currentPage - 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
+                            <a class="page-link" th:href="@{/admin/comments(page=${currentPage - 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
                                 Previous
                             </a>
                         </li>
                         
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
                             class="page-item" th:classappend="${i == currentPage} ? 'active'">
-                            <a class="page-link" th:href="@{/admin/reviews(page=${i}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}" 
+                            <a class="page-link" th:href="@{/admin/comments(page=${i}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}" 
                                th:text="${i + 1}">1</a>
                         </li>
                         
                         <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/reviews(page=${currentPage + 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
+                            <a class="page-link" th:href="@{/admin/comments(page=${currentPage + 1}, cartoonId=${param.cartoonId}, rating=${param.rating}, sort=${param.sort}, keyword=${param.keyword})}">
                                 Next
                             </a>
                         </li>
@@ -203,9 +203,9 @@
                 </nav>
             </div>
 
-            <!-- Review Statistics -->
+            <!-- Comment Statistics -->
             <div class="stats-section">
-                <h4>Review Statistics</h4>
+                <h4>Comment Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h5>Rating Distribution</h5>
@@ -216,9 +216,8 @@
                                     <i class="fas fa-star text-warning"></i>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar" th:style="'width: ' + ${ratingDistribution != null and ratingDistribution[i-1] != null ? ratingDistribution[i-1] : 0} + '%'"></div>
+                                    <div class="progress-bar" th:style="'width: ' + ${ratingDistribution != null and ratingDistribution[i-1] != null ? ratingDistribution[i-1] : 0} + '%'" th:text="${ratingCounts != null and ratingCounts[i-1] != null ? ratingCounts[i-1] : 0}"></div>
                                 </div>
-                                <span class="rating-count" th:text="${ratingCounts != null and ratingCounts[i-1] != null ? ratingCounts[i-1] : 0}">0</span>
                             </div>
                         </div>
                     </div>
@@ -232,7 +231,7 @@
                                          onerror="this.src='/images/placeholder-movie.png'"/>
                                     <div>
                                         <strong th:text="${movie.title}">Movie</strong>
-                                        <small class="d-block text-muted" th:text="${movie.reviews != null ? movie.reviews.size() : 0} + ' reviews'">0 reviews</small>
+                                        <small class="d-block text-muted" th:text="${movie.comments != null ? movie.comments.size() : 0} + ' comments'">0 comments</small>
                                     </div>
                                 </div>
                                 <div class="movie-rating">
@@ -252,18 +251,18 @@
 
     <!-- Custom Styles -->
     <th:block layout:fragment="styles">
-        <link rel="stylesheet" th:href="@{/css/reviews.css}" />
+        <link rel="stylesheet" th:href="@{/css/comments.css}" />
     </th:block>
 
     <!-- Custom Scripts -->
     <th:block layout:fragment="scripts">
         <script>
-            function deleteReview(id, username) {
-                if (confirm(`Are you sure you want to delete the review by "${username}"?\n\nThis action cannot be undone.`)) {
+            function deleteComment(id, username) {
+                if (confirm(`Are you sure you want to delete the comment by "${username}"?\n\nThis action cannot be undone.`)) {
                     // Create a form and submit it
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/admin/reviews/delete/${id}`;
+                    form.action = `/admin/comments/delete/${id}`;
                     
                     const csrfToken = document.querySelector('meta[name="_csrf"]');
                     if (csrfToken) {

@@ -112,25 +112,30 @@
                 });
                 showLoading(false);                if (response.ok) {
                     const data = await response.json();
-                    // Lưu token và thông tin user nếu có
+                    
+                    // Create user object to store in localStorage
+                    const userData = {
+                        id: data.user ? data.user.id : Date.now(), // Use response user id or timestamp
+                        username: data.user ? data.user.username : username,
+                        fullName: data.user ? data.user.fullName : username,
+                        email: data.user ? data.user.email : '',
+                        role: data.user ? data.user.role : 'USER',
+                        avatar: data.user ? data.user.fullName.substring(0, 1).toUpperCase() : username.substring(0, 1).toUpperCase()
+                    };
+                      // Store complete user data
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    
+                    // Store individual fields for easier access
+                    localStorage.setItem('username', userData.username);
+                    localStorage.setItem('email', userData.email);
+                    localStorage.setItem('fullName', userData.fullName);
+                    
+                    // Also store token if provided
                     if (data.token) {
                         localStorage.setItem('token', data.token);
-                    } else {
-                        // Nếu không có token từ backend, set tạm token để header nhận biết đăng nhập
-                        localStorage.setItem('token', 'dummy-token-' + Date.now());
                     }
                     
-                    // Lưu username từ form input
-                    localStorage.setItem('username', username);
-                    
-                    // Lưu thông tin khác từ response nếu có
-                    if (data.email) {
-                        localStorage.setItem('email', data.email);
-                    }
-                    if (data.fullName) {
-                        localStorage.setItem('fullName', data.fullName);
-                    }
-                      showSuccess('Đăng nhập thành công! Đang chuyển hướng...');
+                    showSuccess('Đăng nhập thành công! Đang chuyển hướng...');
                     setTimeout(() => {
                         window.location.replace('/FrontEnd/index.html');
                     }, 1500);

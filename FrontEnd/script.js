@@ -88,10 +88,12 @@ function fetchMoviesFromAPI() {
                     trailerUrl: item.trailerUrl || '',
                     videoUrl: item.videoUrl || '',
                     totalEpisodes: item.totalEpisodes || '',
-                }));
-                currentMovies = [...window.movies];
+                }));                currentMovies = [...window.movies];
                 console.log('[API] Đã lấy dữ liệu phim từ backend:', currentMovies);
                 displayMovies();
+                
+                // Now that movies are loaded, update quick stats
+                updateQuickStats();
             } else {
                 console.warn('[API] API trả về mảng rỗng hoặc không hợp lệ, dùng dữ liệu mẫu.');
                 useBackupMovieData();
@@ -144,11 +146,13 @@ function useBackupMovieData() {
             totalEpisodes: '291'
         }
     ];
-    
-    window.movies = backupMovies;
+      window.movies = backupMovies;
     currentMovies = [...window.movies];
     console.log('[BACKUP] Sử dụng dữ liệu phim mẫu:', currentMovies);
     displayMovies();
+    
+    // Update quick stats with backup data
+    updateQuickStats();
 }
 
 // Gọi hàm fetchMoviesFromAPI khi khởi tạo app
@@ -157,7 +161,7 @@ function initializeApp() {
     fetchMoviesFromAPI();
     animateProgressBars();
     setupEventListeners();
-    updateQuickStats();
+    // Don't call updateQuickStats here - call it after movies are loaded
     
     // Check and update header login status after a short delay
     setTimeout(() => {
@@ -646,8 +650,14 @@ function applyAdvancedFilter() {
 
 // Quick stats functionality
 function updateQuickStats() {
+    // Check if movies array exists and has data
+    if (!movies || !Array.isArray(movies) || movies.length === 0) {
+        console.warn('Movies data not available for stats calculation');
+        return;
+    }
+    
     const totalMovies = movies.length;
-    const avgRating = (movies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / totalMovies).toFixed(1);
+    const avgRating = (movies.reduce((sum, movie) => sum + parseFloat(movie.rating || 0), 0) / totalMovies).toFixed(1);
     const topGenre = getTopGenre();
     
     // Store in localStorage for other components to access
@@ -657,11 +667,22 @@ function updateQuickStats() {
 }
 
 function getTopGenre() {
+    // Check if movies array exists
+    if (!movies || !Array.isArray(movies) || movies.length === 0) {
+        return '';
+    }
+    
     const genreCount = {};
     movies.forEach(movie => {
-        movie.categories.forEach(genre => {
-            genreCount[genre] = (genreCount[genre] || 0) + 1;
-        });
+        // Check if categories exist and is an array
+        if (movie.categories && Array.isArray(movie.categories)) {
+            movie.categories.forEach(genre => {
+                genreCount[genre] = (genreCount[genre] || 0) + 1;
+            });
+        } else if (movie.genre) {
+            // Fallback to single genre field
+            genreCount[movie.genre] = (genreCount[movie.genre] || 0) + 1;
+        }
     });
     
     return Object.keys(genreCount).reduce((a, b) => genreCount[a] > genreCount[b] ? a : b);
@@ -1013,33 +1034,72 @@ function initHeaderIframe() {
 
 // GHI ĐÈ HÀM updateHeaderLoginStatus để cập nhật trực tiếp header tích hợp (không còn dùng iframe)
 function updateHeaderLoginStatus() {
+    console.log('🔍 updateHeaderLoginStatus called');
+    
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
     const email = localStorage.getItem('email') || '';
     const fullName = localStorage.getItem('fullName') || '';
+    
+    console.log('📋 Login status check:', { token: !!token, username, email, fullName });
+    
     // Lấy các phần tử header
     const signInBtn = document.getElementById('signInBtn');
     const userMenu = document.getElementById('userMenu');
     const displayUserName = document.getElementById('displayUserName');
     const userAvatar = document.getElementById('userAvatar');
-    // Kiểm tra trạng thái đăng nhập
-    if (token && username) {
-        signInBtn.style.display = 'none';
-        userMenu.style.display = '';
-        userMenu.classList.add('visible');
-        displayUserName.textContent = username;
-        // Avatar chữ cái đầu
-        const firstLetter = username.charAt(0).toUpperCase();
-        userAvatar.src = `data:image/svg+xml;base64,${btoa(`
-            <svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                <circle cx='20' cy='20' r='20' fill='#3498db'/>
-                <text x='20' y='26' text-anchor='middle' font-family='Arial' font-size='16' font-weight='bold' fill='white'>${firstLetter}</text>
-            </svg>
-        `)}`;
+    
+    console.log('🎯 Header elements:', {
+        signInBtn: !!signInBtn,
+        userMenu: !!userMenu,
+        displayUserName: !!displayUserName,
+        userAvatar: !!userAvatar
+    });
+    
+    // Kiểm tra trạng thái đăng nhập (chỉ cần username)
+    if (username) {
+        console.log('✅ User is logged in:', username);
+        
+        if (signInBtn) {
+            signInBtn.style.display = 'none';
+            console.log('🔄 Hidden sign in button');
+        }
+        
+        if (userMenu) {
+            userMenu.style.display = 'flex';
+            userMenu.classList.add('visible');
+            console.log('🔄 Showed user menu');
+        }
+        
+        if (displayUserName) {
+            displayUserName.textContent = fullName || username;
+            console.log('🔄 Updated display name:', fullName || username);
+        }
+        
+        if (userAvatar) {
+            // Avatar chữ cái đầu
+            const firstLetter = (fullName || username).charAt(0).toUpperCase();
+            userAvatar.src = `data:image/svg+xml;base64,${btoa(`
+                <svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <circle cx='20' cy='20' r='20' fill='#3498db'/>
+                    <text x='20' y='26' text-anchor='middle' font-family='Arial' font-size='16' font-weight='bold' fill='white'>${firstLetter}</text>
+                </svg>
+            `)}`;
+            console.log('🔄 Updated avatar:', firstLetter);
+        }
     } else {
-        signInBtn.style.display = 'flex';
-        userMenu.style.display = 'none';
-        userMenu.classList.remove('visible');
+        console.log('❌ User not logged in');
+        
+        if (signInBtn) {
+            signInBtn.style.display = 'flex';
+            console.log('🔄 Showed sign in button');
+        }
+        
+        if (userMenu) {
+            userMenu.style.display = 'none';
+            userMenu.classList.remove('visible');
+            console.log('🔄 Hidden user menu');
+        }
     }
 }
 
@@ -1412,4 +1472,47 @@ function watchFirstEpisode(cartoonId, title) {
     
     // Chuyển thẳng tới trang movie.html với ID phim
     window.location.href = `moive player/moive.html?id=${cartoonId}`;
+}
+
+// Logout function for index.html
+function logout() {
+    if (!confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        return;
+    }
+    
+    // Clear user data
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('fullName');
+    localStorage.removeItem('bookmarkedMovies');
+    localStorage.removeItem('watchHistory');
+    
+    // Update header immediately
+    updateHeaderLoginStatus();
+    
+    // Show notification
+    if (typeof showNotification === 'function') {
+        showNotification('Đã đăng xuất thành công!', 'success');
+    }
+    
+    // Redirect to login after short delay
+    setTimeout(() => {
+        window.location.href = './login_register/login.html';
+    }, 1500);
+}
+
+// Functions for user dropdown actions
+function viewProfile() {
+    window.location.href = './profile/profile.html';
+}
+
+function viewBookmarks() {
+    console.log('Viewing bookmarks...');
+    // TODO: Implement bookmarks page
+}
+
+function viewHistory() {
+    console.log('Viewing watch history...');
+    // TODO: Implement history page
 }

@@ -43,8 +43,8 @@
                         <div class="card-body d-flex align-items-center gap-3">
                             <i class="fas fa-star fa-2x"></i>
                             <div>
-                                <div class="fs-5 fw-bold" th:text="${totalReviews}">0</div>
-                                <div class="small">Tổng số đánh giá</div>
+                                <div class="fs-5 fw-bold" th:text="${totalComments}">0</div>
+                                <div class="small">Tổng số bình luận</div>
                             </div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-comment-dots"></i> Review mới trong tháng</div>
                         <div class="card-body">
-                            <div class="fs-4 fw-bold text-success" th:text="${reviewsThisMonth}">0</div>
+                            <div class="fs-4 fw-bold text-success" th:text="${commentsThisMonth}">0</div>
                             <div class="small">Đánh giá mới trong tháng</div>
                         </div>
                     </div>
@@ -221,16 +221,16 @@
                     <div class="card h-100">
                         <div class="card-header fw-bold"><i class="fas fa-comments"></i> Đánh giá mới nhất</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item" th:each="review : ${latestReviews}">
-                                <span th:text="${review.username}">user</span>:
-                                <span th:text="${review.content}">Nội dung đánh giá</span>
-                                <span class="badge bg-info ms-2" th:text="${review.rating} + '/5'">5/5</span>
-                                <span th:if="${review.cartoon != null}" class="text-muted ms-2" style="font-size:0.9em;">
-                                    (<span th:text="${review.cartoon.title}">Tên phim</span>)
+                            <li class="list-group-item" th:each="comment : ${latestComments}">
+                                <span th:text="${comment.user.fullName}">user</span>:
+                                <span th:text="${comment.content}">Nội dung bình luận</span>
+                                <span class="badge bg-info ms-2" th:text="${comment.rating} + '/5'">5/5</span>
+                                <span th:if="${comment.cartoon != null}" class="text-muted ms-2" style="font-size:0.9em;">
+                                    (<span th:text="${comment.cartoon.title}">Tên phim</span>)
                                 </span>
                             </li>
-                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(latestReviews)}">
-                                Không có đánh giá nào gần đây.
+                            <li class="list-group-item text-muted" th:if="${#lists.isEmpty(latestComments)}">
+                                Không có bình luận nào gần đây.
                             </li>
                         </ul>
                     </div>

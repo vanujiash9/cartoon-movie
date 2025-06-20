@@ -161,8 +161,8 @@ public class GlobalExceptionHandler {
             return "/admin/movies";
         } else if (requestPath.contains("/admin/episode")) {
             return "/admin/episodes";
-        } else if (requestPath.contains("/admin/review")) {
-            return "/admin/reviews";
+        } else if (requestPath.contains("/admin/comment")) {
+            return "/admin/comments";
         } else {
             return "/admin";
         }

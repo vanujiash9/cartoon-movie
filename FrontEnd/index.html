@@ -326,20 +326,30 @@
         // Header Variables
         let isHeaderLoggedIn = false;
         let currentHeaderUser = {};
-        
-        // Check login status
+          // Check login status
         function checkHeaderLoginStatus() {
-            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
             const username = localStorage.getItem('username');
             
-            console.log('🔍 Checking header login status:', { token: !!token, username });
+            console.log('🔍 Checking header login status:', { userInfo: !!userInfo, username });
             
-            isHeaderLoggedIn = !!(token && username);
+            // Check if user is logged in by looking for userInfo or username
+            isHeaderLoggedIn = !!(userInfo || username);
+            
+            let userData = {};
+            if (userInfo) {
+                try {
+                    userData = JSON.parse(userInfo);
+                } catch (e) {
+                    console.error('Error parsing userInfo:', e);
+                }
+            }
+            
             currentHeaderUser = {
-                username: username || '',
-                email: localStorage.getItem('email') || '',
-                fullName: localStorage.getItem('fullName') || '',
-                token: token || ''
+                username: userData.username || username || '',
+                email: userData.email || localStorage.getItem('email') || '',
+                fullName: userData.fullName || localStorage.getItem('fullName') || '',
+                id: userData.id || localStorage.getItem('userId') || ''
             };
             
             updateHeaderUI();
@@ -395,8 +405,6 @@
         }
         
         function viewProfile() {
-            // Lưu thông tin user vào localStorage (nếu cần)
-            // Chuyển hướng sang trang user.html
             window.location.href = './user/user.html';
         }
         
@@ -488,24 +496,21 @@
         console.log('🎯 Header script loaded');
     </script>
     
-    <!-- Check login status and refresh header -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+    <!-- Check login status and refresh header -->    <script>        document.addEventListener('DOMContentLoaded', function() {
             console.log('🏠 Index page loaded, checking login status...');
             
             // Check if user is logged in
             const token = localStorage.getItem('token');
             const username = localStorage.getItem('username');
             
+            console.log('Token:', token ? 'Present' : 'None');
+            console.log('Username:', username || 'None');
+            
+            // Update header immediately
+            updateHeaderLoginStatus();
+            
             if (token && username) {
                 console.log('✅ User is logged in:', username);
-                
-                // Force update header after delay
-                setTimeout(() => {
-                    if (window.refreshHeaderStatus) {
-                        window.refreshHeaderStatus();
-                    }
-                }, 1000);
             } else {
                 console.log('❌ User not logged in');
             }
@@ -528,40 +533,41 @@
                     userDropdown.classList.remove('active');
                 }
             });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-    // Luôn gọi updateHeaderLoginStatus khi trang vừa load
-    updateHeaderLoginStatus();
-    // Kiểm tra lại sau 1 giây (phòng trường hợp localStorage vừa được cập nhật)
-    setTimeout(updateHeaderLoginStatus, 1000);
-    // Lắng nghe sự kiện thay đổi localStorage từ tab khác
-    window.addEventListener('storage', function(e) {
-        if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
+        }        document.addEventListener('DOMContentLoaded', function() {
+            // Update header when page loads
             updateHeaderLoginStatus();
-        }
-    });
-});
-    </script>
-
-    <!-- ĐẢM BẢO HEADER LUÔN CẬP NHẬT NGAY KHI LOAD TRANG -->
+            
+            // Listen for localStorage changes from other tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
+                    updateHeaderLoginStatus();
+                }
+            });
+        });
+    </script>    <!-- Clean up scripts - use only updateHeaderLoginStatus() -->
     <script>
+        // Ensure header is updated when page loads
         window.addEventListener('DOMContentLoaded', function() {
-    console.log('== DOMContentLoaded: Gọi checkHeaderLoginStatus ==');
-    checkHeaderLoginStatus();
-    // Log giá trị localStorage
-    console.log('localStorage token:', localStorage.getItem('token'));
-    console.log('localStorage username:', localStorage.getItem('username'));
-});
-window.addEventListener('storage', function(e) {
-    if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
-        console.log('== storage event: Gọi lại checkHeaderLoginStatus ==');
-        checkHeaderLoginStatus();
-        // Log giá trị localStorage
-        console.log('localStorage token:', localStorage.getItem('token'));
-        console.log('localStorage username:', localStorage.getItem('username'));
-    }
-});
+            console.log('== DOMContentLoaded: Calling updateHeaderLoginStatus ==');
+            updateHeaderLoginStatus();
+            
+            // Log localStorage values for debugging
+            console.log('localStorage token:', localStorage.getItem('token'));
+            console.log('localStorage username:', localStorage.getItem('username'));
+            
+            // Check again after 500ms in case of timing issues
+            setTimeout(() => {
+                updateHeaderLoginStatus();
+            }, 500);
+        });
+        
+        // Listen for localStorage changes from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
+                console.log('== storage event: Calling updateHeaderLoginStatus ==');
+                updateHeaderLoginStatus();
+            }
+        });
     </script>
 </body>
 </html>

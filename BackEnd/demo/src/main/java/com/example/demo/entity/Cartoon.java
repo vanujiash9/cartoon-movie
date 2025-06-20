@@ -33,11 +33,9 @@ public class Cartoon {
 
     @OneToMany(mappedBy = "cartoon", cascade = CascadeType.ALL, orphanRemoval = true)
     @com.fasterxml.jackson.annotation.JsonIgnore
-    private List<Episode> episodes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cartoon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Episode> episodes = new ArrayList<>();    @OneToMany(mappedBy = "cartoon", cascade = CascadeType.ALL, orphanRemoval = true)
     @com.fasterxml.jackson.annotation.JsonIgnore
-    private List<Review> reviews;
+    private List<Comment> comments;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -82,10 +80,8 @@ public class Cartoon {
     public void setStatus(String status) { this.status = status; }
 
     public List<Episode> getEpisodes() { return episodes; }
-    public void setEpisodes(List<Episode> episodes) { this.episodes = episodes; }
-
-    public List<Review> getReviews() { return reviews; }
-    public void setReviews(List<Review> reviews) { this.reviews = reviews; }
+    public void setEpisodes(List<Episode> episodes) { this.episodes = episodes; }    public List<Comment> getComments() { return comments; }
+    public void setComments(List<Comment> comments) { this.comments = comments; }
 
     @PrePersist
     protected void onCreate() {
