@@ -1,15 +1,11 @@
-/* achievements-page/style.css */
-
-/* Biến CSS (Variables) - Should match those used in header.html & footer.html for theme consistency */
+/* Achievements page styles */
 :root {
   --primary-color: #6c5ce7;
-  --secondary-color: #ff7675; /* Matches your original CSS */
-  --accent-color: #00cec9; /* From header/footer for consistency */
-
-  /* Dark Mode Defaults */
-  --bg-color: #121212; /* Main page sections background */
-  --bg-secondary: #1e1e1e; /* Cards, hero, etc. */
-  --bg-tertiary: #2c2c2c; /* Inputs or other elements */
+  --secondary-color: #ff7675;
+  --accent-color: #00cec9;
+  --bg-color: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2c2c2c;
   --text-color: #ffffff;
   --text-secondary: #a0aec0;
   --text-muted: #888888;
@@ -20,34 +16,440 @@
 }
 
 body {
-  font-family: "Segoe UI", Arial, sans-serif; /* More common font stack */
+  font-family: "Segoe UI", Arial, sans-serif;
   margin: 0;
-  background-color: var(--bg-color); /* Use main BG for the body itself */
+  background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
   max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: calc(100vh - 80px);
 }
 
-/* Fixed Header Adjustment */
-.fixed-header-padding {
-  /* padding-top will be set by JS */
-  transition: padding-top 0.2s ease-out;
-}
-iframe {
-  display: block;
-  overflow: hidden; /* Prevent scrollbars if content fits */
-  background-color: transparent; /* Let parent bg show initially */
+/* Achievement Stats */
+.achievement-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-/* Hero Section */
-.hero {
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.stat-info h3 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+.stat-info p {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    border: none;
+    background: #f8f9fa;
+    color: #6c757d;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.tab-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Achievements Section */
+.achievements-section {
+    margin-bottom: 50px;
+}
+
+.section-heading {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.achievement-card {
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.achievement-card.completed {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.achievement-card.completed .achievement-title,
+.achievement-card.completed .achievement-description {
+    color: white;
+}
+
+.achievement-card.in-progress {
+    border-left: 5px solid #ffc107;
+}
+
+.achievement-card.locked {
+    opacity: 0.6;
+    filter: grayscale(50%);
+}
+
+.achievement-icon {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.achievement-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.achievement-description {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.progress-bar {
+    background: var(--border-color);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+.achievement-card.completed .progress {
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+}
+
+.achievement-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.achievement-card.completed .achievement-progress {
+    color: rgba(255,255,255,0.9);
+}
+
+.achievement-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.achievement-card.locked .achievement-badge {
+    background: #6c757d;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: var(--bg-secondary);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--text-color);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-color);
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.achievement-detail {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.detail-icon {
+    font-size: 3rem;
+    min-width: 80px;
+    text-align: center;
+}
+
+.detail-info {
+    flex: 1;
+}
+
+.detail-info h4 {
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+    color: var(--text-color);
+}
+
+.detail-info p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.detail-progress {
+    margin-bottom: 15px;
+}
+
+.progress-bar-large {
+    background: var(--border-color);
+    border-radius: 10px;
+    height: 12px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-large {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+.detail-status {
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.9rem;
+}
+
+.detail-status.completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.detail-status.in-progress {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.detail-status.locked {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.achievement-tips {
+    background: var(--bg-tertiary);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.achievement-tips h5 {
+    margin: 0 0 15px 0;
+    color: var(--text-color);
+}
+
+.achievement-tips ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.achievement-tips li {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Loading state */
+.loading {
+    text-align: center;
+    padding: 50px;
+    color: var(--text-secondary);
+}
+
+.loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .achievement-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-tabs {
+        justify-content: center;
+    }
+    
+    .tab-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .achievement-detail {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+    }
+}
   text-align: center;
   padding: 70px 20px; /* Reduced top/bottom padding slightly */
   background: linear-gradient(

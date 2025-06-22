@@ -1,0 +1,22 @@
+-- Thêm các thành tựu mới hấp dẫn
+INSERT INTO achievements (name, description) VALUES
+('Xem phim ban đêm', 'Xem phim từ 22:00 đến 02:00 trong 5 ngày'),
+('Khám phá thể loại mới', 'Xem ít nhất 3 thể loại phim khác nhau trong 1 tuần'),
+('Tốc độ ánh sáng', 'Xem 5 bộ phim trong 1 ngày'),
+('Binge watcher', 'Xem liên tục một bộ phim hơn 4 giờ'),
+('Reviewer chuyên nghiệp', 'Viết 50 đánh giá phim'),
+('Người ảnh hưởng', 'Có 10 người follow đánh giá của bạn'),
+('Collector', 'Thêm 100 phim vào danh sách yêu thích'),
+('Early bird', 'Xem phim mới nhất trong 24h đầu ra mắt'),
+('Vintage lover', 'Xem 20 bộ phim cũ hơn 10 năm'),
+('Globetrotter', 'Xem phim từ 10 quốc gia khác nhau'),
+('Marathon runner', 'Xem phim 10 giờ liên tục trong 1 ngày'),
+('Social butterfly', 'Chia sẻ 25 bộ phim lên mạng xã hội'),
+('Perfectionist', 'Hoàn thành 10 bộ phim với rating 100%'),
+('Trend setter', 'Là người đầu tiên review 5 bộ phim mới'),
+('Loyal fan', 'Xem tất cả phim của 1 đạo diễn (ít nhất 5 phim)'),
+('Night owl', 'Xem phim sau 01:00 trong 10 ngày'),
+('Weekend warrior', 'Xem phim chỉ vào cuối tuần trong 1 tháng'),
+('Quality over quantity', 'Chỉ xem phim có rating >= 8.0 trong 2 tuần'),
+('Explorer', 'Xem phim thuộc tất cả thể loại có sẵn'),
+('Platinum member', 'Thành viên VIP trong 6 tháng liên tục');

@@ -14,6 +14,9 @@ public class UserWatchHistoryService {
     @Autowired
     private UserWatchHistoryRepository userWatchHistoryRepository;
 
+    @Autowired
+    private UserAchievementService userAchievementService;
+
     public void recordWatch(User user, Cartoon cartoon) {
         if (!userWatchHistoryRepository.existsByUserAndCartoon(user, cartoon)) {
             UserWatchHistory history = new UserWatchHistory();
@@ -21,6 +24,9 @@ public class UserWatchHistoryService {
             history.setCartoon(cartoon);
             history.setWatchedAt(LocalDateTime.now());
             userWatchHistoryRepository.save(history);
+
+            // Kiểm tra và cấp thành tựu sau khi ghi nhận lịch sử xem
+            userAchievementService.checkAndGrantAchievements(user);
         }
     }
 

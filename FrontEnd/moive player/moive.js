@@ -52,16 +52,16 @@ let isAuthenticated = false; // Track authentication status
 // Authentication and user management
 async function checkAuthentication() {
     console.log('🔍 Checking authentication...');
-    
+
     try {
         // First, check if user info is stored in localStorage
         const storedUser = localStorage.getItem('currentUser');
         console.log('📋 Stored user in localStorage:', storedUser);
-        
+
         if (storedUser) {
             try {
                 currentUser = JSON.parse(storedUser);
-                
+
                 // Validate user data has required fields
                 if (currentUser && currentUser.username && currentUser.id) {
                     isAuthenticated = true;
@@ -76,13 +76,11 @@ async function checkAuthentication() {
                 localStorage.removeItem('currentUser');
             }
         }
-        
+
         // Also check simple username/token fields as backup
         const username = localStorage.getItem('username');
         const token = localStorage.getItem('token');
-        
-        console.log('📋 Backup check - Username:', username, 'Token:', !!token);
-        
+
         if (username) {
             // Create user object from individual fields
             currentUser = {
@@ -92,12 +90,8 @@ async function checkAuthentication() {
                 email: localStorage.getItem('email') || ''
             };
             isAuthenticated = true;
-            console.log('✅ User found from individual fields:', currentUser);
             return true;
         }
-        
-        console.log('❌ No valid user data found in localStorage');
-        
         // If no stored user, try to check with server
         const response = await fetch('http://localhost:8080/api/auth/me', {
             method: 'GET',
@@ -106,7 +100,7 @@ async function checkAuthentication() {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (response.ok) {
             const userData = await response.json();
             currentUser = userData;
@@ -164,7 +158,7 @@ function formatTime(seconds) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    
+
     if (hours > 0) {
         return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     } else {
@@ -180,12 +174,12 @@ function formatTimeAgo(dateString) {
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
-    
+
     if (diffMins < 1) return 'Vừa xong';
     if (diffMins < 60) return diffMins + ' phút trước';
     if (diffHours < 24) return diffHours + ' giờ trước';
     if (diffDays < 7) return diffDays + ' ngày trước';
-    
+
     return date.toLocaleDateString('vi-VN');
 }
 
@@ -193,7 +187,7 @@ function formatTimeAgo(dateString) {
 function showNotification(message, type = 'success') {
     notification.textContent = message;
     notification.className = `notification ${type} show`;
-    
+
     setTimeout(() => {
         notification.classList.remove('show');
     }, 3000);
@@ -210,7 +204,7 @@ function debugLocalStorage() {
     console.log('fullName:', localStorage.getItem('fullName'));
     console.log('email:', localStorage.getItem('email'));
     console.log('All localStorage:', localStorage);
-    
+
     // Try to parse currentUser
     const currentUserStr = localStorage.getItem('currentUser');
     if (currentUserStr) {
@@ -224,35 +218,37 @@ function debugLocalStorage() {
 }
 
 // Initialize video player
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     // Debug localStorage first
     debugLocalStorage();
-    
+
     // Check authentication first
     const authStatus = await checkAuthentication();
     console.log('🔍 Auth status result:', authStatus, 'isAuthenticated:', isAuthenticated);
-    
+
     // Show appropriate UI based on authentication
     updateAuthUI(authStatus);
-    
+
     initializePlayer();
     setupEventListeners();
     loadMovieData();
     loadEpisodes();
-    
+
     // Show loading
     showLoading();
-    
+
     // Hide loading when video is ready
     if (video) {
         video.addEventListener('canplay', hideLoading);
         video.addEventListener('loadedmetadata', updateDuration);
     }
-    
+
     // Load comments after a short delay
     setTimeout(() => {
         loadComments();
     }, 500);
+
+    await loadLikeDislikeState();
 });
 
 // Update UI based on authentication status
@@ -262,17 +258,17 @@ function updateAuthUI(isAuth) {
     const userInfo = document.getElementById('user-info');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
-    
+
     if (isAuth && currentUser) {
         // User is authenticated, show comment form and user info
         if (authPrompt) authPrompt.style.display = 'none';
         if (commentFormContainer) commentFormContainer.style.display = 'block';
-        
+
         // Show user info in header
         if (userInfo) userInfo.style.display = 'flex';
         if (userAvatar) userAvatar.textContent = currentUser.avatar || currentUser.fullName.substring(0, 1).toUpperCase();
         if (userName) userName.textContent = currentUser.fullName || currentUser.username;
-        
+
     } else {
         // User is not authenticated, show login prompt
         if (authPrompt) authPrompt.style.display = 'block';
@@ -293,7 +289,7 @@ function initializePlayer() {
 
 function setupEventListeners() {
     if (!video) return;
-    
+
     // Video events
     video.addEventListener('loadstart', showLoading);
     video.addEventListener('canplay', hideLoading);
@@ -338,41 +334,39 @@ function setupEventListeners() {
     video.addEventListener('play', () => {
         if (isPlaying) {
             setTimeout(() => {
-                if (isPlaying && !videoPlayer.matches(':hover')) {
+                if (isPlaying && !videoPlayer.matches(':hover') && header) {
                     header.classList.add('hidden');
                 }
             }, 3000);
         }
-    });
-
-    video.addEventListener('pause', () => {
-        header.classList.remove('hidden');
+    }); video.addEventListener('pause', () => {
+        if (header) {
+            header.classList.remove('hidden');
+        }
     });
 
     // Fullscreen change
     document.addEventListener('fullscreenchange', updateFullscreenIcon);
-    
+
     // Auto-hide header on scroll
     let lastScrollY = 0;
     window.addEventListener('scroll', () => {
-        const currentScrollY = window.scrollY;
-        
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-            header.classList.add('hidden');
+        const currentScrollY = window.scrollY; if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            if (header) header.classList.add('hidden');
         } else {
-            header.classList.remove('hidden');
+            if (header) header.classList.remove('hidden');
         }
-        
-        lastScrollY = currentScrollY;
-    });
 
-    // Click outside to close quality selector
+        lastScrollY = currentScrollY;
+    });    // Click outside to close quality selector
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.quality-selector') && !e.target.closest('[onclick*="toggleQuality"]')) {
-            qualitySelector.classList.remove('active');
+            if (qualitySelector) {
+                qualitySelector.classList.remove('active');
+            }
         }
     });
-    
+
     // Initialize focus for keyboard controls
     if (videoPlayer) {
         videoPlayer.setAttribute('tabindex', '0');
@@ -384,32 +378,32 @@ function setupEventListeners() {
 
 function loadMovieData() {
     if (!movieId) return;
-    
+
     fetch(`http://localhost:8080/api/cartoons/${movieId}`)
         .then(res => res.json())
         .then(movie => {
             // Cập nhật tiêu đề trang
             document.title = movie.title + ' | Maxion';
-            
+
             // Cập nhật tiêu đề hiển thị
             const h1 = document.querySelector('.movie-details h1');
             if (h1) h1.textContent = movie.title;
-            
+
             // Cập nhật thông tin meta phim
             updateMovieInfo(movie);
-            
+
             // Cập nhật mô tả phim
             const description = document.querySelector('.movie-details .description');
             if (description && movie.description) {
                 description.textContent = movie.description;
             }
-            
+
             // Cập nhật năm phát hành
             const yearElement = document.querySelector('.meta-item:nth-child(2) span:nth-child(2)');
             if (yearElement && movie.releaseYear) {
                 yearElement.textContent = movie.releaseYear;
             }
-            
+
             // Cập nhật thể loại
             const genreElement = document.querySelector('.meta-item:nth-child(4) span:nth-child(2)');
             if (genreElement && movie.genre) {
@@ -427,58 +421,61 @@ function loadEpisodes() {
         if (container) container.innerText = "Không tìm thấy id phim!";
         return;
     }
-    
+
     fetch(`http://localhost:8080/api/cartoons/${movieId}/episodes`)
         .then(res => {
             console.log('Episodes API status:', res.status);
             console.log('Episodes API content-type:', res.headers.get('content-type'));
             if (!res.ok) throw new Error("Không tìm thấy tập phim!");
-            
+
             // Kiểm tra content-type trước khi parse JSON
             const contentType = res.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new Error('API không trả về JSON, có thể là trang lỗi HTML');
             }
-            
+
             return res.json();
         })
         .then(episodes => {
             console.log('[DEBUG] Episodes received:', episodes);
             const container = document.getElementById('episodes-container');
             console.log('[DEBUG] Container found:', container);
-            
+
             if (episodes.length === 0) {
                 // Nếu chưa có tập nào, hiển thị thông báo
                 if (container) container.innerHTML = '<p>Phim này chưa có tập nào để xem.</p>';
             } else {
                 // Sắp xếp tập theo thứ tự
-                episodes.sort((a, b) => a.episode_number - b.episode_number);
+                episodes.sort((a, b) => (a.episodeNumber || a.episode_number) - (b.episodeNumber || b.episode_number));
                 console.log('[DEBUG] Episodes sorted:', episodes);
-                
+
                 // Lưu vào biến global
                 currentEpisodes = episodes;
-                console.log('[DEBUG] currentEpisodes saved:', currentEpisodes);
-                
-                // Tự động phát tập đầu tiên
-                const firstEpisode = episodes[0];
-                if (firstEpisode && firstEpisode.video_url) {
-                    console.log('Đang load tập đầu tiên:', firstEpisode);
-                    loadEpisode(firstEpisode);
+                // Lấy index tập đang xem từ localStorage (nếu có)
+                let savedIndex = 0;
+                const saved = localStorage.getItem(`currentEpisodeIndex_${movieId}`);
+                if (saved !== null && !isNaN(Number(saved))) {
+                    savedIndex = Math.max(0, Math.min(Number(saved), episodes.length - 1));
                 }
-                
+                // Tự động phát tập đã lưu hoặc tập đầu tiên
+                const episodeToPlay = episodes[savedIndex] || episodes[0];
+                if (episodeToPlay && (episodeToPlay.videoUrl || episodeToPlay.video_url)) {
+                    loadEpisode(episodeToPlay);
+                }
+
                 // Hiển thị danh sách tập theo hàng ngang với onclick đơn giản hơn
                 const episodesHtml = episodes.map((ep, index) => `
-                    <div class="episode-number-btn ${ep.id === firstEpisode.id ? 'active' : ''}" 
+                    <div class="episode-number-btn ${ep.id === episodeToPlay.id ? 'active' : ''}"
                          onclick="loadEpisodeByIndex(${index})"
                          data-episode-id="${ep.id}"
-                         data-episode-number="${ep.episode_number}"
+                         data-episode-number="${ep.episodeNumber || ep.episode_number}"
                          title="${ep.title}">
-                        ${ep.episode_number}
+                        ${ep.episodeNumber || ep.episode_number}
                     </div>
                 `).join('');
-                
+
                 console.log('[DEBUG] Episodes HTML:', episodesHtml);
-                
+
                 if (container) {
                     container.innerHTML = episodesHtml;
                     console.log('[DEBUG] Container updated');
@@ -498,8 +495,9 @@ function loadEpisodes() {
 function loadEpisodeByIndex(index) {
     if (currentEpisodes && currentEpisodes[index]) {
         const episode = currentEpisodes[index];
-        console.log('Loading episode by index:', index, episode);
         loadEpisode(episode);
+        // Lưu index tập đang xem vào localStorage
+        localStorage.setItem(`currentEpisodeIndex_${movieId}`, index);
     } else {
         console.error('Không tìm thấy episode với index:', index);
     }
@@ -508,15 +506,15 @@ function loadEpisodeByIndex(index) {
 // Hàm load và phát một tập phim
 function loadEpisode(episode) {
     console.log('Loading episode:', episode);
-    console.log('Episode number:', episode.episode_number);
-    console.log('Video URL:', episode.video_url);
-    
+    console.log('Episode number:', episode.episodeNumber || episode.episode_number);
+    console.log('Video URL:', episode.videoUrl || episode.video_url);
+
     // Update active episode first
-    updateActiveEpisode(episode.episode_number);
-    
+    updateActiveEpisode(episode.episodeNumber || episode.episode_number);
+
     // Nếu là YouTube URL, chuyển đổi sang embed format
-    let videoUrl = episode.video_url;
-    if (videoUrl.includes('youtu.be/') || videoUrl.includes('youtube.com/watch')) {
+    let videoUrl = episode.videoUrl || episode.video_url;
+    if (videoUrl && (videoUrl.includes('youtu.be/') || videoUrl.includes('youtube.com/watch'))) {
         // Chuyển YouTube URL sang embed format
         let videoId = '';
         if (videoUrl.includes('youtu.be/')) {
@@ -524,7 +522,7 @@ function loadEpisode(episode) {
         } else if (videoUrl.includes('youtube.com/watch?v=')) {
             videoId = videoUrl.split('v=')[1].split('&')[0];
         }
-        
+
         if (videoId) {
             console.log('Loading YouTube video:', videoId);
             // Tạo iframe cho YouTube thay vì dùng video element
@@ -539,13 +537,13 @@ function loadEpisode(episode) {
                     </iframe>
                 `;
             }
-            
+
             // Update episode title
             updateEpisodeTitle(episode);
             return;
         }
     }
-    
+
     // Đối với video thông thường (MP4, etc.), restore video element if needed
     let currentVideo = document.getElementById('videoElement');
     if (!currentVideo) {
@@ -564,18 +562,26 @@ function loadEpisode(episode) {
             currentVideo = document.getElementById('videoElement');
         }
     }
-    
+
     // Đối với video thông thường (MP4, etc.)
     if (currentVideo) {
         currentVideo.src = videoUrl;
         currentVideo.load();
-        
+
         // Tự động phát
         currentVideo.play().catch(err => {
             console.log('Autoplay bị chặn:', err);
         });
     }
-    
+
+    // Lưu index tập đang xem vào localStorage (nếu gọi trực tiếp)
+    if (currentEpisodes && episode) {
+        const idx = currentEpisodes.findIndex(ep => ep.id === episode.id);
+        if (idx !== -1) {
+            localStorage.setItem(`currentEpisodeIndex_${movieId}`, idx);
+        }
+    }
+
     // Update episode title
     updateEpisodeTitle(episode);
 }
@@ -594,7 +600,7 @@ function updateActiveEpisode(episodeNumber) {
     document.querySelectorAll('.episode-number-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Add active class to current episode by data attribute
     document.querySelectorAll('.episode-number-btn').forEach(btn => {
         const btnEpisodeNumber = btn.getAttribute('data-episode-number');
@@ -609,7 +615,7 @@ function updateActiveEpisode(episodeNumber) {
 // Playback controls
 function togglePlayPause() {
     if (!video) return;
-    
+
     if (video.paused) {
         video.play();
         showNotification('Đang phát video', 'success');
@@ -621,7 +627,7 @@ function togglePlayPause() {
 
 function seek(e) {
     if (!video || !progressContainer) return;
-    
+
     const rect = progressContainer.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const newTime = (clickX / rect.width) * video.duration;
@@ -630,11 +636,11 @@ function seek(e) {
 
 function updateProgress() {
     if (!video || !video.duration) return;
-    
+
     const progress = (video.currentTime / video.duration) * 100;
     if (progressFilled) progressFilled.style.width = `${progress}%`;
     if (progressThumb) progressThumb.style.left = `${progress}%`;
-    
+
     // Update time display
     const current = formatTime(video.currentTime);
     const duration = formatTime(video.duration);
@@ -643,7 +649,7 @@ function updateProgress() {
 
 function updateDuration() {
     if (!video) return;
-    
+
     const duration = formatTime(video.duration);
     if (timeDisplay) timeDisplay.textContent = `00:00 / ${duration}`;
 }
@@ -651,7 +657,7 @@ function updateDuration() {
 // Volume controls
 function toggleMute() {
     if (!video) return;
-    
+
     if (isMuted) {
         video.volume = currentVolume;
         isMuted = false;
@@ -667,29 +673,29 @@ function toggleMute() {
 
 function setVolume(e) {
     if (!video || !volumeSlider) return;
-    
+
     const rect = volumeSlider.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const newVolume = Math.max(0, Math.min(1, clickX / rect.width));
-    
+
     video.volume = newVolume;
     currentVolume = newVolume;
     isMuted = false;
-    
+
     updateVolumeDisplay();
     updateVolumeIcon();
 }
 
 function updateVolumeDisplay() {
     if (!video || !volumeFilled) return;
-    
+
     const volumePercent = isMuted ? 0 : (video.volume * 100);
     volumeFilled.style.width = `${volumePercent}%`;
 }
 
 function updateVolumeIcon() {
     if (!video || !volumeIcon) return;
-    
+
     if (isMuted || video.volume === 0) {
         volumeIcon.textContent = '🔇';
     } else if (video.volume < 0.5) {
@@ -702,7 +708,7 @@ function updateVolumeIcon() {
 // Playback speed
 function changePlaybackSpeed() {
     if (!video) return;
-    
+
     currentSpeedIndex = (currentSpeedIndex + 1) % playbackSpeeds.length;
     currentSpeed = playbackSpeeds[currentSpeedIndex];
     video.playbackRate = currentSpeed;
@@ -717,7 +723,7 @@ function updateSpeedDisplay() {
 // Fullscreen
 function toggleFullscreen() {
     if (!videoContainer) return;
-    
+
     if (!document.fullscreenElement) {
         videoContainer.requestFullscreen().catch(err => {
             console.log('Error entering fullscreen:', err);
@@ -737,7 +743,7 @@ function toggleTheaterMode() {
     isTheaterMode = !isTheaterMode;
     document.body.classList.toggle('theater-mode', isTheaterMode);
     if (theaterIcon) theaterIcon.textContent = isTheaterMode ? '⛶' : '⛶';
-    
+
     if (isTheaterMode) {
         showNotification('Đã bật chế độ rạp', 'success');
     } else {
@@ -805,20 +811,20 @@ function toggleQuality() {
 
 function changeQuality(quality) {
     if (!video) return;
-    
+
     const currentTime = video.currentTime;
     const wasPlaying = !video.paused;
-    
+
     // Update active quality option
     document.querySelectorAll('.quality-option').forEach(option => {
         option.classList.remove('active');
     });
     event.target.classList.add('active');
-    
+
     // In a real app, you would change the video source here
     showNotification(`Đã chuyển sang chất lượng ${quality}`, 'success');
     if (qualitySelector) qualitySelector.classList.remove('active');
-    
+
     // Restore playback state
     video.currentTime = currentTime;
     if (wasPlaying) {
@@ -829,9 +835,9 @@ function changeQuality(quality) {
 // Subtitles
 function toggleSubtitles() {
     if (!video) return;
-    
+
     subtitlesEnabled = !subtitlesEnabled;
-    
+
     if (subtitlesEnabled) {
         // Enable subtitles
         if (video.textTracks.length > 0) {
@@ -853,7 +859,7 @@ function showControls() {
         videoControls.classList.add('visible');
     }
     clearTimeout(controlsTimeout);
-    
+
     controlsTimeout = setTimeout(() => {
         if (isPlaying && videoPlayer && !videoPlayer.matches(':hover')) {
             hideControls();
@@ -898,7 +904,7 @@ function onVideoEnded() {
 function handleKeyboard(e) {
     // Prevent default browser shortcuts when video is focused
     if (document.activeElement === video || e.target.closest('.video-player')) {
-        switch(e.code) {
+        switch (e.code) {
             case 'Space':
                 e.preventDefault();
                 togglePlayPause();
@@ -956,12 +962,12 @@ function handleKeyboard(e) {
 // Progress preview (hover)
 function showProgressPreview(e) {
     if (!video || !progressContainer) return;
-    
+
     // In a real app, this would show thumbnail preview
     const rect = progressContainer.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const previewTime = (clickX / rect.width) * video.duration;
-    
+
     // You could show a tooltip with the time here
 }
 
@@ -992,178 +998,110 @@ function restartMovie() {
     }
 }
 
-// Like/Dislike functionality
-function toggleLike() {
+// ===== LIKE/DISLIKE MOVIE =====
+function updateLikeDislikeUI() {
     const likeBtn = document.getElementById('likeBtn');
     const dislikeBtn = document.getElementById('dislikeBtn');
     const likeCountEl = document.getElementById('likeCount');
-    
-    if (isLiked) {
-        // Unlike
-        isLiked = false;
-        likeCount = Math.max(0, likeCount - 1);
-        if (likeBtn) likeBtn.classList.remove('liked');
-    } else {
-        // Like
-        isLiked = true;
-        likeCount += 1;
-        if (likeBtn) likeBtn.classList.add('liked');
-        
-        // Remove dislike if exists
-        if (isDisliked) {
-            isDisliked = false;
-            dislikeCount = Math.max(0, dislikeCount - 1);
-            if (dislikeBtn) dislikeBtn.classList.remove('disliked');
-            const dislikeCountEl = document.getElementById('dislikeCount');
-            if (dislikeCountEl) dislikeCountEl.textContent = dislikeCount;
-        }
-    }
-    
-    if (likeCountEl) likeCountEl.textContent = likeCount;
-    showNotification(isLiked ? 'Đã thích!' : 'Đã bỏ thích!', 'success');
-}
-
-function toggleDislike() {
-    const likeBtn = document.getElementById('likeBtn');
-    const dislikeBtn = document.getElementById('dislikeBtn');
     const dislikeCountEl = document.getElementById('dislikeCount');
-    
-    if (isDisliked) {
-        // Remove dislike
-        isDisliked = false;
-        dislikeCount = Math.max(0, dislikeCount - 1);
-        if (dislikeBtn) dislikeBtn.classList.remove('disliked');
-    } else {
-        // Dislike
-        isDisliked = true;
-        dislikeCount += 1;
-        if (dislikeBtn) dislikeBtn.classList.add('disliked');
-        
-        // Remove like if exists
-        if (isLiked) {
-            isLiked = false;
-            likeCount = Math.max(0, likeCount - 1);
-            if (likeBtn) likeBtn.classList.remove('liked');
-            const likeCountEl = document.getElementById('likeCount');
-            if (likeCountEl) likeCountEl.textContent = likeCount;
-        }
-    }
-    
+    if (likeBtn) likeBtn.classList.toggle('liked', isLiked);
+    if (dislikeBtn) dislikeBtn.classList.toggle('disliked', isDisliked);
+    if (likeCountEl) likeCountEl.textContent = likeCount;
     if (dislikeCountEl) dislikeCountEl.textContent = dislikeCount;
-    showNotification(isDisliked ? 'Đã không thích!' : 'Đã bỏ không thích!', 'success');
 }
 
-// Favorite functionality
-function toggleFavorite() {
-    const favoriteText = document.getElementById('favoriteText');
-    isFavorite = !isFavorite;
-    
-    if (favoriteText) {
-        if (isFavorite) {
-            favoriteText.textContent = 'Đã thêm vào yêu thích';
-            showNotification('Đã thêm vào danh sách yêu thích!', 'success');
-        } else {
-            favoriteText.textContent = 'Thêm vào yêu thích';
-            showNotification('Đã xóa khỏi danh sách yêu thích!', 'warning');
-        }
-    }
-}
-
-// Download movie
-function downloadMovie() {
-    showNotification('Tính năng tải xuống đang được phát triển', 'info');
-}
-
-// Share movie
-function shareMovie() {
-    if (navigator.share && navigator.share.url) {
-        navigator.share({
-            title: document.title,
-            text: 'Xem phim tuyệt vời này!',
-            url: window.location.href
-        });
-    } else {
-        navigator.clipboard.writeText(window.location.href);
-        showNotification('Đã sao chép liên kết chia sẻ!', 'success');
-    }
-}
-
-// Comments toggle
-function toggleComments() {
-    commentsVisible = !commentsVisible;
-    if (commentsVisible) {
-        showNotification('Tính năng bình luận đang được phát triển', 'info');
-    }
-}
-
-// ===== MOVIE INFO =====
-
-// Update movie meta information from API
-function updateMovieInfo(movie) {
-    const movieYear = document.getElementById('movieYear');
-    const movieGenre = document.getElementById('movieGenre');
-    const descEl = document.querySelector('.description');
-    
-    if (movieYear) movieYear.textContent = movie.releaseYear || '2002';
-    if (movieGenre) movieGenre.textContent = movie.genre || 'Hành động';
-    
-    // Tạm thời sử dụng rating tĩnh do API rating có vấn đề
-    const defaultRating = '7.4';
-    const movieRating = document.getElementById('movieRating');
-    if (movieRating) movieRating.textContent = defaultRating;
-    
-    // TODO: Load rating from API when fixed
-    // loadMovieRating(movie.id);
-    
-    // Update description if available
-    if (movie.description && descEl) {
-        descEl.textContent = movie.description;
-    }
-}
-
-// Load rating from API
-function loadMovieRating(movieId) {
-    // Fallback rating nếu không có ID hoặc API thất bại
-    const fallbackRating = '7.4';
-    const fallbackReviews = '0';
-    
-    if (!movieId) {
-        const movieRating = document.getElementById('movieRating');
-        if (movieRating) movieRating.textContent = fallbackRating;
+async function toggleLike() {
+    if (!isAuthenticated || !currentUser) {
+        showLoginPrompt();
         return;
     }
-    
-    // Gọi API để lấy rating thực
-    fetch(`http://localhost:8080/api/cartoons/${movieId}/rating`)
-        .then(res => {
-            if (!res.ok) throw new Error('API rating failed');
-            return res.json();
-        })
-        .then(data => {
-            if (data && data.averageRating !== undefined) {
-                const rating = data.averageRating > 0 ? data.averageRating.toFixed(1) : fallbackRating;
-                const totalReviews = data.totalReviews || 0;
-                
-                const movieRating = document.getElementById('movieRating');
-                if (movieRating) movieRating.textContent = rating;
-                
-                // Cập nhật số lượng reviews nếu có element
-                const reviewCountEl = document.getElementById('reviewCount');
-                if (reviewCountEl) {
-                    reviewCountEl.textContent = `(${totalReviews} đánh giá)`;
-                }
-                
-                console.log(`[RATING] Loaded rating: ${rating}/10 from ${totalReviews} reviews`);
-            } else {
-                const movieRating = document.getElementById('movieRating');
-                if (movieRating) movieRating.textContent = fallbackRating;
-            }
-        })
-        .catch(err => {
-            console.warn('[RATING] Failed to load rating from API, using fallback:', err);
-            const movieRating = document.getElementById('movieRating');
-            if (movieRating) movieRating.textContent = fallbackRating;
+    // Gửi API like
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`http://localhost:8080/api/cartoons/${movieId}/like`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? 'Bearer ' + token : undefined,
+                'X-User-ID': currentUser.id.toString(),
+                'X-Username': currentUser.username
+            },
+            body: JSON.stringify({ isLiked: !isLiked })
         });
+        if (!res.ok) throw new Error('Không thể cập nhật trạng thái thích');
+        const data = await res.json();
+        isLiked = data.isLiked;
+        isDisliked = false;
+        likeCount = data.likeCount;
+        dislikeCount = data.dislikeCount;
+        updateLikeDislikeUI();
+        showNotification(isLiked ? 'Đã thích phim!' : 'Đã bỏ thích!', 'success');
+    } catch (e) {
+        showNotification(e.message, 'error');
+    }
+}
+
+async function toggleDislike() {
+    if (!isAuthenticated || !currentUser) {
+        showLoginPrompt();
+        return;
+    }
+    // Gửi API dislike
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`http://localhost:8080/api/cartoons/${movieId}/dislike`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? 'Bearer ' + token : undefined,
+                'X-User-ID': currentUser.id.toString(),
+                'X-Username': currentUser.username
+            },
+            body: JSON.stringify({ isDisliked: !isDisliked })
+        });
+        if (!res.ok) throw new Error('Không thể cập nhật trạng thái không thích');
+        const data = await res.json();
+        isDisliked = data.isDisliked;
+        isLiked = false;
+        likeCount = data.likeCount;
+        dislikeCount = data.dislikeCount;
+        updateLikeDislikeUI();
+        showNotification(isDisliked ? 'Đã không thích phim!' : 'Đã bỏ không thích!', 'success');
+    } catch (e) {
+        showNotification(e.message, 'error');
+    }
+}
+
+// ===== LIKE/DISLIKE COMMENT =====
+async function likeComment(commentId, isLikedAction) {
+    if (!isAuthenticated || !currentUser) {
+        showLoginPrompt();
+        return;
+    }
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`http://localhost:8080/api/cartoons/comments/${commentId}/like`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? 'Bearer ' + token : undefined,
+                'X-User-ID': currentUser.id.toString(),
+                'X-Username': currentUser.username
+            },
+            body: JSON.stringify({ isLiked: isLikedAction })
+        });
+        if (!res.ok) throw new Error('Không thể cập nhật like/dislike bình luận');
+        const data = await res.json();
+
+        // Cập nhật UI comment
+        await loadComments();
+        showNotification(isLikedAction ? 'Đã thích bình luận!' : 'Đã không thích bình luận!', 'success');
+    } catch (e) {
+        showNotification(e.message, 'error');
+    }
 }
 
 // ===== COMMENTS FUNCTIONALITY =====
@@ -1179,20 +1117,24 @@ function updateCommentsCount(count) {
 // Load comments from API
 async function loadComments() {
     if (!movieId) return;
-    
+
     try {
-        const response = await fetch(`http://localhost:8080/api/comments/cartoon/${movieId}`, {
+        const token = localStorage.getItem('token'); const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+        }
+        const response = await fetch(`http://localhost:8080/api/cartoons/${movieId}/comments`, {
             method: 'GET',
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to load comments');
         }
-        
+
         const comments = await response.json();
         console.log('Comments loaded:', comments);
         currentComments = comments;
@@ -1202,7 +1144,7 @@ async function loadComments() {
         console.error('Error loading comments:', err);
         const commentsList = document.getElementById('comments-list');
         if (commentsList) {
-            commentsList.innerHTML = 
+            commentsList.innerHTML =
                 '<div style="text-align: center; padding: 20px; color: #ff6b6b;">Không thể tải bình luận</div>';
         }
     }
@@ -1212,7 +1154,7 @@ async function loadComments() {
 function displayComments(comments) {
     const container = document.getElementById('comments-list');
     if (!container) return;
-    
+
     if (comments.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 40px; color: #666;">
@@ -1222,18 +1164,18 @@ function displayComments(comments) {
         `;
         return;
     }
-    
+
     const commentsHtml = comments.map(comment => {
         const avatar = comment.userAvatar || 'AN';
         const timeAgo = formatTimeAgo(comment.createdAt);
         const rating = '⭐'.repeat(comment.rating || 0);
-        
+
         // Like/dislike button states
         const likedClass = comment.userLikeStatus === 'liked' ? 'liked' : '';
         const dislikedClass = comment.userLikeStatus === 'disliked' ? 'disliked' : '';
-        
+
         // Replies HTML
-        const repliesHtml = comment.replies && comment.replies.length > 0 
+        const repliesHtml = comment.replies && comment.replies.length > 0
             ? comment.replies.map(reply => `
                 <div class="comment-reply">
                     <div class="comment-avatar">${reply.userAvatar}</div>
@@ -1247,7 +1189,7 @@ function displayComments(comments) {
                 </div>
             `).join('')
             : '';
-        
+
         return `
             <div class="comment" data-comment-id="${comment.id}">
                 <div class="comment-avatar">${avatar}</div>
@@ -1290,7 +1232,7 @@ function displayComments(comments) {
             </div>
         `;
     }).join('');
-    
+
     container.innerHTML = commentsHtml;
 }
 
@@ -1302,7 +1244,7 @@ async function postComment() {
         showLoginPrompt();
         return;
     }
-    
+
     let currentUser;
     try {
         currentUser = JSON.parse(userData);
@@ -1311,27 +1253,25 @@ async function postComment() {
         showLoginPrompt();
         return;
     }
-    
+
     const input = document.getElementById('comment-input');
     const ratingSelect = document.getElementById('rating-select');
-    
+
     if (!input || !ratingSelect) return;
-    
+
     const rating = ratingSelect.value;
     const content = input.value.trim();
-    
+
     if (!content) {
         showNotification('Vui lòng nhập nội dung bình luận', 'error');
         return;
-    }
-    
-    if (!movieId) {
+    } if (!movieId) {
         showNotification('Không tìm thấy thông tin phim', 'error');
         return;
     }
-    
+
     try {
-        const response = await fetch(`http://localhost:8080/api/comments/cartoon/${movieId}`, {
+        const response = await fetch(`http://localhost:8080/api/cartoons/${movieId}/comments`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -1343,26 +1283,43 @@ async function postComment() {
                 content: content,
                 rating: parseInt(rating)
             })
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Không thể đăng bình luận');
+        }); if (!response.ok) {
+            if (response.status === 401) {
+                console.log('❌ Authentication failed, clearing user data');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('username');
+                localStorage.removeItem('token');
+                showLoginPrompt();
+                return;
+            }
+
+            const errorText = await response.text();
+            let errorMessage = 'Không thể đăng bình luận';
+
+            try {
+                const errorData = JSON.parse(errorText);
+                errorMessage = errorData.error || errorData.message || errorMessage;
+            } catch (e) {
+                // If not JSON, use text as error message
+                errorMessage = errorText || errorMessage;
+            }
+
+            throw new Error(errorMessage);
         }
-        
+
         const newComment = await response.json();
-        
+
         // Add to current comments and refresh display
         currentComments.unshift(newComment);
         displayComments(currentComments);
         updateCommentsCount(currentComments.length);
-        
+
         // Clear form
         input.value = '';
         ratingSelect.value = '5';
-        
+
         showNotification('Đã đăng bình luận!', 'success');
-        
+
     } catch (error) {
         console.error('Error posting comment:', error);
         showNotification(error.message, 'error');
@@ -1372,67 +1329,48 @@ async function postComment() {
 // Like/Dislike comment with API integration
 async function likeComment(commentId, isLiked) {
     // Check localStorage authentication
-    const userData = localStorage.getItem('currentUser');
-    if (!userData) {
-        showLoginPrompt();
-        return;
-    }
-    
     let currentUser;
     try {
+        const userData = localStorage.getItem('currentUser');
+        if (!userData) throw new Error('Bạn cần đăng nhập để thực hiện hành động này');
         currentUser = JSON.parse(userData);
     } catch (e) {
-        console.error('Invalid user data in localStorage');
         showLoginPrompt();
         return;
     }
-    
+
     try {
-        const response = await fetch(`http://localhost:8080/api/comments/${commentId}/like`, {
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-User-ID': currentUser.id.toString(),
+            'X-Username': currentUser.username
+        };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        const response = await fetch(`http://localhost:8080/api/cartoons/comments/${commentId}/like`, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-User-ID': currentUser.id.toString(),
-                'X-Username': currentUser.username
-            },
-            body: JSON.stringify({
-                isLiked: isLiked
-            })
+            headers,
+            body: JSON.stringify({ isLiked: isLiked })
         });
-        
+
+        if (response.status === 401) {
+            // Xử lý khi hết phiên đăng nhập
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('username');
+            localStorage.removeItem('token');
+            showLoginPrompt();
+            return;
+        }
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Không thể cập nhật like/dislike');
         }
-        
+
         const result = await response.json();
-        
-        // Update UI
-        const likeCountEl = document.getElementById(`like-count-${commentId}`);
-        const dislikeCountEl = document.getElementById(`dislike-count-${commentId}`);
-        const likeBtnEl = document.querySelector(`[data-comment-id="${commentId}"].like-btn`);
-        const dislikeBtnEl = document.querySelector(`[data-comment-id="${commentId}"].dislike-btn`);
-        
-        if (likeCountEl) likeCountEl.textContent = result.likeCount || 0;
-        if (dislikeCountEl) dislikeCountEl.textContent = result.dislikeCount || 0;
-        
-        // Update button states
-        if (likeBtnEl && dislikeBtnEl) {
-            likeBtnEl.classList.remove('liked');
-            dislikeBtnEl.classList.remove('disliked');
-            
-            if (result.userLikeStatus === 'liked') {
-                likeBtnEl.classList.add('liked');
-            } else if (result.userLikeStatus === 'disliked') {
-                dislikeBtnEl.classList.add('disliked');
-            }
-        }
-        
-        showNotification(isLiked ? 'Đã thích!' : 'Đã không thích!', 'success');
-        
+        await loadComments();
+        showNotification(isLiked ? 'Đã thích bình luận!' : 'Đã không thích bình luận!', 'success');
     } catch (error) {
-        console.error('Error liking comment:', error);
         showNotification(error.message, 'error');
     }
 }
@@ -1443,7 +1381,7 @@ function showReplyForm(commentId) {
         showLoginPrompt();
         return;
     }
-    
+
     const replyForm = document.getElementById(`reply-form-${commentId}`);
     if (replyForm) {
         replyForm.style.display = 'block';
@@ -1474,7 +1412,7 @@ async function postReply(parentCommentId) {
         showLoginPrompt();
         return;
     }
-    
+
     let currentUser;
     try {
         currentUser = JSON.parse(userData);
@@ -1483,45 +1421,50 @@ async function postReply(parentCommentId) {
         showLoginPrompt();
         return;
     }
-    
+
     const replyInput = document.getElementById(`reply-input-${parentCommentId}`);
     if (!replyInput) return;
-    
+
     const content = replyInput.value.trim();
     if (!content) {
         showNotification('Vui lòng nhập nội dung phản hồi', 'error');
         return;
     }
-    
+
     try {
-        const response = await fetch(`http://localhost:8080/api/comments/cartoon/${movieId}`, {
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-User-ID': currentUser.id.toString(),
+            'X-Username': currentUser.username
+        };
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+        }
+        const response = await fetch(`http://localhost:8080/api/cartoons/${movieId}/comments`, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-User-ID': currentUser.id.toString(),
-                'X-Username': currentUser.username
-            },
+            headers,
             body: JSON.stringify({
                 content: content,
                 rating: 0, // Replies don't have ratings
                 parentId: parentCommentId
             })
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Không thể đăng phản hồi');
         }
-        
+
         // Reload comments to show new reply
         await loadComments();
-        
+
         // Hide reply form
         hideReplyForm(parentCommentId);
-        
+
         showNotification('Đã đăng phản hồi!', 'success');
-        
+
     } catch (error) {
         console.error('Error posting reply:', error);
         showNotification(error.message, 'error');
@@ -1534,29 +1477,29 @@ async function deleteComment(commentId) {
         showLoginPrompt();
         return;
     }
-    
+
     const confirmDelete = confirm('Bạn có chắc chắn muốn xóa bình luận này?');
     if (!confirmDelete) return;
-    
+
     try {
-        const response = await fetch(`http://localhost:8080/api/comments/${commentId}`, {
+        const response = await fetch(`http://localhost:8080/api/cartoons/comments/${commentId}`, {
             method: 'DELETE',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Không thể xóa bình luận');
         }
-        
+
         // Reload comments
         await loadComments();
-        
+
         showNotification('Đã xóa bình luận!', 'success');
-        
+
     } catch (error) {
         console.error('Error deleting comment:', error);
         showNotification(error.message, 'error');
@@ -1567,11 +1510,11 @@ async function deleteComment(commentId) {
 function sortComments() {
     const sortBy = document.getElementById('comments-sort');
     if (!sortBy) return;
-    
+
     const sortValue = sortBy.value;
     let sortedComments = [...currentComments];
-    
-    switch(sortValue) {
+
+    switch (sortValue) {
         case 'newest':
             sortedComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             break;
@@ -1583,20 +1526,20 @@ function sortComments() {
             sortedComments.sort((a, b) => (b.rating || 0) - (a.rating || 0));
             break;
     }
-    
+
     displayComments(sortedComments);
 }
 
 // Like/Dislike comment functions (placeholder)
-function likeComment(commentId) {
-    console.log('Liked comment:', commentId);
-    showNotification('Tính năng like đang được phát triển', 'info');
-}
+// function likeComment(commentId) {
+//     console.log('Liked comment:', commentId);
+//     showNotification('Tính năng like đang được phát triển', 'info');
+// }
 
-function dislikeComment(commentId) {
-    console.log('Disliked comment:', commentId);
-    showNotification('Tính năng dislike đang được phát triển', 'info');
-}
+// function dislikeComment(commentId) {
+//     console.log('Disliked comment:', commentId);
+//     showNotification('Tính năng dislike đang được phát triển', 'info');
+// }
 
 // Load comments when page loads
 if (movieId) {
@@ -1611,16 +1554,158 @@ function logout() {
     // Clear localStorage
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
-    
+
     // Clear current user data
     currentUser = null;
     isAuthenticated = false;
-    
+
     // Redirect to login
     showNotification('Đã đăng xuất!', 'success');
     setTimeout(() => {
         window.location.href = '../login_register/login.html';
     }, 1000);
+}
+
+// ===== MISSING FUNCTIONS =====
+
+// Toggle favorite movie
+function toggleFavorite() {
+    if (!isAuthenticated || !currentUser) {
+        showLoginPrompt();
+        return;
+    }
+
+    // TODO: Implement favorite functionality
+    showNotification('Tính năng yêu thích đang được phát triển', 'info');
+}
+
+// Download movie
+function downloadMovie() {
+    if (!isAuthenticated || !currentUser) {
+        showLoginPrompt();
+        return;
+    }
+
+    showNotification('Tính năng tải xuống đang được phát triển', 'info');
+}
+
+// Share movie
+function shareMovie() {
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            url: window.location.href
+        }).then(() => {
+            showNotification('Đã chia sẻ thành công!', 'success');
+        }).catch(err => {
+            console.error('Error sharing:', err);
+            copyToClipboard();
+        });
+    } else {
+        copyToClipboard();
+    }
+}
+
+// Copy URL to clipboard
+function copyToClipboard() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        showNotification('Đã sao chép link vào clipboard!', 'success');
+    }).catch(err => {
+        console.error('Error copying to clipboard:', err);
+        showNotification('Không thể sao chép link', 'error');
+    });
+}
+
+// Update movie info display
+function updateMovieInfo(movie) {
+    console.log('🎬 Updating movie info:', movie);
+
+    // Update title
+    const titleElement = document.getElementById('movieTitle');
+    if (titleElement && movie.title) {
+        titleElement.textContent = movie.title;
+    }
+
+    // Update description
+    const descElement = document.getElementById('movieDescription');
+    if (descElement && movie.description) {
+        descElement.textContent = movie.description;
+    }
+
+    // Update genre
+    const genreElement = document.getElementById('movieGenre');
+    if (genreElement && movie.genre) {
+        genreElement.textContent = movie.genre;
+    }
+
+    // Update year
+    const yearElement = document.getElementById('movieYear');
+    if (yearElement && movie.releaseYear) {
+        yearElement.textContent = movie.releaseYear;
+    }
+
+    // Update image
+    const imageElement = document.getElementById('movieImage');
+    if (imageElement && movie.imageUrl) {
+        imageElement.src = movie.imageUrl;
+        imageElement.alt = movie.title || 'Movie poster';
+    }
+
+    // Update total episodes
+    const episodesElement = document.getElementById('totalEpisodes');
+    if (episodesElement && movie.totalEpisodes) {
+        episodesElement.textContent = `${movie.totalEpisodes} tập`;
+    }
+
+    // Update status
+    const statusElement = document.getElementById('movieStatus');
+    if (statusElement && movie.status) {
+        statusElement.textContent = movie.status;
+    }
+}
+
+// ===== COMMENTS FUNCTIONS =====
+
+function toggleComments() {
+    console.log('🔄 Toggle comments visibility');
+
+    const commentsSection = document.getElementById('commentsSection');
+    const toggleBtn = document.querySelector('.toggle-comments-btn');
+
+    if (commentsSection) {
+        commentsSection.classList.toggle('hidden');
+
+        if (toggleBtn) {
+            const isHidden = commentsSection.classList.contains('hidden');
+            toggleBtn.textContent = isHidden ? 'Hiển thị bình luận' : 'Ẩn bình luận';
+        }
+
+        console.log('✅ Comments section toggled:', !commentsSection.classList.contains('hidden') ? 'visible' : 'hidden');
+    } else {
+        console.warn('❌ Comments section not found');
+    }
+}
+
+// ===== LOAD LIKE/DISLIKE STATE ON PAGE LOAD =====
+async function loadLikeDislikeState() {
+    try {
+        const res = await fetch(`http://localhost:8080/api/cartoons/${movieId}/like-stats`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error('Không thể lấy trạng thái like/dislike');
+        const data = await res.json();
+        isLiked = data.isLiked;
+        isDisliked = data.isDisliked;
+        likeCount = data.likeCount;
+        dislikeCount = data.dislikeCount;
+        updateLikeDislikeUI();
+    } catch (e) {
+        console.warn('Không thể lấy trạng thái like/dislike:', e.message);
+    }
 }
 
 // Make functions available globally for onclick handlers

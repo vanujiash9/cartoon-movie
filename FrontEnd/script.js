@@ -24,44 +24,45 @@ const loadMoreBtn = document.getElementById('loadMore');
 // State variables
 let currentMovies = [];
 let displayedMovies = 0;
-const moviesPerPage = 9;
+const moviesPerPage = 10;
 let bookmarkedMovies = JSON.parse(localStorage.getItem('bookmarkedMovies') || '[]');
 let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 let watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
 
 // Initialize app
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check if coming from login page
     const referrer = document.referrer;
     const urlParams = new URLSearchParams(window.location.search);
-      if (referrer.includes('login-success') || urlParams.get('login') === 'success') {
+    if (referrer.includes('login-success') || urlParams.get('login') === 'success') {
         console.log('Detected return from login, forcing header update...');
         console.log('URL params:', Array.from(urlParams.entries()));
         console.log('Referrer:', referrer);
-        
+
         // Clear the URL parameters to avoid repeated detection
         if (urlParams.get('login') === 'success') {
             const newUrl = window.location.origin + window.location.pathname;
             window.history.replaceState({}, document.title, newUrl);
         }
-        
+
         // Immediate attempts
         setTimeout(() => updateHeaderLoginStatus(), 100);
         setTimeout(() => updateHeaderLoginStatus(), 300);
-        
+
         // Medium delay attempts
         setTimeout(() => updateHeaderLoginStatus(), 800);
         setTimeout(() => updateHeaderLoginStatus(), 1500);
-        
+
         // Long delay attempts for stubborn cases
         setTimeout(() => updateHeaderLoginStatus(), 3000);
         setTimeout(() => updateHeaderLoginStatus(), 5000);
     }
-    
+
     initializeApp();
-    
+
     // Additional check after DOM fully loaded
-    setTimeout(() => {        const token = localStorage.getItem('token');
+    setTimeout(() => {
+        const token = localStorage.getItem('token');
         const username = localStorage.getItem('username');
         if (token && username) {
             console.log('Found user login data after DOM load, updating header...');
@@ -72,8 +73,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Tích hợp API backend lấy danh sách phim
 function fetchMoviesFromAPI() {
-    fetch('http://localhost:8080/api/cartoons')
-        .then(res => res.json())
+    console.log('[API] Đang gọi API để lấy danh sách phim...');
+    fetch('http://localhost:8080/api/cartoons', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+    })
+        .then(res => {
+            console.log('[API] Response status:', res.status);
+            console.log('[API] Response ok:', res.ok);
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
         .then(data => {
             console.log('[API] Dữ liệu trả về:', data);
             if (Array.isArray(data) && data.length > 0) {
@@ -88,10 +103,11 @@ function fetchMoviesFromAPI() {
                     trailerUrl: item.trailerUrl || '',
                     videoUrl: item.videoUrl || '',
                     totalEpisodes: item.totalEpisodes || '',
-                }));                currentMovies = [...window.movies];
+                }));
+                currentMovies = [...window.movies];
                 console.log('[API] Đã lấy dữ liệu phim từ backend:', currentMovies);
                 displayMovies();
-                
+
                 // Now that movies are loaded, update quick stats
                 updateQuickStats();
             } else {
@@ -146,11 +162,11 @@ function useBackupMovieData() {
             totalEpisodes: '291'
         }
     ];
-      window.movies = backupMovies;
+    window.movies = backupMovies;
     currentMovies = [...window.movies];
     console.log('[BACKUP] Sử dụng dữ liệu phim mẫu:', currentMovies);
     displayMovies();
-    
+
     // Update quick stats with backup data
     updateQuickStats();
 }
@@ -162,15 +178,15 @@ function initializeApp() {
     animateProgressBars();
     setupEventListeners();
     // Don't call updateQuickStats here - call it after movies are loaded
-    
+
     // Check and update header login status after a short delay
     setTimeout(() => {
         updateHeaderLoginStatus();
     }, 1000);
-    
+
     // Update debug panel
     updateDebugPanel();
-    
+
     // Additional check for login status after longer delay
     setTimeout(() => {
         const token = localStorage.getItem('token');
@@ -180,9 +196,9 @@ function initializeApp() {
             updateHeaderLoginStatus();
         }
     }, 2000);
-    
+
     initializeHashNavigation();
-    
+
     if (!localStorage.getItem('hasVisited')) {
         setTimeout(() => {
             showNotification('Chào mừng đến với Maxion! Khám phá hàng nghìn bộ phim chất lượng cao.', 'success');
@@ -197,15 +213,15 @@ function initializeApp() {
 
 function initializeHashNavigation() {
     // Handle hash on page load
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
         handleHashNavigation();
     });
-    
+
     // Handle hash changes
-    window.addEventListener('hashchange', function() {
+    window.addEventListener('hashchange', function () {
         handleHashNavigation();
     });
-    
+
     // Handle initial hash if page is already loaded
     if (document.readyState === 'complete') {
         setTimeout(handleHashNavigation, 500);
@@ -215,7 +231,7 @@ function initializeHashNavigation() {
 function handleHashNavigation() {
     const hash = window.location.hash.substring(1);
     console.log('Handling hash navigation:', hash);
-    
+
     if (hash && hash !== 'top') {
         setTimeout(() => {
             const target = document.getElementById(hash);
@@ -223,12 +239,12 @@ function handleHashNavigation() {
                 // Calculate offset for fixed header
                 const headerHeight = 100; // Adjust based on your header height
                 const targetPosition = target.offsetTop - headerHeight;
-                
+
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
                 });
-                
+
                 showNotification(`Đã đến: ${getSectionDisplayName(hash)}`, 'success');
             } else {
                 console.warn('Section not found:', hash);
@@ -250,7 +266,7 @@ function getSectionDisplayName(sectionId) {
         'live': 'TV Trực tiếp',
         'top': 'Đầu trang'
     };
-    
+
     return sectionNames[sectionId] || sectionId;
 }
 
@@ -263,17 +279,17 @@ function setupEventListeners() {
     if (yearFilter) {
         yearFilter.addEventListener('change', filterMovies);
     }
-    
+
     // Radio filters
     document.querySelectorAll('input[name="grade"]').forEach(radio => {
         radio.addEventListener('change', sortMovies);
     });
-    
+
     // Load more button
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener('click', loadMoreMovies);
     }
-    
+
     // Smooth scrolling for navigation links (fallback)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -283,12 +299,12 @@ function setupEventListeners() {
             if (target) {
                 const headerHeight = 100;
                 const targetPosition = target.offsetTop - headerHeight;
-                
+
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
                 });
-                
+
                 // Update hash without triggering hashchange
                 history.pushState(null, null, `#${targetId}`);
             }
@@ -300,16 +316,16 @@ function setupEventListeners() {
 function filterMovies() {
     const selectedGenre = genreFilter.value;
     const selectedYear = yearFilter.value;
-    
+
     console.log('Filtering:', selectedGenre, selectedYear);
-    
+
     currentMovies = movies.filter(movie => {
         const genreMatch = selectedGenre === 'all' || movie.categories.includes(selectedGenre);
         const yearMatch = selectedYear === 'all' || checkYearRange(movie.year, selectedYear);
-        
+
         return genreMatch && yearMatch;
     });
-    
+
     console.log('Filtered movies:', currentMovies.length);
     displayMovies();
     showNotification(`Tìm thấy ${currentMovies.length} phim phù hợp`, 'success');
@@ -319,10 +335,10 @@ function filterByCategory(category) {
     if (genreFilter) {
         genreFilter.value = category;
         filterMovies();
-        
+
         // Scroll to movies section with hash
         window.location.hash = 'movies';
-        
+
         showNotification(`Lọc theo: ${getGenreDisplayName(category)}`, 'success');
     }
 }
@@ -341,14 +357,14 @@ function getGenreDisplayName(genre) {
         'thriller': 'Thriller',
         'crime': 'Tội phạm'
     };
-    
+
     return genreNames[genre] || genre;
 }
 
 function checkYearRange(movieYear, yearRange) {
     const year = parseInt(movieYear);
-    
-    switch(yearRange) {
+
+    switch (yearRange) {
         case '2024': return year === 2024;
         case '2020-2023': return year >= 2020 && year <= 2023;
         case '2010-2019': return year >= 2010 && year <= 2019;
@@ -360,10 +376,10 @@ function checkYearRange(movieYear, yearRange) {
 
 function sortMovies() {
     const selectedSort = document.querySelector('input[name="grade"]:checked').id;
-    
+
     console.log('Sorting by:', selectedSort);
-    
-    switch(selectedSort) {
+
+    switch (selectedSort) {
         case 'popular':
             currentMovies.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
             break;
@@ -374,32 +390,32 @@ function sortMovies() {
         default:            // Reset to original filtered list
             const selectedGenre = genreFilter ? genreFilter.value : 'all';
             const selectedYear = yearFilter ? yearFilter.value : 'all';
-            
+
             const allMovies = window.movies || [];
             currentMovies = [...allMovies].filter(movie => {
                 const genreMatch = selectedGenre === 'all' || movie.categories.includes(selectedGenre);
                 const yearMatch = selectedYear === 'all' || checkYearRange(movie.year, selectedYear);
-                
+
                 return genreMatch && yearMatch;
             });
             break;
     }
-    
+
     displayMovies();
 }
 
 // Display movies
 function displayMovies() {
     console.log('Displaying movies:', currentMovies.length);
-    
+
     if (!moviesGrid) {
         console.error('Movies grid not found!');
         return;
     }
-    
+
     displayedMovies = 0;
     moviesGrid.innerHTML = '';
-    
+
     if (currentMovies.length === 0) {
         moviesGrid.innerHTML = `
             <div class="empty-state">
@@ -410,24 +426,24 @@ function displayMovies() {
         if (loadMoreBtn) loadMoreBtn.style.display = 'none';
         return;
     }
-    
+
     loadMoreMovies();
 }
 
 function loadMoreMovies() {
     const startIndex = displayedMovies;
     const endIndex = Math.min(startIndex + moviesPerPage, currentMovies.length);
-    
+
     console.log('Loading movies from', startIndex, 'to', endIndex);
-    
+
     for (let i = startIndex; i < endIndex; i++) {
         const movie = currentMovies[i];
         const movieCard = createMovieCard(movie, i);
         moviesGrid.appendChild(movieCard);
     }
-    
+
     displayedMovies = endIndex;
-    
+
     // Hide load more button if all movies are displayed
     if (loadMoreBtn) {
         if (displayedMovies >= currentMovies.length) {
@@ -436,7 +452,7 @@ function loadMoreMovies() {
             loadMoreBtn.style.display = 'block';
         }
     }
-    
+
     // Add animation to new cards
     const newCards = moviesGrid.querySelectorAll('.movie-card:nth-last-child(-n+' + (endIndex - startIndex) + ')');
     newCards.forEach((card, index) => {
@@ -457,7 +473,7 @@ function createMovieCard(movie, index) {
         useSVG = true;
     }
     const fallbackSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-        <svg width=\"200\" height=\"280\" viewBox=\"0 0 200 280\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n\n            <rect width=\"200\" height=\"280\" fill=\"#3498db\"/>\n            <text x=\"100\" y=\"120\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"18\" fill=\"white\" font-weight=\"bold\">${(movie.title||'').slice(0,32)}</text>\n            <text x=\"100\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"13\" fill=\"#e0e0e0\">${movie.year||''}</text>\n            <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"12\" fill=\"#e0e0e0\">${(movie.genre||'').slice(0,32)}</text>\n        </svg>`);
+        <svg width=\"200\" height=\"280\" viewBox=\"0 0 200 280\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n\n            <rect width=\"200\" height=\"280\" fill=\"#3498db\"/>\n            <text x=\"100\" y=\"120\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"18\" fill=\"white\" font-weight=\"bold\">${(movie.title || '').slice(0, 32)}</text>\n            <text x=\"100\" y=\"150\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"13\" fill=\"#e0e0e0\">${movie.year || ''}</text>\n            <text x=\"100\" y=\"170\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"12\" fill=\"#e0e0e0\">${(movie.genre || '').slice(0, 32)}</text>\n        </svg>`);
 
     let statusBadgeHTML = '';
     if (movie.status) {
@@ -516,7 +532,7 @@ function createMovieCard(movie, index) {
         </div>
     `;
     // Hiệu ứng hover: show trailer (video hoặc iframe), hide img, show info
-    movieCard.addEventListener('mouseenter', function() {
+    movieCard.addEventListener('mouseenter', function () {
         const video = movieCard.querySelector('.trailer-video');
         const iframe = movieCard.querySelector('.trailer-iframe');
         const img = movieCard.querySelector('.card-img');
@@ -532,7 +548,7 @@ function createMovieCard(movie, index) {
         // Hiện info dưới ảnh khi hover
         movieCard.querySelectorAll('.card-extra-info').forEach(e => e.style.display = 'block');
     });
-    movieCard.addEventListener('mouseleave', function() {
+    movieCard.addEventListener('mouseleave', function () {
         const video = movieCard.querySelector('.trailer-video');
         const iframe = movieCard.querySelector('.trailer-iframe');
         const img = movieCard.querySelector('.card-img');
@@ -556,7 +572,7 @@ function createMovieCard(movie, index) {
 // Bookmark functionality
 function toggleBookmark(movieTitle, element) {
     const index = bookmarkedMovies.indexOf(movieTitle);
-    
+
     if (index > -1) {
         bookmarkedMovies.splice(index, 1);
         element.classList.remove('active');
@@ -566,11 +582,11 @@ function toggleBookmark(movieTitle, element) {
         element.classList.add('active');
         showNotification(`Đã thêm "${movieTitle}" vào danh sách yêu thích`, 'success');
     }
-    
+
     localStorage.setItem('bookmarkedMovies', JSON.stringify(bookmarkedMovies));
     updateQuickStats();
     updateFooterStats();
-    
+
     // Add feedback animation
     element.style.transform = 'scale(1.2)';
     setTimeout(() => {
@@ -587,9 +603,9 @@ function playMovie(movieTitle) {
         updateQuickStats();
         updateFooterStats();
     }
-    
+
     showNotification(`Đang phát: ${movieTitle}`, 'success');
-    
+
     // Simulate opening video player
     setTimeout(() => {
         showNotification('Video player sẽ mở ở đây trong ứng dụng thực tế', 'success');
@@ -606,10 +622,10 @@ function playLiveStream(streamId) {
         'game-of-thrones': 'Game of Thrones',
         'vikings': 'Vikings'
     };
-    
+
     const streamName = streamNames[streamId] || streamId;
     showNotification(`Đang kết nối đến ${streamName} LIVE...`, 'success');
-    
+
     setTimeout(() => {
         showNotification('Kết nối thành công! Đang phát trực tiếp...', 'success');
     }, 1500);
@@ -628,7 +644,7 @@ function getTrendingMovies() {
         .filter(movie => parseFloat(movie.rating) > 7.5)
         .sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
         .slice(0, 6);
-    
+
     currentMovies = trending;
     displayMovies();
     showNotification('Đang hiển thị phim đang thịnh hành', 'success');
@@ -637,13 +653,13 @@ function getTrendingMovies() {
 function applyAdvancedFilter() {
     const minRating = 7.0; // Minimum rating filter
     const recentYears = ['2020', '2021', '2022', '2023', '2024'];
-    
+
     currentMovies = movies.filter(movie => {
         const hasGoodRating = parseFloat(movie.rating) >= minRating;
         const isRecent = recentYears.includes(movie.year);
         return hasGoodRating || isRecent;
     });
-    
+
     displayMovies();
     showNotification(`Lọc nâng cao: ${currentMovies.length} phim chất lượng cao`, 'success');
 }
@@ -655,11 +671,11 @@ function updateQuickStats() {
         console.warn('Movies data not available for stats calculation');
         return;
     }
-    
+
     const totalMovies = movies.length;
     const avgRating = (movies.reduce((sum, movie) => sum + parseFloat(movie.rating || 0), 0) / totalMovies).toFixed(1);
     const topGenre = getTopGenre();
-    
+
     // Store in localStorage for other components to access
     localStorage.setItem('totalMovies', totalMovies);
     localStorage.setItem('avgRating', avgRating);
@@ -671,7 +687,7 @@ function getTopGenre() {
     if (!movies || !Array.isArray(movies) || movies.length === 0) {
         return '';
     }
-    
+
     const genreCount = {};
     movies.forEach(movie => {
         // Check if categories exist and is an array
@@ -684,14 +700,14 @@ function getTopGenre() {
             genreCount[movie.genre] = (genreCount[movie.genre] || 0) + 1;
         }
     });
-    
+
     return Object.keys(genreCount).reduce((a, b) => genreCount[a] > genreCount[b] ? a : b);
 }
 
 // Animate progress bars
 function animateProgressBars() {
     const progressBars = document.querySelectorAll('.progress');
-    
+
     // Intersection Observer for progress bars
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -702,7 +718,7 @@ function animateProgressBars() {
             }
         });
     }, { threshold: 0.5 });
-    
+
     progressBars.forEach(bar => {
         observer.observe(bar);
     });
@@ -720,7 +736,7 @@ function showNotification(message, type = 'success') {
     } catch (e) {
         console.log('Header notification not available, using fallback');
     }
-    
+
     // Fallback notification system
     let notification = document.getElementById('notification');
     if (!notification) {
@@ -743,11 +759,11 @@ function showNotification(message, type = 'success') {
         `;
         document.body.appendChild(notification);
     }
-    
+
     notification.textContent = message;
     notification.className = `notification ${type}`;
     notification.style.transform = 'translateX(0)';
-    
+
     setTimeout(() => {
         notification.style.transform = 'translateX(700px)';
     }, 3000);
@@ -762,7 +778,7 @@ let externalDropdown = null;
 function showExternalUserDropdown(position) {
     // Remove existing dropdown if any
     hideExternalUserDropdown();
-    
+
     // Create dropdown element
     externalDropdown = document.createElement('div');
     externalDropdown.className = 'external-user-dropdown';
@@ -784,7 +800,7 @@ function showExternalUserDropdown(position) {
             Đăng xuất
         </div>
     `;
-    
+
     // Apply styles
     externalDropdown.style.cssText = `
         position: fixed;
@@ -798,9 +814,9 @@ function showExternalUserDropdown(position) {
         border: 1px solid rgba(52, 152, 219, 0.2);
         animation: fadeInUp 0.3s ease-out;
     `;
-      // Add to document
+    // Add to document
     document.body.appendChild(externalDropdown);
-    
+
     // Add click outside listener để đóng dropdown
     setTimeout(() => {
         document.addEventListener('click', handleExternalDropdownOutsideClick);
@@ -813,20 +829,20 @@ function handleExternalDropdownOutsideClick(event) {
         // Also check if click is on header iframe area
         const headerFrame = document.getElementById('headerFrame') || document.querySelector('iframe[src*="header.html"]');
         let isHeaderClick = false;
-        
+
         if (headerFrame) {
             const rect = headerFrame.getBoundingClientRect();
             const clickX = event.clientX;
             const clickY = event.clientY;
-            
+
             isHeaderClick = (
-                clickX >= rect.left && 
-                clickX <= rect.right && 
-                clickY >= rect.top && 
+                clickX >= rect.left &&
+                clickX <= rect.right &&
+                clickY >= rect.top &&
                 clickY <= rect.bottom
             );
         }
-        
+
         if (!isHeaderClick) {
             hideExternalUserDropdown();
             document.removeEventListener('click', handleExternalDropdownOutsideClick);
@@ -879,23 +895,23 @@ function viewHistoryExternal() {
 
 function logoutExternal() {
     hideExternalUserDropdown();
-    
+
     if (!confirm('Bạn có chắc chắn muốn đăng xuất?')) {
         return;
     }
-    
+
     // Clear user data
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('email');
     localStorage.removeItem('bookmarkedMovies');
     localStorage.removeItem('watchHistory');
-    
+
     showNotification('Đã đăng xuất thành công!', 'success');
-    
+
     // Update header
     updateHeaderLoginStatus();
-    
+
     // Redirect to login
     setTimeout(() => {
         window.location.href = './login_register/login.html';
@@ -950,78 +966,78 @@ document.head.appendChild(dropdownStyle);
 function initHeaderIframe() {
     const headerFrame = document.getElementById('headerFrame');
     console.log('Header iframe loaded');
-    
+
     let headerReadyRetries = 0;
     const maxRetries = 10;
-    
+
     // Ping header repeatedly until it responds
     function pingHeader() {
         if (headerFrame && headerFrame.contentWindow) {
             console.log(`Pinging header (attempt ${headerReadyRetries + 1}/${maxRetries})`);
             headerFrame.contentWindow.postMessage({ type: 'ping' }, '*');
             headerReadyRetries++;
-            
+
             if (headerReadyRetries < maxRetries) {
                 setTimeout(pingHeader, 500);
             }
         }
     }
-    
+
     // Start pinging immediately and repeatedly
     setTimeout(pingHeader, 200);
-    
+
     // Also try updating login status multiple times with different delays
     setTimeout(() => updateHeaderLoginStatus(), 800);
     setTimeout(() => updateHeaderLoginStatus(), 1500);
     setTimeout(() => updateHeaderLoginStatus(), 3000);
-    
+
     // Handle header iframe communication
-    window.addEventListener('message', function(event) {
+    window.addEventListener('message', function (event) {
         if (event.source === headerFrame.contentWindow) {
             console.log('Message from header:', event.data);
-            
+
             if (event.data.type === 'pong') {
                 console.log('Header is ready! Stopping ping attempts and updating login status...');
                 headerReadyRetries = maxRetries; // Stop further pings
-                
+
                 // Multiple update attempts when header is ready
                 setTimeout(() => updateHeaderLoginStatus(), 50);
                 setTimeout(() => updateHeaderLoginStatus(), 200);
                 setTimeout(() => updateHeaderLoginStatus(), 500);
                 return;
             }
-            
+
             // Handle login navigation from header
             if (event.data.type === 'navigateToLogin') {
                 console.log('Navigating to login from header:', event.data.url);
                 window.location.href = event.data.url;
                 return;
             }
-            
+
             // Handle navigation messages from header
             if (event.data.type === 'navigateToSection') {
                 const sectionId = event.data.sectionId;
                 navigateToSection(sectionId);
             }
-              // Handle search messages from header
+            // Handle search messages from header
             if (event.data.type === 'searchMovie') {
                 const query = event.data.query;
                 performSearch(query);
             }
-            
+
             // Handle user dropdown messages from header
             if (event.data.type === 'showUserDropdown') {
                 showExternalUserDropdown(event.data.position);
             }
-            
+
             if (event.data.type === 'hideUserDropdown') {
                 hideExternalUserDropdown();
             }
         }
     });
-    
+
     // Send scroll events to header iframe để update navbar scroll effect
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         const scrollTop = window.pageYOffset;
         if (headerFrame && headerFrame.contentWindow) {
             headerFrame.contentWindow.postMessage({
@@ -1035,50 +1051,49 @@ function initHeaderIframe() {
 // GHI ĐÈ HÀM updateHeaderLoginStatus để cập nhật trực tiếp header tích hợp (không còn dùng iframe)
 function updateHeaderLoginStatus() {
     console.log('🔍 updateHeaderLoginStatus called');
-    
+
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
     const email = localStorage.getItem('email') || '';
     const fullName = localStorage.getItem('fullName') || '';
-    
+
     console.log('📋 Login status check:', { token: !!token, username, email, fullName });
-    
+
     // Lấy các phần tử header
     const signInBtn = document.getElementById('signInBtn');
     const userMenu = document.getElementById('userMenu');
     const displayUserName = document.getElementById('displayUserName');
     const userAvatar = document.getElementById('userAvatar');
-    
+
     console.log('🎯 Header elements:', {
         signInBtn: !!signInBtn,
         userMenu: !!userMenu,
         displayUserName: !!displayUserName,
         userAvatar: !!userAvatar
     });
-    
+
     // Kiểm tra trạng thái đăng nhập (chỉ cần username)
     if (username) {
         console.log('✅ User is logged in:', username);
-        
+
         if (signInBtn) {
             signInBtn.style.display = 'none';
             console.log('🔄 Hidden sign in button');
         }
-        
+
         if (userMenu) {
             userMenu.style.display = 'flex';
             userMenu.classList.add('visible');
             console.log('🔄 Showed user menu');
         }
-        
+
         if (displayUserName) {
-            displayUserName.textContent = fullName || username;
-            console.log('🔄 Updated display name:', fullName || username);
+            displayUserName.textContent = fullName ? fullName : username;
         }
-        
+
         if (userAvatar) {
-            // Avatar chữ cái đầu
-            const firstLetter = (fullName || username).charAt(0).toUpperCase();
+            // Avatar chữ cái đầu của fullName nếu có, nếu không thì lấy username
+            const firstLetter = (fullName ? fullName : username).charAt(0).toUpperCase();
             userAvatar.src = `data:image/svg+xml;base64,${btoa(`
                 <svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
                     <circle cx='20' cy='20' r='20' fill='#3498db'/>
@@ -1089,12 +1104,12 @@ function updateHeaderLoginStatus() {
         }
     } else {
         console.log('❌ User not logged in');
-        
+
         if (signInBtn) {
             signInBtn.style.display = 'flex';
             console.log('🔄 Showed sign in button');
         }
-        
+
         if (userMenu) {
             userMenu.style.display = 'none';
             userMenu.classList.remove('visible');
@@ -1107,13 +1122,13 @@ function updateHeaderLoginStatus() {
 function updateDebugPanel() {
     // Function kept for potential future debugging needs
     console.log('Debug info - Token:', localStorage.getItem('token') ? 'Present' : 'None',
-                'Username:', localStorage.getItem('username') || 'None');
+        'Username:', localStorage.getItem('username') || 'None');
 }
 
 function manualRefreshHeader() {
     console.log('Manual header refresh triggered');
     updateHeaderLoginStatus();
-    
+
     // Also try to call header's refresh function directly
     const headerFrame = document.getElementById('headerFrame');
     if (headerFrame && headerFrame.contentWindow) {
@@ -1124,19 +1139,19 @@ function manualRefreshHeader() {
         if (headerFrame.contentWindow.HeaderApp && headerFrame.contentWindow.HeaderApp.forceRefresh) {
             headerFrame.contentWindow.HeaderApp.forceRefresh();
         }
-        
+
         // Also send message-based refresh
         headerFrame.contentWindow.postMessage({
             type: 'forceRefresh'
         }, '*');
     }
-    
+
     console.log('Manual refresh completed');
 }
 
 function clearLoginData() {
     localStorage.removeItem('token');
-    localStorage.removeItem('username'); 
+    localStorage.removeItem('username');
     localStorage.removeItem('email');
     updateHeaderLoginStatus();
     console.log('Login data cleared');
@@ -1157,26 +1172,26 @@ function simulateLogin() {
 }
 
 // Global login status checker - can be called from console for debugging
-window.checkGlobalLoginStatus = function() {
+window.checkGlobalLoginStatus = function () {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
     const email = localStorage.getItem('email');
-    
+
     console.log('=== Global Login Status Check ===');
     console.log('Token:', token ? 'Present (' + token.substring(0, 10) + '...)' : 'None');
     console.log('Username:', username || 'None');
     console.log('Email:', email || 'None');
     console.log('Is Logged In:', !!(token && username));
-    
+
     // Force header update
     updateHeaderLoginStatus();
-    
+
     // Try manual header refresh
     const headerFrame = document.getElementById('headerFrame');
     if (headerFrame && headerFrame.contentWindow && headerFrame.contentWindow.refreshLoginStatus) {
         headerFrame.contentWindow.refreshLoginStatus();
     }
-    
+
     return {
         isLoggedIn: !!(token && username),
         token: token,
@@ -1186,14 +1201,14 @@ window.checkGlobalLoginStatus = function() {
 };
 
 // Listen for storage changes (when user logs in/out from another tab)
-window.addEventListener('storage', function(e) {
+window.addEventListener('storage', function (e) {
     console.log('Storage changed:', e.key, e.newValue);
     if (e.key === 'token' || e.key === 'username' || e.key === 'loginStatusChanged') {
         setTimeout(() => {
             console.log('Updating header due to storage change');
             updateHeaderLoginStatus();
         }, 100);
-        
+
         // Multiple attempts for storage changes
         setTimeout(() => updateHeaderLoginStatus(), 500);
         setTimeout(() => updateHeaderLoginStatus(), 1000);
@@ -1211,13 +1226,13 @@ setInterval(() => {
 }, 5000);
 
 // Listen for login success from popup/child windows
-window.addEventListener('message', function(e) {
+window.addEventListener('message', function (e) {
     console.log('Received message:', e.data);
-    
+
     if (e.data.type === 'userLoggedIn') {
         console.log('User logged in from child window/popup');
         console.log('User info:', e.data.userInfo);
-        
+
         // Multiple aggressive update attempts
         setTimeout(() => updateHeaderLoginStatus(), 50);
         setTimeout(() => updateHeaderLoginStatus(), 200);
@@ -1228,7 +1243,7 @@ window.addEventListener('message', function(e) {
 });
 
 // Update header login status when page becomes visible
-document.addEventListener('visibilitychange', function() {
+document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
         console.log('Page became visible, checking login status...');
         setTimeout(() => {
@@ -1238,7 +1253,7 @@ document.addEventListener('visibilitychange', function() {
 });
 
 // Also check when window regains focus
-window.addEventListener('focus', function() {
+window.addEventListener('focus', function () {
     console.log('Window gained focus, checking login status...');
     setTimeout(() => {
         updateHeaderLoginStatus();
@@ -1247,7 +1262,7 @@ window.addEventListener('focus', function() {
 
 
 // Check for URL hash changes that might indicate return from login
-window.addEventListener('hashchange', function() {
+window.addEventListener('hashchange', function () {
     console.log('Hash changed, checking login status...');
     setTimeout(() => {
         updateHeaderLoginStatus();
@@ -1257,7 +1272,7 @@ window.addEventListener('hashchange', function() {
 // Navigation function for header communication
 function navigateToSection(sectionId) {
     console.log('Navigating to section:', sectionId);
-    
+
     if (sectionId === 'top') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         // Update hash without triggering event
@@ -1268,12 +1283,12 @@ function navigateToSection(sectionId) {
         if (target) {
             const headerHeight = 100; // Adjust based on your header height
             const targetPosition = target.offsetTop - headerHeight;
-            
+
             window.scrollTo({
                 top: targetPosition,
                 behavior: 'smooth'
             });
-            
+
             // Update hash without triggering event
             history.pushState(null, null, `#${sectionId}`);
             showNotification(`Đã đến: ${getSectionDisplayName(sectionId)}`, 'success');
@@ -1284,20 +1299,20 @@ function navigateToSection(sectionId) {
 // Search function for header communication
 function performSearch(query) {
     console.log('Performing search:', query);
-    
+
     // Filter movies based on search query
-    const searchResults = movies.filter(movie => 
+    const searchResults = movies.filter(movie =>
         movie.title.toLowerCase().includes(query.toLowerCase()) ||
         movie.genre.toLowerCase().includes(query.toLowerCase())
     );
-    
+
     if (searchResults.length > 0) {
         currentMovies = searchResults;
         displayMovies();
-        
+
         // Navigate to movies section
         window.location.hash = 'movies';
-        
+
         showNotification(`Tìm thấy ${searchResults.length} kết quả cho "${query}"`, 'success');
     } else {
         showNotification(`Không tìm thấy phim nào cho "${query}"`, 'error');
@@ -1307,14 +1322,14 @@ function performSearch(query) {
 // Footer iframe integration
 function initFooterIframe() {
     const footerFrame = document.getElementById('footerFrame');
-    
+
     // Handle iframe communication
-    window.addEventListener('message', function(event) {
+    window.addEventListener('message', function (event) {
         // Handle resize requests from footer iframe
         if (event.data.type === 'resizeIframe') {
             footerFrame.style.height = event.data.height + 'px';
         }
-        
+
         // Handle scroll to top requests
         if (event.data.type === 'scrollToTop') {
             window.scrollTo({
@@ -1322,7 +1337,7 @@ function initFooterIframe() {
                 behavior: 'smooth'
             });
         }
-        
+
         // Handle function calls from footer
         if (event.data.type === 'callFunction') {
             const functionName = event.data.functionName;
@@ -1330,15 +1345,15 @@ function initFooterIframe() {
                 window[functionName]();
             }
         }
-        
+
         // Handle stats requests from footer
         if (event.data.type === 'requestStats') {
             sendStatsToFooter();
         }
     });
-    
+
     // Send scroll events to footer iframe
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         const scrollTop = window.pageYOffset;
         if (footerFrame && footerFrame.contentWindow) {
             footerFrame.contentWindow.postMessage({
@@ -1347,7 +1362,7 @@ function initFooterIframe() {
             }, '*');
         }
     });
-    
+
     // Initial stats send
     setTimeout(() => {
         sendStatsToFooter();
@@ -1357,16 +1372,15 @@ function initFooterIframe() {
 function sendStatsToFooter() {
     const footerFrame = document.getElementById('footerFrame');
     const bookmarkedMovies = JSON.parse(localStorage.getItem('bookmarkedMovies') || '[]');
-    const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
-    
-    const stats = {
-        totalMovies: movies ? movies.length : 18,
-        avgRating: movies ? (movies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / movies.length).toFixed(1) : '7.2',
+    const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]'); const stats = {
+        totalMovies: Array.isArray(movies) ? movies.length : 18,
+        avgRating: Array.isArray(movies) && movies.length > 0 ?
+            (movies.reduce((sum, movie) => sum + parseFloat(movie.rating || 0), 0) / movies.length).toFixed(1) : '7.2',
         topGenre: getGenreDisplayName(getTopGenre()),
         bookmarkCount: bookmarkedMovies.length,
         watchedCount: watchHistory.length
     };
-    
+
     if (footerFrame && footerFrame.contentWindow) {
         footerFrame.contentWindow.postMessage({
             type: 'updateStats',
@@ -1380,139 +1394,126 @@ function updateFooterStats() {
     sendStatsToFooter();
 }
 
-// Global functions for external access
-window.MainApp = {
-    getRandomRecommendation,
-    getTrendingMovies,
-    applyAdvancedFilter,
-    showNotification,
-    updateQuickStats,
-    filterByCategory,
-    playMovie,
-    playBannerMovie,
-    playLiveStream,
-    toggleBookmark,
-    navigateToSection,
-    performSearch,
-    handleHashNavigation
-};
+// =========================
+// NOTIFICATION SYSTEM
+// =========================
 
-// Error handling for images
-document.addEventListener('error', function(e) {
-    if (e.target.tagName === 'IMG') {
-        e.target.style.display = 'none';
-    }
-}, true);
+const notificationBell = document.getElementById('notificationBell');
+const notificationBadge = document.getElementById('notificationBadge');
+const notificationDropdown = document.getElementById('notificationDropdown');
+const notificationList = document.getElementById('notificationList');
 
-// Keyboard shortcuts for the main page
-document.addEventListener('keydown', function(e) {
-    // Quick navigation shortcuts
-    if (e.altKey) {
-        switch(e.key) {
-            case '1':
-                e.preventDefault();
-                window.location.hash = 'top';
-                break;
-            case '2':
-                e.preventDefault();
-                window.location.hash = 'movies';
-                break;
-            case '3':
-                e.preventDefault();
-                window.location.hash = 'category';
-                break;
-            case '4':
-                e.preventDefault();
-                window.location.hash = 'achievements';
-                break;
-            case '5':
-                e.preventDefault();
-                window.location.hash = 'live';
-                break;        }
-    }
-    
-    // Random recommendation shortcut (Ctrl/Cmd + R)
-    if ((e.ctrlKey || e.metaKey) && e.key === 'r' && e.shiftKey) {
-        e.preventDefault();
-        getRandomRecommendation();
-    }
-});
+let notifications = [];
+let unreadCount = 0;
+let notificationPollingInterval = null;
 
-// Add CSS for smooth section targeting
-const smoothScrollCSS = `
-    /* Smooth scroll offset for sections */
-    section[id] {
-        scroll-margin-top: 100px;
-    }
-    
-    /* Enhanced transitions */
-    html {
-        scroll-behavior: smooth;
-    }
-    
-    /* Focus management for accessibility */
-    section[id]:target {
-        animation: highlightSection 0.5s ease-in-out;
-    }
-    
-    @keyframes highlightSection {
-        0% { background-color: rgba(52, 152, 219, 0.1); }
-        100% { background-color: transparent; }
-    }
-`;
-
-// Inject the CSS
-const smoothScrollStyle = document.createElement('style');
-smoothScrollStyle.textContent = smoothScrollCSS;
-document.head.appendChild(smoothScrollStyle);
-
-// Hàm xem tập phim đầu tiên
-function watchFirstEpisode(cartoonId, title) {
-    console.log(`Đang chuyển tới trang xem phim ${title} (Cartoon ID: ${cartoonId})`);
-    
-    // Chuyển thẳng tới trang movie.html với ID phim
-    window.location.href = `moive player/moive.html?id=${cartoonId}`;
-}
-
-// Logout function for index.html
-function logout() {
-    if (!confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+function fetchNotifications() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        notificationBadge.style.display = 'none';
+        notificationList.innerHTML = '<div style="padding:16px; color:#888;">Vui lòng đăng nhập để xem thông báo.</div>';
         return;
     }
-    
-    // Clear user data
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('email');
-    localStorage.removeItem('fullName');
-    localStorage.removeItem('bookmarkedMovies');
-    localStorage.removeItem('watchHistory');
-    
-    // Update header immediately
-    updateHeaderLoginStatus();
-    
-    // Show notification
-    if (typeof showNotification === 'function') {
-        showNotification('Đã đăng xuất thành công!', 'success');
+    fetch('http://localhost:8080/api/notifications', {
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+        .then(res => res.json())
+        .then(data => {
+            notifications = Array.isArray(data) ? data : [];
+            renderNotificationList();
+        })
+        .catch(() => {
+            notificationList.innerHTML = '<div style="padding:16px; color:#888;">Không thể tải thông báo.</div>';
+        });
+    fetch('http://localhost:8080/api/notifications/unread-count', {
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+        .then(res => res.json())
+        .then(data => {
+            unreadCount = data && typeof data.count === 'number' ? data.count : 0;
+            updateNotificationBadge();
+        });
+}
+
+function updateNotificationBadge() {
+    if (unreadCount > 0) {
+        notificationBadge.textContent = unreadCount;
+        notificationBadge.style.display = 'inline-block';
+    } else {
+        notificationBadge.style.display = 'none';
     }
-    
-    // Redirect to login after short delay
-    setTimeout(() => {
-        window.location.href = './login_register/login.html';
-    }, 1500);
 }
 
-// Functions for user dropdown actions
-function viewProfile() {
-    window.location.href = './profile/profile.html';
+function renderNotificationList() {
+    if (!notifications.length) {
+        notificationList.innerHTML = '<div style="padding:16px; color:#888;">Không có thông báo nào.</div>';
+        return;
+    }
+    notificationList.innerHTML = notifications.map(n => `
+        <div class="notification-item${n.read ? '' : ' unread'}" style="padding:10px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; background:${n.read ? '#fff' : '#eaf6ff'};" onclick="markNotificationRead(${n.id})">
+            <div style="font-size:15px;">${n.content || 'Thông báo mới'}</div>
+            <div style="font-size:12px; color:#888; margin-top:2px;">${formatNotificationTime(n.createdAt)}</div>
+        </div>
+    `).join('');
 }
 
-function viewBookmarks() {
-    console.log('Viewing bookmarks...');
-    // TODO: Implement bookmarks page
+function formatNotificationTime(isoString) {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleString('vi-VN', { hour12: false });
 }
 
-function viewHistory() {
-    console.log('Viewing watch history...');
-    // TODO: Implement history page
+window.markNotificationRead = function (id) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(`http://localhost:8080/api/notifications/${id}/read`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }
+    }).then(() => {
+        fetchNotifications();
+    });
+};
+
+window.markAllNotificationsRead = function () {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('http://localhost:8080/api/notifications/mark-all-read', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }
+    }).then(() => {
+        fetchNotifications();
+    });
+};
+
+if (notificationBell) {
+    notificationBell.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (notificationDropdown.style.display === 'block') {
+            notificationDropdown.style.display = 'none';
+        } else {
+            notificationDropdown.style.display = 'block';
+            fetchNotifications();
+        }
+    });
+    document.addEventListener('click', function (e) {
+        if (!notificationBell.contains(e.target)) {
+            notificationDropdown.style.display = 'none';
+        }
+    });
 }
+
+function startNotificationPolling() {
+    if (notificationPollingInterval) clearInterval(notificationPollingInterval);
+    fetchNotifications();
+    notificationPollingInterval = setInterval(fetchNotifications, 15000); // 15s
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    startNotificationPolling();
+});
+
+// =========================
+// END NOTIFICATION SYSTEM
+// =========================
+
+// ...existing code...

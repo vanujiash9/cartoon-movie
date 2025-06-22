@@ -6,6 +6,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.AchievementRepository;
 import com.example.demo.repository.UserAchievementRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserAchievementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +22,11 @@ public class UserAchievementRestController {
     @Autowired
     private AchievementRepository achievementRepository;
 
-    public UserAchievementRestController(UserAchievementRepository userAchievementRepository, UserRepository userRepository) {
+    @Autowired
+    private UserAchievementService userAchievementService;
+
+    public UserAchievementRestController(UserAchievementRepository userAchievementRepository,
+            UserRepository userRepository) {
         this.userAchievementRepository = userAchievementRepository;
         this.userRepository = userRepository;
     }
@@ -31,7 +36,8 @@ public class UserAchievementRestController {
     @GetMapping("/user/{userId}")
     public List<UserAchievement> getAchievementsByUser(@PathVariable Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return List.of();
+        if (user == null)
+            return List.of();
         return userAchievementRepository.findByUser(user);
     }
 
@@ -60,25 +66,28 @@ public class UserAchievementRestController {
     @GetMapping("/user/{userId}/not-achieved")
     public List<Achievement> getNotAchieved(@PathVariable Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return List.of();
+        if (user == null)
+            return List.of();
         List<UserAchievement> achieved = userAchievementRepository.findByUser(user);
         List<Integer> achievedIds = achieved.stream().map(ua -> ua.getAchievement().getId()).toList();
         return achievementRepository.findAll().stream()
-            .filter(a -> !achievedIds.contains(a.getId()))
-            .collect(Collectors.toList());
+                .filter(a -> !achievedIds.contains(a.getId()))
+                .collect(Collectors.toList());
     }
 
     // API lấy tiến độ thành tựu "xem 10 phim" (có thể mở rộng cho các loại khác)
     @GetMapping("/user/{userId}/progress")
     public Map<String, Object> getProgress(@PathVariable Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return Map.of();
+        if (user == null)
+            return Map.of();
         // Giả sử id thành tựu "xem 10 phim" là 2
         int watched = 0;
         try {
             watched = (int) user.getAchievements().stream()
-                .filter(ua -> ua.getAchievement().getId() == 2).count();
-        } catch (Exception ignored) {}
+                    .filter(ua -> ua.getAchievement().getId() == 2).count();
+        } catch (Exception ignored) {
+        }
         Map<String, Object> progress = new HashMap<>();
         progress.put("achievementId", 2);
         progress.put("name", "Xem 10 phim");
@@ -102,16 +111,17 @@ public class UserAchievementRestController {
             result.add(map);
         }
         return result.stream()
-            .sorted((a, b) -> ((Integer) b.get("achievementCount")).compareTo((Integer) a.get("achievementCount")))
-            .limit(10)
-            .collect(Collectors.toList());
+                .sorted((a, b) -> ((Integer) b.get("achievementCount")).compareTo((Integer) a.get("achievementCount")))
+                .limit(10)
+                .collect(Collectors.toList());
     }
 
     // API lịch sử thành tựu của user
     @GetMapping("/user/{userId}/history")
     public List<Map<String, Object>> getAchievementHistory(@PathVariable Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return List.of();
+        if (user == null)
+            return List.of();
         List<UserAchievement> list = userAchievementRepository.findByUser(user);
         List<Map<String, Object>> result = new ArrayList<>();
         for (UserAchievement ua : list) {
@@ -123,5 +133,54 @@ public class UserAchievementRestController {
             result.add(map);
         }
         return result;
+    }
+
+    // API lấy tiến độ chi tiết thành tựu của user (mới)
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
+    @GetMapping("/user/{userId}/detailed-progress")
+    public List<Map<String, Object>> getDetailedProgress(@PathVariable Integer userId) {
+        return userAchievementService.getUserAchievementProgress(userId);
+    }
+
+    // API kiểm tra và cấp thành tựu tự động
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
+    @PostMapping("/user/{userId}/check-achievements")
+    public Map<String, Object> checkAchievements(@PathVariable Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return Map.of("success", false, "message", "User not found");
+        }
+
+        userAchievementService.checkAndGrantAchievements(user);
+        return Map.of("success", true, "message", "Achievements checked and updated");
+    }
+
+    // Lấy tiến độ thành tựu theo username
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
+    @GetMapping("/username/{username}/detailed-progress")
+    public List<Map<String, Object>> getDetailedProgressByUsername(@PathVariable String username) {
+        System.out.println("=== getDetailedProgressByUsername called with: " + username + " ===");
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            System.out.println("User not found: " + username);
+            return new ArrayList<>();
+        }
+        System.out.println("Found user: " + user.getId() + " - " + user.getUsername());
+        return userAchievementService.getUserAchievementProgress(user.getId());
+    }
+
+    // Kiểm tra thành tựu theo username
+    @PreAuthorize("hasAnyRole('USER','VIP','ADMIN')")
+    @PostMapping("/username/{username}/check-achievements")
+    public Map<String, Object> checkAchievementsByUsername(@PathVariable String username) {
+        System.out.println("=== checkAchievementsByUsername called with: " + username + " ===");
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            System.out.println("User not found: " + username);
+            return Map.of("success", false, "message", "User not found");
+        }
+
+        userAchievementService.checkAndGrantAchievements(user);
+        return Map.of("success", true, "message", "Achievements checked and updated", "userId", user.getId());
     }
 }

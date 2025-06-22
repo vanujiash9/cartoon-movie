@@ -138,6 +138,321 @@ window.addEventListener("message", (event) => {
 });
 
 // --- Your Existing Achievements Page JS ---
+
+// Achievements page script
+class AchievementsPage {
+  constructor() {
+    this.baseUrl = 'http://localhost:8080/api';
+    this.userId = null;
+    this.achievements = [];
+    this.currentFilter = 'all';
+    this.currentAchievement = null;
+  }
+
+  // Khởi tạo
+  init() {
+    this.userId = this.getCurrentUserId();
+    if (this.userId) {
+      this.loadAchievements();
+      this.setupEventListeners();
+    } else {
+      this.showLoginMessage();
+    }
+  }
+
+  // Lấy user ID từ localStorage
+  getCurrentUserId() {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      try {
+        const user = JSON.parse(userInfo);
+        return user.id;
+      } catch (e) {
+        console.error('Error parsing userInfo:', e);
+      }
+    }
+    return localStorage.getItem('userId');
+  }
+
+  // Hiển thị thông báo đăng nhập
+  showLoginMessage() {
+    const grid = document.getElementById('achievementsGrid');
+    if (grid) {
+      grid.innerHTML = `
+                <div class="login-message">
+                    <h3>Vui lòng đăng nhập để xem thành tựu</h3>
+                    <a href="../login_register/login.html" class="login-btn">Đăng nhập ngay</a>
+                </div>
+            `;
+    }
+  }
+
+  // Tải danh sách thành tựu
+  async loadAchievements() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${this.baseUrl}/user-achievements/user/${this.userId}/detailed-progress`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        this.achievements = await response.json();
+        this.renderAchievements();
+        this.updateStats();
+      } else {
+        console.error('Failed to load achievements:', response.status);
+        this.showError('Không thể tải thành tựu. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      console.error('Error loading achievements:', error);
+      this.showError('Lỗi kết nối. Vui lòng kiểm tra internet.');
+    }
+  }
+
+  // Hiển thị lỗi
+  showError(message) {
+    const grid = document.getElementById('achievementsGrid');
+    if (grid) {
+      grid.innerHTML = `
+                <div class="error-message">
+                    <h3>❌ ${message}</h3>
+                    <button onclick="location.reload()" class="retry-btn">Thử lại</button>
+                </div>
+            `;
+    }
+  }
+
+  // Setup event listeners
+  setupEventListeners() {
+    // Filter tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        this.currentFilter = e.target.dataset.filter;
+        this.renderAchievements();
+      });
+    });
+
+    // Close modal when clicking outside
+    const modal = document.getElementById('achievementModal');
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target.id === 'achievementModal') {
+          this.closeModal();
+        }
+      });
+    }
+  }
+
+  // Render thành tựu
+  renderAchievements() {
+    const grid = document.getElementById('achievementsGrid');
+    if (!grid) return;
+
+    let filteredAchievements = this.achievements;
+
+    // Apply filter
+    switch (this.currentFilter) {
+      case 'completed':
+        filteredAchievements = this.achievements.filter(a => a.completed);
+        break;
+      case 'in-progress':
+        filteredAchievements = this.achievements.filter(a => !a.completed && a.progressPercent > 0);
+        break;
+      case 'locked':
+        filteredAchievements = this.achievements.filter(a => !a.completed && a.progressPercent === 0);
+        break;
+    }
+
+    if (filteredAchievements.length === 0) {
+      grid.innerHTML = `
+                <div class="no-achievements">
+                    <h3>Không có thành tựu nào</h3>
+                    <p>Hãy tiếp tục xem phim để mở khóa thành tựu!</p>
+                </div>
+            `;
+      return;
+    }
+
+    grid.innerHTML = filteredAchievements.map(achievement => {
+      const progressPercent = achievement.progressPercent || 0;
+      const current = achievement.current || 0;
+      const target = achievement.target || 1;
+      const icon = achievement.icon || '🏆';
+
+      let cardClass = 'achievement-card';
+      let badgeText = '';
+
+      if (achievement.completed) {
+        cardClass += ' completed';
+        badgeText = '✅ Hoàn thành';
+      } else if (progressPercent > 0) {
+        cardClass += ' in-progress';
+        badgeText = `${progressPercent}% hoàn thành`;
+      } else {
+        cardClass += ' locked';
+        badgeText = '🔒 Chưa bắt đầu';
+      }
+
+      return `
+                <div class="${cardClass}" onclick="achievementsPage.openModal(${achievement.id})">
+                    <div class="achievement-icon">${icon}</div>
+                    <h3 class="achievement-title">${achievement.name}</h3>
+                    <p class="achievement-description">${achievement.description}</p>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <div class="achievement-progress">
+                        <span>${current}/${target}</span>
+                        <span>${progressPercent}%</span>
+                    </div>
+                    <div class="achievement-badge">${badgeText}</div>
+                </div>
+            `;
+    }).join('');
+  }
+
+  // Cập nhật thống kê
+  updateStats() {
+    const completed = this.achievements.filter(a => a.completed).length;
+    const total = this.achievements.length;
+    const progressPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    const completedCountEl = document.getElementById('completedCount');
+    const totalCountEl = document.getElementById('totalCount');
+    const progressPercentEl = document.getElementById('progressPercent');
+
+    if (completedCountEl) completedCountEl.textContent = completed;
+    if (totalCountEl) totalCountEl.textContent = total;
+    if (progressPercentEl) progressPercentEl.textContent = progressPercent + '%';
+  }
+
+  // Mở modal chi tiết thành tựu
+  openModal(achievementId) {
+    const achievement = this.achievements.find(a => a.id === achievementId);
+    if (!achievement) return;
+
+    this.currentAchievement = achievement;
+
+    // Populate modal data
+    document.getElementById('modalTitle').textContent = 'Chi tiết thành tựu';
+    document.getElementById('modalIcon').textContent = achievement.icon || '🏆';
+    document.getElementById('modalName').textContent = achievement.name;
+    document.getElementById('modalDescription').textContent = achievement.description;
+
+    const progressPercent = achievement.progressPercent || 0;
+    const current = achievement.current || 0;
+    const target = achievement.target || 1;
+
+    document.getElementById('modalProgress').style.width = progressPercent + '%';
+    document.getElementById('modalProgressText').textContent = `${current}/${target}`;
+
+    // Status
+    const statusEl = document.getElementById('modalStatus');
+    if (achievement.completed) {
+      statusEl.textContent = '🎉 Đã hoàn thành';
+      statusEl.className = 'detail-status completed';
+    } else if (progressPercent > 0) {
+      statusEl.textContent = `🔄 Đang thực hiện (${progressPercent}%)`;
+      statusEl.className = 'detail-status in-progress';
+    } else {
+      statusEl.textContent = '🔒 Chưa bắt đầu';
+      statusEl.className = 'detail-status locked';
+    }
+
+    // Tips
+    this.populateTips(achievement);
+
+    // Show modal
+    document.getElementById('achievementModal').style.display = 'block';
+  }
+
+  // Điền tips cho thành tựu
+  populateTips(achievement) {
+    const tipsList = document.getElementById('tipsList');
+    const tips = this.getAchievementTips(achievement.id);
+
+    if (tips.length > 0) {
+      tipsList.innerHTML = tips.map(tip => `<li>${tip}</li>`).join('');
+      document.querySelector('.achievement-tips').style.display = 'block';
+    } else {
+      document.querySelector('.achievement-tips').style.display = 'none';
+    }
+  }
+
+  // Lấy tips cho từng thành tựu
+  getAchievementTips(achievementId) {
+    const tipsMap = {
+      1: ['Chúc mừng! Bạn đã hoàn thành bước đầu tiên.'],
+      2: [
+        'Xem đủ 10 bộ phim bất kỳ để mở khóa thành tựu này',
+        'Có thể là phim lẻ hoặc phim bộ',
+        'Xem hết ít nhất 80% thời lượng phim mới được tính'
+      ],
+      3: [
+        'Viết đánh giá đầu tiên cho bất kỳ bộ phim nào',
+        'Đánh giá phải có ít nhất 50 ký tự',
+        'Chia sẻ cảm nhận thật lòng về bộ phim'
+      ],
+      4: [
+        'Xem phim thường xuyên trong 1 tháng',
+        'Ít nhất 15 lần xem trong 30 ngày',
+        'Bao gồm cả xem lại phim cũ'
+      ],
+      5: ['Chúc mừng! Bạn đã hoàn thành khi đăng nhập lần đầu.'],
+      6: [
+        'Xem phim mỗi ngày trong 7 ngày liên tiếp',
+        'Ít nhất 1 phim mỗi ngày',
+        'Không được bỏ lỡ ngày nào'
+      ],
+      7: [
+        'Xem hết tất cả tập của một bộ phim nhiều tập',
+        'Phim phải có ít nhất 3 tập',
+        'Xem hết 100% thời lượng mỗi tập'
+      ],
+      8: [
+        'Chia sẻ bộ phim yêu thích lên mạng xã hội',
+        'Sử dụng nút chia sẻ trên trang phim',
+        'Có thể chia sẻ lên Facebook, Twitter hoặc Zalo'
+      ],
+      9: [
+        'Viết những đánh giá chất lượng để nhận like',
+        'Đánh giá chi tiết, hữu ích',
+        'Tương tác với đánh giá của người khác'
+      ],
+      10: [
+        'Mời bạn bè tham gia bằng link giới thiệu',
+        'Bạn bè phải đăng ký thành công',
+        'Có thể tìm link giới thiệu trong trang cá nhân'
+      ]
+    };
+
+    return tipsMap[achievementId] || [];
+  }
+
+  // Đóng modal
+  closeModal() {
+    document.getElementById('achievementModal').style.display = 'none';
+    this.currentAchievement = null;
+  }
+}
+
+// Close modal function for global use
+function closeModal() {
+  if (window.achievementsPage) {
+    window.achievementsPage.closeModal();
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+  window.achievementsPage = new AchievementsPage();
+  window.achievementsPage.init();
+});
 document.addEventListener("DOMContentLoaded", () => {
   // Hàm hiển thị thông báo tùy chỉnh (already defined in your script)
   function hienThiThongBao(noiDung, loai = "thanhCong") {

@@ -19,9 +19,7 @@ public class CommentLike {
     private User user;
 
     @Column(name = "is_liked", nullable = false)
-    private boolean isLiked; // true = like, false = dislike
-
-    @Column(name = "created_at", nullable = false)
+    private boolean isLiked; // true = like, false = dislike @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     // Constructors
@@ -30,10 +28,10 @@ public class CommentLike {
     }
 
     public CommentLike(Comment comment, User user, boolean isLiked) {
+        this();
         this.comment = comment;
         this.user = user;
         this.isLiked = isLiked;
-        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters

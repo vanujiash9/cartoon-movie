@@ -19,20 +19,25 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "cartoon_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Cartoon cartoon;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Comment> replies;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<CommentLike> likes;
 
     @Column(name = "created_at", nullable = false)

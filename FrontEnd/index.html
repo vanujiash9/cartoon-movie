@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maxion - Trang phim online tốt nhất</title>
-    
+
     <!-- Favicon và Meta Tags -->
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREQAAAAAAAAABEAERERERERARAAERERERERERAQEREREREREQEQEREREREREQEBERERERERAQEAAREREREQEAAAEREREREAARAAAREREQAAEAEAAREQAAAQABAAEQAAAAEAAQAQAAAAEAARAAABAAAQEAAREAABABABEQEREQEBEQEREREQEBABEREREAAAERERERAAAAAREREREREQERERERERABEQERERERERAQEREREREREQEQERERERERERABERERERERERAREREREREREQEQEREREREREREQEREREREREREQERERERERERERAREREREREREREAERERERERERABAAAAABAAAAAEAABAABAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAAABAAAAAQAAAAEAAAABAAAAAgAAAAIAAAACAAAAAg">
+    <link rel="icon" type="image/x-icon"
+        href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREREREREREREREQAAAAAAAAABEAERERERERARAAERERERERERAQEREREREREQEQEREREREREQEBERERERERAQEAAREREREQEAAAEREREREAARAAAREREQAAEAEAAREQAAAQABAAEQAAAAEAAQAQAAAAEAARAAABAAAQEAAREAABABABEQEREQEBEQEREREQEBABEREREAAAERERERAAAAAREREREREQERERERERABEQERERERERAQEREREREREQEQERERERERERABERERERERERAREREREREREQEQEREREREREREQEREREREREREQERERERERERERAREREREREREREAERERERERERABAAAAABAAAAAEAABAABAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAAAABAAAAAQAAAAEAAAABAAAAAgAAAAIAAAACAAAAAg">
     <meta name="description" content="Xem phim online chất lượng cao tại Maxion">
     <meta name="keywords" content="phim online, xem phim, maxion">
-      <!-- CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./header.css">
 </head>
+
 <body>
     <!-- Integrated Header (No iframe) -->
     <header>
         <div class="navbar" id="navbar">
             <a href="#" class="navbar-brand" onclick="scrollToTop()">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTQwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIyMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+" alt="Maxion Logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTQwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIyMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+"
+                    alt="Maxion Logo">
             </a>
 
             <nav id="navMenu">
                 <ul class="navbar-nav">
                     <li><a href="#" class="navbar-link" onclick="scrollToSection('top')">Trang chủ</a></li>
                     <li><a href="#" class="navbar-link" onclick="scrollToSection('movies')">Danh sách phim</a></li>
-                    <li><a href="#" class="navbar-link indicator" onclick="scrollToSection('achievements')">Thành tựu</a></li>
+                    <li><a href="#" class="navbar-link indicator" onclick="scrollToSection('achievements')">Thành
+                            tựu</a></li>
                     <li><a href="#" class="navbar-link" onclick="scrollToSection('category')">Thể loại</a></li>
                     <li><a href="#" class="navbar-link" onclick="scrollToSection('live')">TV Trực tiếp</a></li>
                 </ul>
@@ -33,7 +38,8 @@
 
             <div class="navbar-actions">
                 <form class="navbar-form" id="searchForm">
-                    <input type="text" name="search" placeholder="Tìm kiếm phim..." class="navbar-form-search" id="searchInput">
+                    <input type="text" name="search" placeholder="Tìm kiếm phim..." class="navbar-form-search"
+                        id="searchInput">
                     <button type="button" class="navbar-form-btn" id="searchBtn">
                         <span style="font-size: 18px;">🔍</span>
                     </button>
@@ -43,7 +49,22 @@
                 <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
                     <span>🎤</span>
                 </button>
-
+                <!-- Notification Bell -->
+                <div class="notification-bell" id="notificationBell"
+                    style="position: relative; margin-right: 16px; cursor: pointer;">
+                    <span style="font-size: 22px;">🔔</span>
+                    <span id="notificationBadge"
+                        style="position: absolute; top: -4px; right: -4px; background: red; color: white; border-radius: 50%; font-size: 12px; padding: 2px 6px; display: none;">0</span>
+                    <div id="notificationDropdown" class="notification-dropdown"
+                        style="position: absolute; right: 0; top: 32px; background: #fff; color: #222; min-width: 320px; max-width: 400px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); border-radius: 8px; z-index: 1000;">
+                        <div style="padding: 12px; font-weight: bold; border-bottom: 1px solid #eee;">Thông báo</div>
+                        <div id="notificationList" style="max-height: 350px; overflow-y: auto;"></div>
+                        <div style="padding: 8px; text-align: center; border-top: 1px solid #eee;">
+                            <a href="#" onclick="markAllNotificationsRead(); return false;"
+                                style="color: #3498db; font-size: 14px;">Đánh dấu tất cả đã đọc</a>
+                        </div>
+                    </div>
+                </div>
                 <!-- Sign In Button (shown when NOT logged in) -->
                 <a href="./login_register/login.html" class="navbar-signin" id="signInBtn">
                     <span id="signInText">Đăng nhập</span>
@@ -53,7 +74,8 @@
                 <!-- User Menu (shown when logged in) -->
                 <div class="user-menu" id="userMenu" style="display: none;">
                     <div class="user-info-display" id="userInfoDisplay">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+Cjx0ZXh0IHg9IjEwIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPC9zdmc+Cjwvc3ZnPg==" alt="User Avatar" class="user-avatar" id="userAvatar">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+Cjx0ZXh0IHg9IjEwIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPC9zdmc+Cjwvc3ZnPg=="
+                            alt="User Avatar" class="user-avatar" id="userAvatar">
                         <span class="user-name" id="displayUserName">Người dùng</span>
                         <span class="dropdown-arrow">▼</span>
                     </div>
@@ -84,8 +106,9 @@
         <main>
             <section class="banner">
                 <div class="banner-card" onclick="playBannerMovie()">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDkwMCA1MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI5MDAiIGhlaWdodD0iNTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgouYmFubmVyLXRleHQgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjkwMCIgeTI9IjUwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMWUzYzcyIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJhNTI5OCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjQ1MCIgeT0iMjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYmFubmVyLXRleHQiIGZvbnQtc2l6ZT0iNDgiPkpvaG4gV2ljayAzPC90ZXh0Pgo8dGV4dCB4PSI0NTAiIHk9IjI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImJhbm5lci10ZXh0IiBmb250LXNpemU9IjE4Ij5QYXJhYmVsbHVtPC90ZXh0Pgo8L3N2Zz4=" alt="John Wick 3 Banner" class="banner-img">
-                    
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDkwMCA1MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI5MDAiIGhlaWdodD0iNTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgouYmFubmVyLXRleHQgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjkwMCIgeTI9IjUwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMWUzYzcyIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJhNTI5OCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjQ1MCIgeT0iMjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0iYmFubmVyLXRleHQiIGZvbnQtc2l6ZT0iNDgiPkpvaG4gV2ljayAzPC90ZXh0Pgo8dGV4dCB4PSI0NTAiIHk9IjI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9ImJhbm5lci10ZXh0IiBmb250LXNpemU9IjE4Ij5QYXJhYmVsbHVtPC90ZXh0Pgo8L3N2Zz4="
+                        alt="John Wick 3 Banner" class="banner-img">
+
                     <div class="banner-play-btn">
                         <span>▶</span>
                     </div>
@@ -113,7 +136,7 @@
 
             <section class="movies" id="movies">
                 <h2 class="section-heading">Phim Hot</h2>
-                
+
                 <div class="filter-bar">
                     <div class="filter-dropdowns">
                         <select name="genre" class="genre" id="genreFilter">
@@ -164,99 +187,71 @@
                 <h2 class="section-heading">Thể loại</h2>
 
                 <div class="category-grid">
-                    <div class="category-card" onclick="filterByCategory('action')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZGMyNjI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoG5oIMSR4buZbmc8L3RleHQ+Cjwvc3ZnPg==" alt="Hành động" class="card-img">
+                    <div class="category-card category-action" onclick="filterByCategory('action')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZGMyNjI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoG5oIMSR4buZbmc8L3RleHQ+Cjwvc3ZnPg=="
+                            alt="Hành động" class="card-img">
                         <div class="name">Hành động</div>
                         <div class="total">120</div>
                     </div>
 
-                    <div class="category-card" onclick="filterByCategory('comedy')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZjM5YzEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoGk8L3RleHQ+Cjwvc3ZnPg==" alt="Hài" class="card-img">
+                    <div class="category-card category-comedy" onclick="filterByCategory('comedy')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZjM5YzEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkjDoGk8L3RleHQ+Cjwvc3ZnPg=="
+                            alt="Hài" class="card-img">
                         <div class="name">Hài</div>
                         <div class="total">85</div>
                     </div>
 
-                    <div class="category-card" onclick="filterByCategory('thriller')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjNzQzZjM5Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlRocmlsbGVyPC90ZXh0Pgo8L3N2Zz4=" alt="Thriller" class="card-img">
+                    <div class="category-card category-thriller" onclick="filterByCategory('thriller')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjNzQzZjM5Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlRocmlsbGVyPC90ZXh0Pgo8L3N2Zz4="
+                            alt="Thriller" class="card-img">
                         <div class="name">Thriller</div>
                         <div class="total">45</div>
                     </div>
 
-                    <div class="category-card" onclick="filterByCategory('horror')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMmMzZTUwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPktpbmcgxJHhu4s8L3RleHQ+Cjwvc3ZnPg==" alt="Kinh dị" class="card-img">
+                    <div class="category-card category-horror" onclick="filterByCategory('horror')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMmMzZTUwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPktpbmcgxJHhu4s8L3RleHQ+Cjwvc3ZnPg=="
+                            alt="Kinh dị" class="card-img">
                         <div class="name">Kinh dị</div>
                         <div class="total">60</div>
                     </div>
 
-                    <div class="category-card" onclick="filterByCategory('adventure')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMjc4NGU3Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlBoaWV1IGzGsOG7pW5nPC90ZXh0Pgo8L3N2Zz4=" alt="Phiêu lưu" class="card-img">
+                    <div class="category-card category-adventure" onclick="filterByCategory('adventure')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMjc4NGU3Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlBoaWV1IGzGsOG7pW5nPC90ZXh0Pgo8L3N2Zz4="
+                            alt="Phiêu lưu" class="card-img">
                         <div class="name">Phiêu lưu</div>
                         <div class="total">95</div>
                     </div>
 
-                    <div class="category-card" onclick="filterByCategory('animation')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZWQ0ODEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkhv4bqhdCBow6xuaDwvdGV4dD4KPC9zdmc+" alt="Hoạt hình" class="card-img">
+                    <div class="category-card category-animation" onclick="filterByCategory('animation')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjZWQ0ODEyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPkhv4bqhdCBow6xuaDwvdGV4dD4KPC9zdmc+"
+                            alt="Hoạt hình" class="card-img">
                         <div class="name">Hoạt hình</div>
                         <div class="total">70</div>
                     </div>
 
-                    <div class="category-card" onclick="filterByCategory('crime')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMzQzYTQwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlThu5lpIHBo4bqhbTwvdGV4dD4KPC9zdmc+" alt="Tội phạm" class="card-img">
+                    <div class="category-card category-crime" onclick="filterByCategory('crime')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMzQzYTQwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlThu5lpIHBo4bqhbTwvdGV4dD4KPC9zdmc+"
+                            alt="Tội phạm" class="card-img">
                         <div class="name">Tội phạm</div>
                         <div class="total">35</div>
                     </div>
 
-                    <div class="category-card" onclick="filterByCategory('scifi')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjOWI1OWI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlNjaS1GaTwvdGV4dD4KPC9zdmc+" alt="Khoa học viễn tưởng" class="card-img">
+                    <div class="category-card category-scifi" onclick="filterByCategory('scifi')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMwMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjOWI1OWI2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiPlNjaS1GaTwvdGV4dD4KPC9zdmc+"
+                            alt="Khoa học viễn tưởng" class="card-img">
                         <div class="name">Sci-fi</div>
                         <div class="total">55</div>
                     </div>
                 </div>
             </section>
-
             <section class="achievements" id="achievements">
                 <h2 class="section-heading">Thành tựu của bạn</h2>
-                
-                <div class="achievement-cards">
-                    <article class="achievement-card">
-                        <div class="achievement-icon">🌟</div>
-                        <h3 class="achievement-title">Otaku Mới</h3>
-                        <p class="achievement-description">Xem 10 bộ phim đầu tiên</p>
-                        <div class="progress-bar">
-                            <div class="progress" data-progress="70"></div>
-                        </div>
-                        <span>7/10</span>
-                    </article>
 
-                    <article class="achievement-card">
-                        <div class="achievement-icon">🔥</div>
-                        <h3 class="achievement-title">Người Hâm Mộ</h3>
-                        <p class="achievement-description">Xem 5 bộ phim hoàn chỉnh</p>
-                        <div class="progress-bar">
-                            <div class="progress" data-progress="40"></div>
-                        </div>
-                        <span>2/5</span>
-                    </article>
-
-                    <article class="achievement-card">
-                        <div class="achievement-icon">🏆</div>
-                        <h3 class="achievement-title">Nhà Phê Bình</h3>
-                        <p class="achievement-description">Đánh giá 20 bộ phim</p>
-                        <div class="progress-bar">
-                            <div class="progress" data-progress="15"></div>
-                        </div>
-                        <span>3/20</span>
-                    </article>
-
-                    <article class="achievement-card">
-                        <div class="achievement-icon">⏰</div>
-                        <h3 class="achievement-title">Người Kiên Nhẫn</h3>
-                        <p class="achievement-description">Xem phim 30 ngày liên tiếp</p>
-                        <div class="progress-bar">
-                            <div class="progress" data-progress="50"></div>
-                        </div>
-                        <span>15/30</span>
-                    </article>
+                <div class="achievement-cards-container">
+                    <div class="achievement-cards" id="achievementCards">
+                        <!-- Thành tựu sẽ được load từ backend -->
+                    </div>
+                    <!-- Đã loại bỏ achievements-navigation và các nút prev/next, dots -->
                 </div>
             </section>
 
@@ -266,7 +261,8 @@
                 <div class="live-grid">
                     <div class="live-card" onclick="playLiveStream('planet-earth')">
                         <div class="card-head">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMzQ5ODAwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzIzNzEwMCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlBsYW5ldCBFYXJ0aDwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TQUE9Pc b25lIC0gSXNsYW5kczwvdGV4dD4KPC9zdmc+" alt="Planet Earth II" class="card-img">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMzQ5ODAwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzIzNzEwMCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlBsYW5ldCBFYXJ0aDwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TQUE9Pc b25lIC0gSXNsYW5kczwvdGV4dD4KPC9zdmc+"
+                                alt="Planet Earth II" class="card-img">
                             <div class="live-badge">LIVE</div>
                             <div class="total-viewers">305K người xem</div>
                             <div class="play">
@@ -275,14 +271,16 @@
                         </div>
 
                         <div class="card-body">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNDI4NWY0IiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkJCQzwvdGV4dD4KPC9zdmc+" alt="BBC America" class="avatar">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNDI4NWY0IiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkJCQzwvdGV4dD4KPC9zdmc+"
+                                alt="BBC America" class="avatar">
                             <h3 class="card-title">Planet Earth II <br> Season 1 - Islands</h3>
                         </div>
                     </div>
 
                     <div class="live-card" onclick="playLiveStream('game-of-thrones')">
                         <div class="card-head">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjQxZTMwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzMzMGMxZiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPkdhbWUgb2YgVGhyb25lczwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TRUE9b24gNSAtIE1vdGhlcidzIE1lcmN5PC90ZXh0Pgo8L3N2Zz4=" alt="Game of Thrones" class="card-img">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjQxZTMwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzMzMGMxZiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPkdhbWUgb2YgVGhyb25lczwvdGV4dD4KPHR4dCB4PSIxNTAiIHk9IjE2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InRpdGxlIiBmb250LXNpemU9IjE2Ij5TRUE9b24gNSAtIE1vdGhlcidzIE1lcmN5PC90ZXh0Pgo8L3N2Zz4="
+                                alt="Game of Thrones" class="card-img">
                             <div class="live-badge">LIVE</div>
                             <div class="total-viewers">1.7M người xem</div>
                             <div class="play">
@@ -291,14 +289,16 @@
                         </div>
 
                         <div class="card-body">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+"
+                                alt="HBO" class="avatar">
                             <h3 class="card-title">Game of Thrones <br> Season 5 - Mother's Mercy</h3>
                         </div>
                     </div>
 
                     <div class="live-card" onclick="playLiveStream('vikings')">
                         <div class="card-head">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNTQ2ZTdhIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzM3NGY1MyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlZpa2luZ3M8L3RleHQ+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMTYiPlNlYXNvbiA0IC0gV2hhdCBNaWdodCBIYXZlIEJlZW48L3RleHQ+Cjwvc3ZnPg==" alt="Vikings" class="card-img">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MCkiLz4KPHN0eWxlPgoudGl0bGUgeyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtd2VpZ2h0OiBib2xkOyBmaWxsOiB3aGl0ZTsgfQo8L3N0eWxlPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDAiIHgxPSIwIiB5MT0iMCIgeDI9IjMwMCIgeTI9IjI4MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNTQ2ZTdhIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzM3NGY1MyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjx0ZXh0IHg9IjE1MCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMjAiPlZpa2luZ3M8L3RleHQ+Cjx0ZXh0IHg9IjE1MCIgeT0iMTYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiIGZvbnQtc2l6ZT0iMTYiPlNlYXNvbiA0IC0gV2hhdCBNaWdodCBIYXZlIEJlZW48L3RleHQ+Cjwvc3ZnPg=="
+                                alt="Vikings" class="card-img">
                             <div class="live-badge">LIVE</div>
                             <div class="total-viewers">468K người xem</div>
                             <div class="play">
@@ -307,35 +307,37 @@
                         </div>
 
                         <div class="card-body">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+" alt="HBO" class="avatar">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTEwODFlIiByeD0iMTUiLz4KPHR4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiPkhCTzwvdGV4dD4KPC9zdmc+"
+                                alt="HBO" class="avatar">
                             <h3 class="card-title">Vikings <br> Season 4 - What Might Have Been</h3>
                         </div>
                     </div>
                 </div>
-            </section>        </main>
+            </section>
+        </main>
     </div>
 
     <!-- Include Footer -->
     <iframe src="./footer.html" class="footer-frame" id="footerFrame" onload="initFooterIframe()"></iframe>
-
     <!-- Load JavaScript -->
     <script src="./script.js"></script>
-    
+    <script src="./js/achievements.js"></script>
+
     <!-- Integrated Header JavaScript -->
     <script>
         // Header Variables
         let isHeaderLoggedIn = false;
         let currentHeaderUser = {};
-          // Check login status
+        // Check login status
         function checkHeaderLoginStatus() {
             const userInfo = localStorage.getItem('userInfo');
             const username = localStorage.getItem('username');
-            
+
             console.log('🔍 Checking header login status:', { userInfo: !!userInfo, username });
-            
+
             // Check if user is logged in by looking for userInfo or username
             isHeaderLoggedIn = !!(userInfo || username);
-            
+
             let userData = {};
             if (userInfo) {
                 try {
@@ -344,35 +346,35 @@
                     console.error('Error parsing userInfo:', e);
                 }
             }
-            
+
             currentHeaderUser = {
                 username: userData.username || username || '',
                 email: userData.email || localStorage.getItem('email') || '',
                 fullName: userData.fullName || localStorage.getItem('fullName') || '',
                 id: userData.id || localStorage.getItem('userId') || ''
             };
-            
+
             updateHeaderUI();
         }
-        
+
         // Update header UI
         function updateHeaderUI() {
             const signInBtn = document.getElementById('signInBtn');
             const userMenu = document.getElementById('userMenu');
             const displayUserName = document.getElementById('displayUserName');
             const userAvatar = document.getElementById('userAvatar');
-            
+
             console.log('🔄 Updating header UI - isLoggedIn:', isHeaderLoggedIn, 'username:', currentHeaderUser.username);
-            
+
             // Luôn xóa style inline cũ để tránh lỗi hiển thị menu user
             if (isHeaderLoggedIn && currentHeaderUser.username) {
                 signInBtn.style.display = 'none';
                 userMenu.style.display = '';
                 userMenu.classList.add('visible');
-                
+
                 // Update username
                 displayUserName.textContent = currentHeaderUser.username;
-                
+
                 // Update avatar
                 const firstLetter = currentHeaderUser.username.charAt(0).toUpperCase();
                 userAvatar.src = `data:image/svg+xml;base64,${btoa(`
@@ -381,41 +383,37 @@
                         <text x="20" y="26" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="white">${firstLetter}</text>
                     </svg>
                 `)}`;
-                
-                console.log('✅ Header updated for user:', currentHeaderUser.username);
             } else {
                 signInBtn.style.display = 'flex';
                 userMenu.style.display = 'none';
                 userMenu.classList.remove('visible');
-                
-                console.log('❌ Header showing sign in button');
             }
         }
-        
+
         // Header functions
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         function scrollToSection(sectionId) {
             const element = document.getElementById(sectionId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
             }
         }
-        
+
         function viewProfile() {
             window.location.href = './user/user.html';
         }
-        
+
         function viewBookmarks() {
             alert('Tính năng đang phát triển!');
         }
-        
+
         function viewHistory() {
             alert('Tính năng đang phát triển!');
         }
-        
+
         function logout() {
             if (confirm('Bạn có chắc muốn đăng xuất?')) {
                 localStorage.clear();
@@ -424,15 +422,15 @@
                 window.location.reload();
             }
         }
-        
+
         // Search functionality
         function setupHeaderSearch() {
             const searchBtn = document.getElementById('searchBtn');
             const searchInput = document.getElementById('searchInput');
             const searchSuggestions = document.getElementById('searchSuggestions');
-            
+
             if (searchBtn) {
-                searchBtn.addEventListener('click', function() {
+                searchBtn.addEventListener('click', function () {
                     const query = searchInput.value.trim();
                     if (query) {
                         alert(`Tìm kiếm: ${query}`);
@@ -440,75 +438,76 @@
                     }
                 });
             }
-            
+
             if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
+                searchInput.addEventListener('keypress', function (e) {
                     if (e.key === 'Enter') {
                         searchBtn.click();
                     }
                 });
             }
         }
-        
+
         // Voice search
         function setupVoiceSearch() {
             const voiceBtn = document.getElementById('voiceBtn');
             if (voiceBtn) {
-                voiceBtn.addEventListener('click', function() {
+                voiceBtn.addEventListener('click', function () {
                     alert('Tính năng tìm kiếm bằng giọng nói đang phát triển!');
                 });
             }
         }
-        
+
         // Initialize header
         function initializeIntegratedHeader() {
             console.log('🎯 Initializing integrated header...');
-            
+
             // Check login status immediately
             checkHeaderLoginStatus();
-            
+
             // Setup search
             setupHeaderSearch();
             setupVoiceSearch();
-            
+
             // Listen for storage changes
-            window.addEventListener('storage', function(e) {
+            window.addEventListener('storage', function (e) {
                 if (e.key === 'username' || e.key === 'token') {
                     console.log('🔄 Storage changed, updating header...');
                     checkHeaderLoginStatus();
                 }
             });
-            
+
             // Auto-check every 3 seconds
             setInterval(checkHeaderLoginStatus, 3000);
-            
+
             console.log('✅ Integrated header initialized');
         }
-        
+
         // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             setTimeout(initializeIntegratedHeader, 500);
         });
-        
+
         // Manual refresh function for external use
         window.refreshHeaderStatus = checkHeaderLoginStatus;
-        
+
         console.log('🎯 Header script loaded');
     </script>
-    
-    <!-- Check login status and refresh header -->    <script>        document.addEventListener('DOMContentLoaded', function() {
+
+    <!-- Check login status and refresh header -->
+    <script>        document.addEventListener('DOMContentLoaded', function () {
             console.log('🏠 Index page loaded, checking login status...');
-            
+
             // Check if user is logged in
             const token = localStorage.getItem('token');
             const username = localStorage.getItem('username');
-            
+
             console.log('Token:', token ? 'Present' : 'None');
             console.log('Username:', username || 'None');
-            
+
             // Update header immediately
             updateHeaderLoginStatus();
-            
+
             if (token && username) {
                 console.log('✅ User is logged in:', username);
             } else {
@@ -523,51 +522,88 @@
         const userDropdown = document.getElementById('userDropdown');
 
         if (userInfoDisplay && userDropdown) {
-            userInfoDisplay.addEventListener('click', function(e) {
+            userInfoDisplay.addEventListener('click', function (e) {
                 e.stopPropagation();
                 userDropdown.classList.toggle('active');
             });
             // Ẩn dropdown khi click ra ngoài
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 if (!userDropdown.contains(e.target) && !userInfoDisplay.contains(e.target)) {
                     userDropdown.classList.remove('active');
                 }
             });
-        }        document.addEventListener('DOMContentLoaded', function() {
+        } document.addEventListener('DOMContentLoaded', function () {
             // Update header when page loads
             updateHeaderLoginStatus();
-            
+
             // Listen for localStorage changes from other tabs
-            window.addEventListener('storage', function(e) {
+            window.addEventListener('storage', function (e) {
                 if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
                     updateHeaderLoginStatus();
                 }
             });
         });
-    </script>    <!-- Clean up scripts - use only updateHeaderLoginStatus() -->
+    </script> <!-- Clean up scripts - use only updateHeaderLoginStatus() -->
     <script>
         // Ensure header is updated when page loads
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', function () {
             console.log('== DOMContentLoaded: Calling updateHeaderLoginStatus ==');
             updateHeaderLoginStatus();
-            
+
             // Log localStorage values for debugging
             console.log('localStorage token:', localStorage.getItem('token'));
             console.log('localStorage username:', localStorage.getItem('username'));
-            
+
             // Check again after 500ms in case of timing issues
             setTimeout(() => {
                 updateHeaderLoginStatus();
             }, 500);
         });
-        
+
         // Listen for localStorage changes from other tabs
-        window.addEventListener('storage', function(e) {
+        window.addEventListener('storage', function (e) {
             if (e.key === 'token' || e.key === 'username' || e.key === 'email' || e.key === 'fullName') {
                 console.log('== storage event: Calling updateHeaderLoginStatus ==');
                 updateHeaderLoginStatus();
             }
         });
     </script>
+    <script>
+        (function () {
+            const bell = document.getElementById('notificationBell');
+            const dropdown = document.getElementById('notificationDropdown');
+            if (!bell || !dropdown) return;
+            // Hiển thị khi hover hoặc click
+            let dropdownTimeout;
+            function showDropdown() {
+                clearTimeout(dropdownTimeout);
+                dropdown.classList.add('active');
+            }
+            function hideDropdown() {
+                dropdownTimeout = setTimeout(() => {
+                    dropdown.classList.remove('active');
+                }, 120);
+            }
+            bell.addEventListener('mouseenter', showDropdown);
+            bell.addEventListener('mouseleave', hideDropdown);
+            bell.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (dropdown.classList.contains('active')) {
+                    dropdown.classList.remove('active');
+                } else {
+                    showDropdown();
+                }
+            });
+            dropdown.addEventListener('mouseenter', showDropdown);
+            dropdown.addEventListener('mouseleave', hideDropdown);
+            // Đóng khi click ra ngoài
+            document.addEventListener('click', function (e) {
+                if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        })();
+    </script>
 </body>
+
 </html>

@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>John Wick: Chapter 3 - Parabellum | Maxion</title>
     <link rel="stylesheet" href="../moive player/moive.css">
-<!--     
+    <!--     
     <style>
         
         
     </style> -->
 </head>
+
 <body>
     <!-- Notification -->
     <div class="notification" id="notification"></div>
@@ -20,33 +22,18 @@
         <div class="header-content">
             <button class="back-btn" onclick="goBack()">
                 <span>←</span>
-                <span>Quay lại</span>
+                <span>Quay lại trang chủ</span>
             </button>
-            
+
             <a href="../index.html" class="logo">MAXION</a>
             <style>
-                a{
-                     text-decoration: none;
+                a {
+                    text-decoration: none;
                 }
             </style>
-              <div class="header-actions">
-                <!-- User info for authenticated users -->
-                <div id="user-info" class="user-info" style="display: none;">
-                    <span class="user-avatar" id="user-avatar">U</span>
-                    <span class="user-name" id="user-name">User</span>
-                    <button class="logout-btn" onclick="logout()" title="Đăng xuất">
-                        <span>⭷</span>
-                    </button>
-                </div>
-                
-                <button class="action-btn" onclick="toggleTheaterMode()" title="Chế độ rạp">
-                    <span id="theaterIcon">⛶</span>
-                </button>
+            <div class="header-actions">
                 <button class="action-btn" onclick="togglePictureInPicture()" title="Picture in Picture">
                     <span>⧉</span>
-                </button>
-                <button class="action-btn" onclick="toggleQuality()" title="Chất lượng video">
-                    <span>⚙</span>
                 </button>
             </div>
         </div>
@@ -56,7 +43,8 @@
     <div class="video-container" id="videoContainer">
         <div class="video-player" id="videoPlayer">
             <video class="video-element" id="videoElement" preload="metadata">
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                    type="video/mp4">
                 <track kind="captions" src="" srclang="vi" label="Tiếng Việt">
                 <track kind="captions" src="" srclang="en" label="English">
                 Trình duyệt của bạn không hỗ trợ thẻ video.
@@ -66,17 +54,6 @@
             <div class="loading-overlay" id="loadingOverlay">
                 <div class="loading-spinner"></div>
             </div>
-
-            <!-- Quality Selector -->
-            <div class="quality-selector" id="qualitySelector">
-                <button class="quality-option" onclick="changeQuality('4K')">4K Ultra HD</button>
-                <button class="quality-option active" onclick="changeQuality('1080p')">1080p Full HD</button>
-                <button class="quality-option" onclick="changeQuality('720p')">720p HD</button>
-                <button class="quality-option" onclick="changeQuality('480p')">480p</button>
-                <button class="quality-option" onclick="changeQuality('360p')">360p</button>
-                <button class="quality-option" onclick="changeQuality('auto')">Tự động</button>
-            </div>
-
             <!-- Video Controls -->
             <div class="video-controls" id="videoControls">
                 <div class="progress-container" id="progressContainer">
@@ -85,47 +62,9 @@
                         <div class="progress-thumb" id="progressThumb"></div>
                     </div>
                 </div>
-
-                <div class="controls-bottom">
-                    <div class="controls-left">
-                        <button class="control-btn play-btn" id="playPauseBtn" onclick="togglePlayPause()">
-                            <span id="playIcon">▶</span>
-                        </button>
-                        
-                        <div class="volume-container">
-                            <button class="control-btn" id="muteBtn" onclick="toggleMute()">
-                                <span id="volumeIcon">🔊</span>
-                            </button>
-                            <div class="volume-slider" id="volumeSlider">
-                                <div class="volume-filled" id="volumeFilled"></div>
-                            </div>
-                        </div>
-
-                        <div class="time-display" id="timeDisplay">
-                            00:00 / 00:00
-                        </div>
-                    </div>
-
-                    <div class="controls-right">
-                        <button class="control-btn" onclick="changePlaybackSpeed()" title="Tốc độ phát">
-                            <span id="speedIcon">1x</span>
-                        </button>
-                        
-                        <button class="control-btn" onclick="toggleSubtitles()" title="Phụ đề">
-                            <span>CC</span>
-                        </button>
-                        
-                        <button class="control-btn" onclick="toggleFullscreen()" title="Toàn màn hình">
-                            <span id="fullscreenIcon">⛶</span>
-                        </button>
-                    </div>
-                </div>            </div>
+            </div>
         </div>
     </div>
-
-    <!-- Current Episode Info -->
-    <div class="current-episode-info">
-        <h3 class="current-episode-title">Đang tải...</h3>
     </div>
 
     <!-- Picture in Picture Container -->
@@ -139,14 +78,24 @@
     <!-- Content Section -->
     <div class="content-section" id="contentSection">
         <div class="movie-info">
-            <div class="movie-details">                <h1>John Wick: Chapter 3 - Parabellum</h1>
-                
+            <div class="movie-details">
+                <h1>Đang tải phim...</h1>
+                <div class="current-episode-info">
+                    <h3 class="current-episode-title">Đang tải...</h3>
+                </div>
+                <!-- tiêu đề phim -->
                 <p class="description">
-                    John Wick bị truy nã với mức tiền thưởng 14 triệu đô la trên đầu và một đội quân sát thủ đang truy đuổi anh ta. Sau khi giết một thành viên của High Table - tổ chức sát thủ bí mật quốc tế, John Wick bị trục xuất khỏi mọi dịch vụ và cảnh báo trong ngành. Anh ta phải chiến đấu để thoát khỏi New York khi mà các sát thủ giỏi nhất thế giới đang săn lùng anh.
                 </p>
 
+                <!-- Episodes Section (moved up) -->
+                <div class="episodes-section">
+                    <h3>Danh sách tập</h3>
+                    <div id="episodes-container" class="episodes-horizontal"></div>
+                </div>
+
                 <!-- Movie Meta Information -->
-                <div class="movie-meta" id="movieMeta">                    <div class="meta-item rating">
+                <div class="movie-meta" id="movieMeta">
+                    <div class="meta-item rating">
                         <span>⭐</span>
                         <span id="movieRating">7.4</span>
                         <span id="reviewCount" style="font-size: 0.9em; opacity: 0.8;"></span>
@@ -201,15 +150,6 @@
                         <span>📤</span>
                         <span>Chia sẻ</span>
                     </button>
-                    <button class="action-btn" onclick="toggleComments()">
-                        <span>💬</span>
-                        <span>Bình luận</span>
-                    </button>                </div>
-                
-                <!-- Episodes Section -->
-                <div class="episodes-section">
-                    <h3>Danh sách tập</h3>
-                    <div id="episodes-container" class="episodes-horizontal"></div>
                 </div>
 
                 <div class="cast-crew">
@@ -239,7 +179,8 @@
                 </div>
             </div>
 
-            <div class="sidebar">                <h3>Phim liên quan</h3>
+            <div class="sidebar">
+                <h3>Phim liên quan</h3>
                 <div class="related-movies">
                     <div class="related-movie" onclick="playRelatedMovie(2)">
                         <div class="related-poster">NA</div>
@@ -266,7 +207,8 @@
                     </div>
 
                     <div class="related-movie" onclick="playRelatedMovie(5)">
-                        <div class="related-poster">AOT</div>                        <div class="related-info">
+                        <div class="related-poster">AOT</div>
+                        <div class="related-info">
                             <h4>Attack on Titan</h4>
                             <p>2013 • Anime</p>
                             <div class="related-rating">
@@ -301,11 +243,13 @@
                     </div>
                 </div>
             </div>
-        </div>        <!-- Comments Section -->
+        </div> <!-- Comments Section -->
         <div class="comments-section">
             <div class="comments-header">
                 <h3 id="comments-count">Bình luận (0)</h3>
-                <select id="comments-sort" style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px;" onchange="sortComments()">
+                <select id="comments-sort"
+                    style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px;"
+                    onchange="sortComments()">
                     <option value="newest">Mới nhất</option>
                     <option value="oldest">Cũ nhất</option>
                     <option value="popular">Phổ biến nhất</option>
@@ -322,11 +266,13 @@
 
             <!-- Comment form for authenticated users -->
             <div id="comment-form-container" class="comment-form">
-                <textarea id="comment-input" class="comment-input" placeholder="Viết bình luận của bạn..." maxlength="500"></textarea>
+                <textarea id="comment-input" class="comment-input" placeholder="Viết bình luận của bạn..."
+                    maxlength="500"></textarea>
                 <div class="comment-actions">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <label>Đánh giá: </label>
-                        <select id="rating-select" style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); padding: 5px; border-radius: 4px;">
+                        <select id="rating-select"
+                            style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); padding: 5px; border-radius: 4px;">
                             <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
                             <option value="4">⭐⭐⭐⭐ (4/5)</option>
                             <option value="3">⭐⭐⭐ (3/5)</option>
@@ -341,10 +287,13 @@
             <div id="comments-list" class="comments-list">
                 <div style="text-align: center; padding: 20px; color: #666;">
                     Đang tải bình luận...
-                </div>            </div>
-        </div>    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Import JavaScript từ file riêng -->
     <script src="moive.js"></script>
 </body>
+
 </html>

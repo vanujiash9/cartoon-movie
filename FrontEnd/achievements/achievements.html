@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thành tựu - Maxion</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="navbar" id="navbar">
+            <a href="../index.html" class="navbar-brand">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTQwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIyMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+"
+                    alt="Maxion Logo">
+            </a>
+
+            <nav id="navMenu">
+                <ul class="navbar-nav">
+                    <li><a href="../index.html" class="navbar-link">Trang chủ</a></li>
+                    <li><a href="../index.html#movies" class="navbar-link">Danh sách phim</a></li>
+                    <li><a href="#" class="navbar-link indicator active">Thành tựu</a></li>
+                    <li><a href="../genres/genres.html" class="navbar-link">Thể loại</a></li>
+                    <li><a href="../index.html#live" class="navbar-link">TV Trực tiếp</a></li>
+                </ul>
+            </nav>
+
+            <div class="navbar-actions">
+                <form class="navbar-form">
+                    <input type="text" name="search" placeholder="Tìm kiếm thành tựu..." class="navbar-form-search">
+                    <button type="button" class="navbar-form-btn">
+                        <span style="font-size: 18px;">🔍</span>
+                    </button>
+                </form>
+
+                <!-- Sign In Button (shown when NOT logged in) -->
+                <a href="../login_register/login.html" class="navbar-signin" id="signInBtn">
+                    <span>Đăng nhập</span>
+                    <span style="margin-left: 8px;">➡️</span>
+                </a>
+
+                <!-- User Menu (shown when logged in) -->
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <div class="user-info-display" id="userInfoDisplay">
+                        <img src="" alt="User Avatar" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="displayUserName">Người dùng</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="viewProfile()">
+                            <span>👤</span> Hồ sơ của tôi
+                        </div>
+                        <div class="dropdown-item" onclick="viewBookmarks()">
+                            <span>❤️</span> Danh sách yêu thích
+                        </div>
+                        <div class="dropdown-item" onclick="viewHistory()">
+                            <span>⏰</span> Lịch sử xem
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <span>🚪</span> Đăng xuất
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <!-- Achievement Stats -->
+            <section class="achievement-stats">
+                <div class="stats-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-info">
+                        <h3 id="completedCount">0</h3>
+                        <p>Thành tựu đã đạt</p>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <h3 id="totalCount">0</h3>
+                        <p>Tổng thành tựu</p>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 id="progressPercent">0%</h3>
+                        <p>Tỷ lệ hoàn thành</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Tabs -->
+            <section class="filter-tabs">
+                <button class="tab-btn active" data-filter="all">Tất cả</button>
+                <button class="tab-btn" data-filter="completed">Đã hoàn thành</button>
+                <button class="tab-btn" data-filter="in-progress">Đang thực hiện</button>
+                <button class="tab-btn" data-filter="locked">Chưa bắt đầu</button>
+            </section>
+
+            <!-- Achievements Grid -->
+            <section class="achievements-section">
+                <h2 class="section-heading">Thành tựu của bạn</h2>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Achievements will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Achievement Detail Modal -->
+            <div class="modal" id="achievementModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modalTitle">Thành tựu</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="achievement-detail">
+                            <div class="detail-icon" id="modalIcon">🏆</div>
+                            <div class="detail-info">
+                                <h4 id="modalName">Tên thành tựu</h4>
+                                <p id="modalDescription">Mô tả thành tựu</p>
+                                <div class="detail-progress">
+                                    <div class="progress-bar-large">
+                                        <div class="progress-large" id="modalProgress"></div>
+                                    </div>
+                                    <span id="modalProgressText">0/0</span>
+                                </div>
+                                <div class="detail-status" id="modalStatus"></div>
+                            </div>
+                        </div>
+                        <div class="achievement-tips" id="modalTips">
+                            <h5>💡 Mẹo để đạt thành tựu:</h5>
+                            <ul id="tipsList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/achievements.js"></script>
+    <script src="./script.js"></script>
+
+    <!-- Header Login Check -->
+    <script>
+        function updateHeaderLoginStatus() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const signInBtn = document.getElementById('signInBtn');
+            const userMenu = document.getElementById('userMenu');
+            const displayUserName = document.getElementById('displayUserName');
+
+            if (token && username) {
+                signInBtn.style.display = 'none';
+                userMenu.style.display = 'flex';
+                displayUserName.textContent = username;
+            } else {
+                signInBtn.style.display = 'flex';
+                userMenu.style.display = 'none';
+            }
+        }
+
+        function viewProfile() {
+            window.location.href = '../user/user.html';
+        }
+
+        function viewBookmarks() {
+            alert('Tính năng đang phát triển!');
+        }
+
+        function viewHistory() {
+            alert('Tính năng đang phát triển!');
+        }
+
+        function logout() {
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                localStorage.clear();
+                updateHeaderLoginStatus();
+                alert('Đã đăng xuất thành công!');
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            updateHeaderLoginStatus();
+        });
+    </script>
+</body>
+
+</html>
