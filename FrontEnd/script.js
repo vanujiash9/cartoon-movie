@@ -1516,4 +1516,8 @@ document.addEventListener('DOMContentLoaded', function () {
 // END NOTIFICATION SYSTEM
 // =========================
 
-// ...existing code...
+// Định nghĩa hàm watchFirstEpisode để chuyển hướng sang trang xem phim
+function watchFirstEpisode(movieId, movieTitle) {
+    // Chuyển hướng sang trang xem phim, truyền id qua URL nếu cần
+    window.location.href = './moive player/moive.html?id=' + movieId;
+}

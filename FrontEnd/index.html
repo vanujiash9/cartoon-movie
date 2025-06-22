@@ -364,8 +364,6 @@
             const displayUserName = document.getElementById('displayUserName');
             const userAvatar = document.getElementById('userAvatar');
 
-            console.log('🔄 Updating header UI - isLoggedIn:', isHeaderLoggedIn, 'username:', currentHeaderUser.username);
-
             // Luôn xóa style inline cũ để tránh lỗi hiển thị menu user
             if (isHeaderLoggedIn && currentHeaderUser.username) {
                 signInBtn.style.display = 'none';
@@ -603,6 +601,11 @@
                 }
             });
         })();
+    </script>
+    <script>
+        function playBannerMovie() {
+            window.location.href = './moive player/moive.html';
+        }
     </script>
 </body>
 
