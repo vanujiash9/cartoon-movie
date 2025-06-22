@@ -1,0 +1,486 @@
+<!-- Simple Notification Test Page -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notification System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+        
+        .danger {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+        }
+        
+        .warning {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+        
+        .info {
+            background: linear-gradient(135deg, #17a2b8, #007bff);
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test Notification System</h1>
+        
+        <!-- Status Display -->
+        <div id="status" class="status"></div>
+        
+        <!-- Login Status -->
+        <div class="test-section">
+            <h3>📋 Login Status</h3>
+            <p>Username: <span id="currentUser">Not logged in</span></p>
+            <p>Token: <span id="hasToken">No</span></p>
+            <button onclick="checkLoginStatus()">🔄 Check Status</button>
+        </div>
+        
+        <!-- Direct Notification Tests -->
+        <div class="test-section">
+            <h3>🧪 Direct Notification Tests</h3>
+            <p>Test notification system directly through API</p>
+            
+            <div class="form-group">
+                <label for="notificationType">Notification Type:</label>
+                <select id="notificationType">
+                    <option value="LIKE">❤️ Like</option>
+                    <option value="COMMENT">💬 Comment</option>
+                    <option value="REPLY">↩️ Reply</option>
+                    <option value="ACHIEVEMENT">🏆 Achievement</option>
+                    <option value="PROFILE_UPDATE">👤 Profile Update</option>
+                    <option value="SYSTEM">⚙️ System</option>
+                    <option value="SUCCESS">✅ Success</option>
+                    <option value="WARNING">⚠️ Warning</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="notificationTitle">Title:</label>
+                <input type="text" id="notificationTitle" placeholder="Enter notification title">
+            </div>
+            
+            <div class="form-group">
+                <label for="notificationContent">Content:</label>
+                <textarea id="notificationContent" rows="3" placeholder="Enter notification content"></textarea>
+            </div>
+            
+            <button onclick="createCustomNotification()">📤 Send Test Notification</button>
+        </div>
+        
+        <!-- Profile Update Test -->
+        <div class="test-section">
+            <h3>👤 Profile Update Test</h3>
+            <p>Update your profile to trigger notification</p>
+            
+            <div class="form-group">
+                <label for="newFullName">Full Name:</label>
+                <input type="text" id="newFullName" placeholder="Enter new full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="newEmail">Email:</label>
+                <input type="email" id="newEmail" placeholder="Enter new email">
+            </div>
+            
+            <button onclick="updateProfile()">💾 Update Profile (triggers notification)</button>
+        </div>
+        
+        <!-- Quick Action Tests -->
+        <div class="test-section">
+            <h3>⚡ Quick Tests</h3>
+            <p>One-click notification tests</p>
+            
+            <button onclick="testLikeNotification()" class="danger">❤️ Test Like</button>
+            <button onclick="testCommentNotification()" class="info">💬 Test Comment</button>
+            <button onclick="testAchievementNotification()" class="warning">🏆 Test Achievement</button>
+            <button onclick="testSuccessNotification()" class="success">✅ Test Success</button>
+            
+            <br><br>
+            <button onclick="createMultipleNotifications()">🔥 Create 5 Test Notifications</button>
+            <button onclick="clearAllNotifications()" class="danger">🗑️ Mark All Read</button>
+        </div>
+        
+        <!-- Notification Status -->
+        <div class="test-section">
+            <h3>📊 Notification Status</h3>
+            <p>Unread count: <span id="unreadCount">0</span></p>
+            <button onclick="checkNotificationCount()">🔢 Check Unread Count</button>
+            <button onclick="loadNotificationList()">📋 Load Notifications</button>
+        </div>
+        
+        <div class="back-link">
+            <a href="../index.html">← Back to Main Page</a>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'http://localhost:8080/api';
+        
+        // Check login status
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            
+            document.getElementById('currentUser').textContent = username || 'Not logged in';
+            document.getElementById('hasToken').textContent = token ? 'Yes' : 'No';
+            
+            if (!token || !username) {
+                showStatus('⚠️ Please login first to test notifications', 'error');
+            } else {
+                showStatus('✅ Logged in successfully', 'success');
+            }
+        }
+        
+        // Show status message
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Create custom notification
+        async function createCustomNotification() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showStatus('❌ Please login first', 'error');
+                return;
+            }
+            
+            const type = document.getElementById('notificationType').value;
+            const title = document.getElementById('notificationTitle').value || 'Test Notification';
+            const content = document.getElementById('notificationContent').value || 'This is a test notification';
+            
+            try {
+                const response = await fetch(`${API_BASE}/notifications/test`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type, title, content })
+                });
+                
+                if (response.ok) {
+                    showStatus('✅ Test notification created successfully!', 'success');
+                    checkNotificationCount();
+                } else {
+                    const error = await response.text();
+                    showStatus(`❌ Failed to create notification: ${error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Update profile
+        async function updateProfile() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showStatus('❌ Please login first', 'error');
+                return;
+            }
+            
+            const fullName = document.getElementById('newFullName').value;
+            const email = document.getElementById('newEmail').value;
+            
+            if (!fullName && !email) {
+                showStatus('⚠️ Please enter at least one field to update', 'error');
+                return;
+            }
+            
+            try {
+                const updateData = {};
+                if (fullName) updateData.fullName = fullName;
+                if (email) updateData.email = email;
+                
+                const response = await fetch(`${API_BASE}/users/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    showStatus('✅ Profile updated successfully! Check for notification.', 'success');
+                    // Clear form
+                    document.getElementById('newFullName').value = '';
+                    document.getElementById('newEmail').value = '';
+                    // Check notifications
+                    setTimeout(checkNotificationCount, 1000);
+                } else {
+                    const error = await response.text();
+                    showStatus(`❌ Failed to update profile: ${error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Quick test functions
+        async function testLikeNotification() {
+            await quickNotificationTest('LIKE', 'Someone liked your comment', 'John Doe đã thích bình luận của bạn');
+        }
+        
+        async function testCommentNotification() {
+            await quickNotificationTest('COMMENT', 'New comment on your post', 'Có bình luận mới trên phim bạn đã xem');
+        }
+        
+        async function testAchievementNotification() {
+            await quickNotificationTest('ACHIEVEMENT', '🎉 Achievement Unlocked!', 'Chúc mừng! Bạn đã đạt được thành tựu: Người xem tích cực');
+        }
+        
+        async function testSuccessNotification() {
+            await quickNotificationTest('SUCCESS', 'Action completed', 'Hành động của bạn đã được thực hiện thành công');
+        }
+        
+        async function quickNotificationTest(type, title, content) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showStatus('❌ Please login first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/notifications/test`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type, title, content })
+                });
+                
+                if (response.ok) {
+                    showStatus(`✅ ${type} notification sent!`, 'success');
+                    checkNotificationCount();
+                } else {
+                    showStatus(`❌ Failed to send ${type} notification`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Create multiple notifications
+        async function createMultipleNotifications() {
+            const notifications = [
+                { type: 'LIKE', title: 'New Like', content: 'Someone liked your comment' },
+                { type: 'COMMENT', title: 'New Comment', content: 'New comment on your post' },
+                { type: 'ACHIEVEMENT', title: 'Achievement!', content: 'You unlocked a new achievement' },
+                { type: 'SUCCESS', title: 'Success', content: 'Action completed successfully' },
+                { type: 'SYSTEM', title: 'System Update', content: 'System has been updated' }
+            ];
+            
+            for (const notif of notifications) {
+                await quickNotificationTest(notif.type, notif.title, notif.content);
+                await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
+            }
+        }
+        
+        // Check notification count
+        async function checkNotificationCount() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showStatus('❌ Please login first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/notifications/unread-count`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const count = await response.json();
+                    document.getElementById('unreadCount').textContent = count;
+                    showStatus(`📊 Unread notifications: ${count}`, 'success');
+                } else {
+                    showStatus('❌ Failed to check notification count', 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load notification list
+        async function loadNotificationList() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showStatus('❌ Please login first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/notifications`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const notifications = await response.json();
+                    console.log('📋 Notifications loaded:', notifications);
+                    showStatus(`📋 Loaded ${notifications.length} notifications (check console)`, 'success');
+                } else {
+                    showStatus('❌ Failed to load notifications', 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Clear all notifications
+        async function clearAllNotifications() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showStatus('❌ Please login first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/notifications/mark-all-read`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showStatus('✅ All notifications marked as read', 'success');
+                    checkNotificationCount();
+                } else {
+                    showStatus('❌ Failed to mark notifications as read', 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            checkNotificationCount();
+        });
+    </script>
+</body>
+</html>

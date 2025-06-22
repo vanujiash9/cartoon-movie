@@ -11,24 +11,27 @@ import jakarta.persistence.FetchType;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    private String username;
+    private Integer id;    private String username;
     private String email;
+    
+    @Column(name = "full_name")
     private String fullName;
+    
     private String role;
-    private boolean enabled;
+    
+    @Column(name = "is_active")
+    private boolean isActive;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAchievement> achievements;
 
-    private String password;
-
-    @Column(name = "ban_comment_until")
+    private String password;    @Column(name = "ban_comment_until")
     private LocalDateTime banCommentUntil;
 
+    @Column(name = "avatar_url")
     private String avatar;
 
     private String phone;
@@ -74,14 +77,12 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }    public boolean isActive() {
+        return isActive;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public LocalDateTime getCreatedAt() {

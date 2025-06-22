@@ -67,13 +67,48 @@ public class UserRestController {
     @PostMapping
     public User create(@RequestBody User user) {
         return userService.save(user);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    }    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public User update(@PathVariable Integer id, @RequestBody User user) {
         user.setId(id);
         return userService.save(user);
+    }
+    
+    // Endpoint để user cập nhật profile của mình
+    @PutMapping("/me")
+    public ResponseEntity<?> updateProfile(@RequestBody UserDTO userDTO) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập để cập nhật thông tin");
+        }
+        
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Update allowed fields
+        if (userDTO.getFullName() != null) {
+            user.setFullName(userDTO.getFullName());
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
+        
+        // Save will trigger notification via UserService
+        User updatedUser = userService.save(user);
+        
+        // Return updated DTO
+        UserDTO responseDTO = new UserDTO();
+        responseDTO.setId(updatedUser.getId());
+        responseDTO.setUsername(updatedUser.getUsername());
+        responseDTO.setEmail(updatedUser.getEmail());
+        responseDTO.setFullName(updatedUser.getFullName());
+        responseDTO.setRole(updatedUser.getRole());
+        responseDTO.setCreatedAt(updatedUser.getCreatedAt() != null ? updatedUser.getCreatedAt().toString() : null);
+        
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")

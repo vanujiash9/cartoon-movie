@@ -13,6 +13,7 @@
     <meta name="keywords" content="phim online, xem phim, maxion">    <!-- CSS -->
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./css/notifications.css">
     <style>
         /* Achievements Widget Styles */
         .achievements-loading {
@@ -345,25 +346,35 @@
 
                 <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
                     <span>🎤</span>
-                </button>
-                <!-- Notification Bell -->
+                </button>                <!-- Notification Bell -->
                 <div class="notification-bell" id="notificationBell"
                     style="position: relative; margin-right: 16px; cursor: pointer;">
-                    <span style="font-size: 22px;">🔔</span>
+                    <span style="font-size: 22px; transition: transform 0.2s;">🔔</span>
                     <span id="notificationBadge"
-                        style="position: absolute; top: -4px; right: -4px; background: red; color: white; border-radius: 50%; font-size: 12px; padding: 2px 6px; display: none;">0</span>
+                        style="position: absolute; top: -4px; right: -4px; background: #ff4757; color: white; border-radius: 50%; font-size: 11px; padding: 2px 6px; display: none; min-width: 18px; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0</span>
                     <div id="notificationDropdown" class="notification-dropdown"
-                        style="position: absolute; right: 0; top: 32px; background: #fff; color: #222; min-width: 320px; max-width: 400px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); border-radius: 8px; z-index: 1000;">
-                        <div style="padding: 12px; font-weight: bold; border-bottom: 1px solid #eee;">Thông báo</div>
-                        <div id="notificationList" style="max-height: 350px; overflow-y: auto;"></div>
-                        <div style="padding: 8px; text-align: center; border-top: 1px solid #eee;">
+                        style="position: absolute; right: 0; top: 32px; background: #fff; color: #222; min-width: 350px; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-radius: 12px; z-index: 1000; border: 1px solid #e9ecef; overflow: hidden;">
+                        <div style="padding: 16px; font-weight: 600; font-size: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; justify-content: space-between; align-items: center;">
+                            <span>🔔 Thông báo</span>
+                            <span id="notificationCount" style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">0</span>
+                        </div>
+                        <div id="notificationList" style="max-height: 400px; overflow-y: auto;">
+                            <div style="padding: 20px; text-align: center; color: #888;">
+                                <div style="font-size: 24px; margin-bottom: 8px;">📭</div>
+                                <div>Đang tải thông báo...</div>
+                            </div>
+                        </div>
+                        <div style="padding: 12px; text-align: center; border-top: 1px solid #eee; background: #f8f9fa;">
                             <a href="#" onclick="markAllNotificationsRead(); return false;"
-                                style="color: #3498db; font-size: 14px;">Đánh dấu tất cả đã đọc</a>
+                                style="color: #667eea; font-size: 14px; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.2s; display: inline-block;"
+                                onmouseover="this.style.background='#667eea'; this.style.color='white';"
+                                onmouseout="this.style.background='transparent'; this.style.color='#667eea';">
+                                ✓ Đánh dấu tất cả đã đọc
+                            </a>
                         </div>
                     </div>
-                </div>
-                <!-- Sign In Button (shown when NOT logged in) -->
-                <a href="./login_register/login.html" class="navbar-signin" id="signInBtn">
+                </div><!-- Sign In Button (shown when NOT logged in) -->
+                <a href="./login-register/login.html" class="navbar-signin" id="signInBtn">
                     <span id="signInText">Đăng nhập</span>
                     <span style="margin-left: 8px;">➡️</span>
                 </a>
@@ -476,7 +487,6 @@
                 <div class="movies-grid" id="moviesGrid">
                     <!-- Movies will be populated by JavaScript -->
                 </div>
-
                 <button class="load-more" id="loadMore">TẢI THÊM</button>
             </section>
 
@@ -589,8 +599,7 @@
                         <div class="achievement-cards" id="achievementCards">
                             <!-- Thành tựu sẽ được load từ backend -->
                         </div>
-                    </div>
-                      <!-- Share feature -->
+                    </div>                      <!-- Share feature -->
                     <div class="achievements-share">
                         <p>Chia sẻ phim để mở khóa thành tựu mới!</p>
                         <button class="share-demo-btn" onclick="openShareDemo()">
@@ -599,6 +608,29 @@
                         <button class="share-demo-btn" onclick="debugAchievements()" style="background: #e74c3c; margin-left: 10px;">
                             🔍 Debug Achievements
                         </button>
+                        
+                        <!-- Notification Test Buttons -->
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="margin-bottom: 15px; color: #666;">🔔 Test Notification System:</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                                <button onclick="createTestNotification('LIKE', 'Test Like', 'Ai đó đã thích bình luận của bạn')" 
+                                    style="background: #FF6B6B; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                    ❤️ Test Like
+                                </button>
+                                <button onclick="createTestNotification('COMMENT', 'Test Comment', 'Có bình luận mới trên phim bạn đã xem')" 
+                                    style="background: #4ECDC4; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                    💬 Test Comment
+                                </button>
+                                <button onclick="createTestNotification('ACHIEVEMENT', 'Thành tựu mới!', 'Bạn đã mở khóa thành tựu: Người xem tích cực')" 
+                                    style="background: #FFD700; color: #333; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                    🏆 Test Achievement
+                                </button>
+                                <button onclick="createTestNotification('SUCCESS', 'Cập nhật thành công', 'Thông tin cá nhân đã được cập nhật')" 
+                                    style="background: #00B894; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                    ✅ Test Success
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -606,10 +638,10 @@
     </div>
 
     <!-- Include Footer -->
-    <iframe src="./footer.html" class="footer-frame" id="footerFrame" onload="initFooterIframe()"></iframe>
-    <!-- Load JavaScript -->
+    <iframe src="./footer.html" class="footer-frame" id="footerFrame" onload="initFooterIframe()"></iframe>    <!-- Load JavaScript -->
     <script src="./script.js"></script>
     <script src="./js/shared-api.js"></script>
+    <script src="./js/notifications.js"></script>
     <script>
         // Achievements Integration        let achievementsData = null;
         let isLoadingAchievements = false; // Prevent multiple simultaneous loads

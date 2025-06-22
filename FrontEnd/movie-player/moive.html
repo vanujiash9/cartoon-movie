@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Wick: Chapter 3 - Parabellum | Maxion</title>
+    <link rel="stylesheet" href="../moive player/moive.css">
+    <style>
+        /* CSS cho thông báo lỗi */
+        .error-container {
+            text-align: center;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-container h2 {
+            color: #ff5252;
+            margin-bottom: 15px;
+        }
+
+        .error-container p {
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .error-container button {
+            background: #ff5252;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .error-container button:hover {
+            background: #ff7373;
+        }
+
+        .error-message {
+            color: #ff5252;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: rgba(255, 82, 82, 0.1);
+            border-radius: 5px;
+        }
+
+        .no-episodes {
+            text-align: center;
+            padding: 15px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header-content">
+            <button class="back-btn" onclick="goBack()">
+                <span>←</span>
+                <span>Quay lại trang chủ</span>
+            </button>
+
+            <a href="../index.html" class="logo">MAXION</a>
+            <style>
+                a {
+                    text-decoration: none;
+                }
+            </style>
+            <div class="header-actions">
+                <button class="action-btn" onclick="togglePictureInPicture()" title="Picture in Picture">
+                    <span>⧉</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Video Container -->
+    <div class="video-container" id="videoContainer">
+        <div class="video-player" id="videoPlayer">
+            <video class="video-element" id="videoElement" preload="metadata">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                    type="video/mp4">
+                <track kind="captions" src="" srclang="vi" label="Tiếng Việt">
+                <track kind="captions" src="" srclang="en" label="English">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner"></div>
+            </div>
+            <!-- Video Controls -->
+            <div class="video-controls" id="videoControls">
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-filled" id="progressFilled"></div>
+                        <div class="progress-thumb" id="progressThumb"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Picture in Picture Container -->
+    <div class="pip-container" id="pipContainer">
+        <video class="pip-video" id="pipVideo"></video>
+        <div class="pip-controls">
+            <button class="pip-btn" onclick="closePiP()">×</button>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content-section" id="contentSection">
+        <div class="movie-info">
+            <div class="movie-details">
+                <h1>Đang tải phim...</h1>
+                <div class="current-episode-info">
+                    <h3 class="current-episode-title">Đang tải...</h3>
+                </div>
+                <!-- tiêu đề phim -->
+                <p class="description">
+                </p>
+
+                <!-- Episodes Section (moved up) -->
+                <div class="episodes-section">
+                    <h3>Danh sách tập</h3>
+                    <div id="episodes-container" class="episodes-horizontal"></div>
+                </div>
+
+                <!-- Movie Meta Information -->
+                <div class="movie-meta" id="movieMeta">
+                    <div class="meta-item rating">
+                        <span>⭐</span>
+                        <span id="movieRating">Đang tải...</span>
+                        <span id="reviewCount" style="font-size: 0.9em; opacity: 0.8;"></span>
+                    </div>
+                    <div class="meta-item year">
+                        <span>📅</span>
+                        <span id="movieYear">Đang tải...</span>
+                    </div>
+                    <div class="meta-item duration">
+                        <span>⏱️</span>
+                        <span id="movieDuration">Đang tải...</span>
+                    </div>
+                    <div class="meta-item genre">
+                        <span>🎭</span>
+                        <span id="movieGenre">Đang tải...</span>
+                    </div>
+                </div>
+
+                <!-- Like/Dislike Actions -->
+                <div class="rating-actions">
+                    <button class="rating-btn" id="likeBtn" onclick="toggleLike()">
+                        <span>👍</span>
+                        <span>Thích</span>
+                        <span class="count" id="likeCount">0</span>
+                    </button>
+                    <button class="rating-btn" id="dislikeBtn" onclick="toggleDislike()">
+                        <span>👎</span>
+                        <span>Không thích</span>
+                        <span class="count" id="dislikeCount">0</span>
+                    </button>
+                </div>
+
+                <!-- Movie Actions -->
+                <div class="movie-actions">
+                    <button class="action-btn primary" onclick="restartMovie()">
+                        <span>🔄</span>
+                        <span>Xem lại từ đầu</span>
+                    </button>
+                    <button class="action-btn" onclick="toggleFavorite()">
+                        <span>❤️</span>
+                        <span id="favoriteText">Thêm vào yêu thích</span>
+                    </button>
+                    <button class="action-btn" onclick="downloadMovie()">
+                        <span>⬇️</span>
+                        <span>Tải xuống</span>
+                    </button>
+                    <button class="action-btn" onclick="shareMovie()">
+                        <span>📤</span>
+                        <span>Chia sẻ</span>
+                    </button>
+                </div>
+
+                <div class="cast-crew">
+                    <h3>Diễn viên & Đạo diễn</h3>
+                    <div class="cast-list">
+                        <div class="cast-member">
+                            <div class="cast-avatar">KR</div>
+                            <div class="cast-name">Keanu Reeves</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">HB</div>
+                            <div class="cast-name">Halle Berry</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">IM</div>
+                            <div class="cast-name">Ian McShane</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">LF</div>
+                            <div class="cast-name">Laurence Fishburne</div>
+                        </div>
+                        <div class="cast-member">
+                            <div class="cast-avatar">CS</div>
+                            <div class="cast-name">Chad Stahelski</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <h3>Phim liên quan</h3>
+                <div class="related-movies">
+                    <div class="related-movie" onclick="playRelatedMovie(2)">
+                        <div class="related-poster">NA</div>
+                        <div class="related-info">
+                            <h4>Naruto</h4>
+                            <p>2002 • Anime</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>8.5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie(6)">
+                        <div class="related-poster">JK</div>
+                        <div class="related-info">
+                            <h4>Jujutsu Kaisen</h4>
+                            <p>2020 • Anime</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>9.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie(5)">
+                        <div class="related-poster">AOT</div>
+                        <div class="related-info">
+                            <h4>Attack on Titan</h4>
+                            <p>2013 • Anime</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>9.2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie(7)">
+                        <div class="related-poster">DS</div>
+                        <div class="related-info">
+                            <h4>Demon Slayer</h4>
+                            <p>2019 • Anime</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>8.8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="related-movie" onclick="playRelatedMovie(9)">
+                        <div class="related-poster">MHA</div>
+                        <div class="related-info">
+                            <h4>My Hero Academia</h4>
+                            <p>2016 • Anime</p>
+                            <div class="related-rating">
+                                <span>⭐</span>
+                                <span>8.6</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Comments Section -->
+        <div class="comments-section">
+            <div class="comments-header">
+                <h3 id="comments-count">Bình luận (0)</h3>
+                <select id="comments-sort"
+                    style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px;"
+                    onchange="sortComments()">
+                    <option value="newest">Mới nhất</option>
+                    <option value="oldest">Cũ nhất</option>
+                    <option value="popular">Phổ biến nhất</option>
+                </select>
+            </div>
+
+            <!-- Authentication prompt for non-logged in users -->
+            <div id="auth-prompt" class="auth-prompt" style="display: none;">
+                <p>Bạn cần đăng nhập để bình luận và tương tác.</p>
+                <button class="login-btn" onclick="window.location.href='../login_register/login.html'">
+                    Đăng nhập
+                </button>
+            </div>
+
+            <!-- Comment form for authenticated users -->
+            <div id="comment-form-container" class="comment-form">
+                <textarea id="comment-input" class="comment-input" placeholder="Viết bình luận của bạn..."
+                    maxlength="500"></textarea>
+                <div class="comment-actions">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label>Đánh giá: </label>
+                        <select id="rating-select"
+                            style="background: var(--secondary-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); padding: 5px; border-radius: 4px;">
+                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                            <option value="3">⭐⭐⭐ (3/5)</option>
+                            <option value="2">⭐⭐ (2/5)</option>
+                            <option value="1">⭐ (1/5)</option>
+                        </select>
+                    </div>
+                    <button class="action-button btn-primary" onclick="postComment()">Đăng bình luận</button>
+                </div>
+            </div>
+
+            <div id="comments-list" class="comments-list">
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    Đang tải bình luận...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import JavaScript từ file riêng -->
+    <script src="moive.js"></script>
+</body>
+
+</html>

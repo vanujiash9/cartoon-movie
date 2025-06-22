@@ -45,7 +45,7 @@ public class AuthController {
         user.setEmail(request.getEmail());
         user.setAvatar(request.getAvatar());
         user.setRole("USER");
-        user.setEnabled(true);
+        user.setActive(true);
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setGender(request.getGender());

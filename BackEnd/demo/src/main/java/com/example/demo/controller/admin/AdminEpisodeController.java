@@ -170,4 +170,17 @@ public class AdminEpisodeController {
             return "redirect:/admin/episodes/add/" + cartoonId;
         }
     }
+
+    @PostMapping("/episodes/delete/{cartoonId}/{id}")
+    public String deleteEpisodePost(@PathVariable Integer cartoonId, @PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            episodeService.delete(id);
+            redirectAttributes.addFlashAttribute("message", "Episode deleted successfully!");
+            return "redirect:/admin/episodes/add/" + cartoonId;
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Failed to delete episode: " + e.getMessage());
+            return "redirect:/admin/episodes/add/" + cartoonId;
+        }
+    }
 }

@@ -57,8 +57,8 @@
                             </form>
                         </td>
                         <td>
-                            <span th:if="${user.enabled}" class="badge bg-success">Kích hoạt</span>
-                            <span th:unless="${user.enabled}" class="badge bg-secondary">Khóa</span>
+                            <span th:if="${user.active}" class="badge bg-success">Kích hoạt</span>
+                            <span th:unless="${user.active}" class="badge bg-secondary">Khóa</span>
                         </td>
                         <td>
                             <ul class="list-unstyled mb-0">

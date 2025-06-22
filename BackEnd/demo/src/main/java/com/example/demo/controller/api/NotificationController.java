@@ -77,8 +77,19 @@ public class NotificationController {
         }
         String username = auth.getName();
         User user = userService.findByUsername(username);
+        
+        String title = body.getOrDefault("title", "Thông báo test");
         String content = body.getOrDefault("content", "Đây là thông báo test");
-        notificationService.sendNotification(user, content);
+        String typeStr = body.getOrDefault("type", "SYSTEM");
+        
+        Notification.NotificationType type;
+        try {
+            type = Notification.NotificationType.valueOf(typeStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            type = Notification.NotificationType.SYSTEM;
+        }
+        
+        notificationService.createNotification(user, title, content, type);
         return ResponseEntity.ok("Đã tạo thông báo test thành công");
     }
 }

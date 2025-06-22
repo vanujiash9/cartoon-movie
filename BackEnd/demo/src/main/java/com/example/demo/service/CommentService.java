@@ -26,6 +26,9 @@ public class CommentService {
     
     @Autowired
     private UserAchievementService userAchievementService;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     // Lấy danh sách comments của một phim
     public List<Comment> getCommentsByCartoonId(Long cartoonId) {
@@ -44,6 +47,14 @@ public class CommentService {
         // Trigger achievement check for first review
         if (savedComment.getUser() != null) {
             userAchievementService.checkAndGrantAchievements(savedComment.getUser());
+        }
+        
+        // Send notification if this is a reply to another comment
+        if (savedComment.getParentComment() != null && savedComment.getParentComment().getUser() != null) {
+            User parentCommentOwner = savedComment.getParentComment().getUser();
+            User replier = savedComment.getUser();
+            notificationService.notifyCommentReplied(parentCommentOwner, replier, 
+                savedComment.getParentComment().getId().intValue());
         }
         
         return savedComment;
@@ -86,6 +97,7 @@ public class CommentService {
         
         Comment comment = commentRepository.findById(commentId).orElse(null);
         User commentOwner = comment != null ? comment.getUser() : null;
+        User liker = userService.getById(userId).orElse(null);
         
         if (existingLike.isPresent()) {
             CommentLike like = existingLike.get();
@@ -96,6 +108,11 @@ public class CommentService {
                 // User changed from like to dislike or vice versa
                 like.setLiked(isLiked);
                 commentLikeRepository.save(like);
+                
+                // Send notification for new like (not dislike)
+                if (isLiked && commentOwner != null && liker != null) {
+                    notificationService.notifyCommentLiked(commentOwner, liker, commentId.intValue());
+                }
             }
         } else {
             // Create new like/dislike
@@ -106,6 +123,11 @@ public class CommentService {
                 newLike.setUser(userOpt.get());
                 newLike.setLiked(isLiked);
                 commentLikeRepository.save(newLike);
+                
+                // Send notification for new like (not dislike)
+                if (isLiked && commentOwner != null && liker != null) {
+                    notificationService.notifyCommentLiked(commentOwner, liker, commentId.intValue());
+                }
             }
         }
         

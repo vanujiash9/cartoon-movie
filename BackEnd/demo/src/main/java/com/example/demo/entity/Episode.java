@@ -14,9 +14,7 @@ public class Episode {
     private String title;
 
     @Column(name = "description")
-    private String description;
-
-    @Column(name = "episode_num")
+    private String description;    @Column(name = "episode_number")
     private Integer episode_number;
 
     @Column(name = "video_url")
@@ -29,16 +27,12 @@ public class Episode {
     private Integer duration;
 
     @Column(name = "views")
-    private Integer views = 0;
-
-    @Column(name = "season_num")
+    private Integer views = 0;    @Column(name = "season_num")
     private Integer season_number = 1;
 
     @Column(name = "created_at")
-    private LocalDateTime created_at;
-
-    @ManyToOne
-    @JoinColumn(name = "cartoonn_id")
+    private LocalDateTime created_at;    @ManyToOne
+    @JoinColumn(name = "cartoon_id")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Cartoon cartoon;
 

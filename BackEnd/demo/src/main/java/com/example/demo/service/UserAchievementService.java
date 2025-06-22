@@ -36,11 +36,11 @@ public class UserAchievementService {    @Autowired
     @Autowired
     private CartoonRepository cartoonRepository;
     @Autowired
-    private UserShareRepository userShareRepository;
-    @Autowired 
+    private UserShareRepository userShareRepository;    @Autowired 
     private ReferralRepository referralRepository;
-
-    // Gán thành tựu cho user nếu chưa có
+    
+    @Autowired
+    private NotificationService notificationService;    // Gán thành tựu cho user nếu chưa có
     public void grantAchievementIfNotExists(User user, int achievementId) {
         boolean alreadyHas = userAchievementRepository.findByUser(user)
                 .stream().anyMatch(ua -> ua.getAchievement().getId() == achievementId);
@@ -51,9 +51,15 @@ public class UserAchievementService {    @Autowired
                 ua.setUser(user);
                 ua.setAchievement(achievementOpt.get());
                 userAchievementRepository.save(ua);
+                
+                // Send notification for new achievement
+                Achievement achievement = achievementOpt.get();
+                if (notificationService != null) {
+                    notificationService.notifyAchievementUnlocked(user, achievement.getName());
+                }
             }
         }
-    }    // Kiểm tra và tự động cấp thành tựu cho user
+    }// Kiểm tra và tự động cấp thành tựu cho user
     public void checkAndGrantAchievements(User user) {
         // 1. Đăng ký tài khoản (ID: 1) - tự động cấp
         grantAchievementIfNotExists(user, 1);

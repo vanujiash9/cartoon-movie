@@ -179,20 +179,22 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete episode "<span id="deleteEpisodeName"></span>"?</p>
-                    <p class="text-danger"><small>This action cannot be undone.</small></p>
+                    <p>Bạn có chắc chắn muốn xóa tập "<span id="deleteEpisodeName"></span>"?</p>
+                    <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a id="deleteConfirmBtn" href="#" class="btn btn-danger">Delete Episode</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form id="deleteForm" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Xóa tập phim</button>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>    <!-- Edit Episode Modal -->
+    </div><!-- Edit Episode Modal -->
     <div class="modal fade" id="editEpisodeModal" tabindex="-1" aria-labelledby="editEpisodeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -225,14 +227,14 @@
         document.getElementById('modalImage').src = src;
         var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
         imageModal.show();
-    }
-
-    function confirmDelete(cartoonId, episodeId, episodeTitle) {
+    }    function confirmDelete(cartoonId, episodeId, episodeTitle) {
         document.getElementById('deleteEpisodeName').textContent = episodeTitle;
-        document.getElementById('deleteConfirmBtn').href = `/admin/episodes/delete/${cartoonId}/${episodeId}`;
+        // Tạo URL đúng với context path của Spring Boot
+        var deleteUrl = window.location.origin + '/admin/episodes/delete/' + cartoonId + '/' + episodeId;
+        document.getElementById('deleteForm').action = deleteUrl;
         var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
         deleteModal.show();
-    }    // Auto-dismiss alerts
+    }// Auto-dismiss alerts
     setTimeout(function() {
         document.querySelectorAll('.alert-dismissible').forEach(function(alert) {
             alert.style.display = 'none';

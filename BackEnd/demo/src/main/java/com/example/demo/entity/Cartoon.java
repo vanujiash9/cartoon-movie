@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "cartoonn")
+@Table(name = "cartoons")
 public class Cartoon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    private String title;
+    private Integer id;    private String title;
     private String description;
+    
+    @Column(name = "release_year")
     private Integer releaseYear;
+    
+    @Column(name = "total_episodes")
     private Integer totalEpisodes;
+    
+    @Column(name = "image_url")
     private String imageUrl;
+    
     private String trailerUrl;
 
     @Column(name = "created_at")
