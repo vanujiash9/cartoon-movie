@@ -254,8 +254,12 @@ async function checkBackendConnection() {
 
 // Initialize video player
 document.addEventListener('DOMContentLoaded', async function () {
+    console.log('🎬 Bắt đầu khởi tạo app...');
+    
     // Debug localStorage first
-    debugLocalStorage();    // Check authentication first
+    debugLocalStorage();
+    
+    // Check authentication first
     const authStatus = await checkAuthentication();
     console.log('🔍 Auth status result:', authStatus, 'isAuthenticated:', isAuthenticated);
 
@@ -269,16 +273,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     initializePlayer();
     setupEventListeners();
     
-    try {
-        // Cập nhật movieId từ URL (không cần gán lại nếu đã có)
+    // Run debug check
+    console.log('🔍 Checking elements...');
+    debugApp();
+      try {
+        // Cập nhật movieId từ URL
+        movieId = getMovieIdFromUrl();
         if (!movieId) {
-            movieId = getMovieIdFromUrl();
-            if (!movieId) {
-                throw new Error('Không tìm thấy ID phim trong URL!');
-            }
+            throw new Error('Không tìm thấy ID phim trong URL! Vui lòng truy cập từ trang chủ với link đúng định dạng: ?id=123');
         }
         console.log('🎬 ID phim được lấy từ URL:', movieId);
-          // Kiểm tra kết nối backend (không chặn tiến trình nếu fail)
+        
+        // Kiểm tra kết nối backend (không chặn tiến trình nếu fail)
         try {
             const isBackendConnected = await checkBackendConnection();
             if (!isBackendConnected) {
@@ -291,6 +297,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         
         // Tải thông tin phim (bên trong hàm này sẽ gọi loadEpisodes sau khi hoàn thành)
+        console.log('🎬 Bắt đầu tải thông tin phim...');
         loadMovieData();
     } catch (error) {
         console.error('❌ Lỗi khởi tạo:', error);
@@ -345,17 +352,40 @@ function updateAuthUI(isAuth) {
 }
 
 function initializePlayer() {
+    console.log('🎬 Khởi tạo video player...');
+    
+    // Kiểm tra video element có tồn tại không
+    if (!video) {
+        console.error('❌ Không tìm thấy video element! Kiểm tra lại HTML.');
+        showNotification('Lỗi: Không tìm thấy video player!', 'error');
+        return;
+    }
+    
+    console.log('✅ Video element đã được tìm thấy:', video);
+    
+    // Khởi tạo các giá trị mặc định
     if (video) {
         video.volume = currentVolume;
         video.currentTime = 0;
+        console.log('✅ Đã thiết lập volume và thời gian cho video');
     }
+    
     updateVolumeDisplay();
     updateSpeedDisplay();
     updateProgress();
+    
+    console.log('✅ Player được khởi tạo thành công');
 }
 
 function setupEventListeners() {
-    if (!video) return;
+    console.log('🎬 Thiết lập event listeners...');
+    
+    if (!video) {
+        console.error('❌ Không thể thiết lập event listeners: video element không tồn tại!');
+        return;
+    }
+    
+    console.log('✅ Đang thiết lập các sự kiện cho video element...');
 
     // Video events
     video.addEventListener('loadstart', showLoading);
@@ -432,17 +462,27 @@ function setupEventListeners() {
                 qualitySelector.classList.remove('active');
             }
         }
-    });
-
-    // Initialize focus for keyboard controls
+    });    // Initialize focus for keyboard controls
     if (videoPlayer) {
         videoPlayer.setAttribute('tabindex', '0');
         videoPlayer.focus();
     }
+    
+    console.log('✅ Event listeners đã được thiết lập thành công');
 }
 
-// ===== MOVIE DATA LOADING =====
+// Debug function to test elements and API
+function debugApp() {
+    console.log('🔍 DEBUGGING APP STATE...');
+    console.log('Video element:', document.getElementById('videoElement'));
+    console.log('Episodes container:', document.getElementById('episodes-container'));
+    console.log('Movie ID:', movieId);
+    console.log('URL:', window.location.search);
+}
 
+window.debugApp = debugApp;
+
+// ===== MOVIE DATA LOADING =====
 function loadMovieData() {
     if (!movieId) {
         console.error('❌ Không tìm thấy movieId để tải thông tin phim!');
@@ -660,13 +700,18 @@ function loadEpisode(episode) {
         console.error('❌ Không tìm thấy URL video!');
         showNotification('Không tìm thấy URL video cho tập phim này!', 'error');
         return;
-    }
-
-    // Hiển thị loading
+    }    // Hiển thị loading
     showLoading();
 
     // Cập nhật UI trước (active episode button)
-    updateActiveEpisode(episode.episodeNumber || episode.episode_number);
+    updateActiveEpisode(episode.episodeNumber || episode.episode_number);    // Kiểm tra video element trước khi sử dụng
+    const videoElement = document.getElementById('videoElement');
+    if (!videoElement) {
+        console.error('❌ Không tìm thấy video element để phát!');
+        showNotification('Lỗi: Không tìm thấy video player!', 'error');
+        hideLoading();
+        return;
+    }
 
     // Xử lý YouTube URL
     if (videoUrl && (videoUrl.includes('youtu.be/') || videoUrl.includes('youtube.com/watch'))) {
@@ -701,9 +746,8 @@ function loadEpisode(episode) {
         }
     }
 
-    // Đối với video thông thường (MP4, etc.), restore video element if needed
-    let currentVideo = document.getElementById('videoElement');
-    if (!currentVideo) {
+    // Đối với video thông thường (MP4, etc.), restore video element if needed    let videoEl = document.getElementById('videoElement');
+    if (!videoEl) {
         console.log('Restoring video element...');
         const videoContainer = document.querySelector('.video-player');
         if (videoContainer) {
@@ -712,23 +756,29 @@ function loadEpisode(episode) {
                     <source src="" type="video/mp4">
                     <track kind="captions" src="" srclang="vi" label="Tiếng Việt">
                     <track kind="captions" src="" srclang="en" label="English">
-                    Trình duyệt của bạn không hỗ trợ thẻ video.
-                </video>
+                    Trình duyệt của bạn không hỗ trợ thẻ video.                </video>
                 <!-- Add back other video player UI elements if needed -->
             `;
-            currentVideo = document.getElementById('videoElement');
+            videoEl = document.getElementById('videoElement');
         }
     }
 
     // Đối với video thông thường (MP4, etc.)
-    if (currentVideo) {
-        currentVideo.src = videoUrl;
-        currentVideo.load();
-
-        // Tự động phát
-        currentVideo.play().catch(err => {
+    if (videoEl) {
+        console.log('🎬 Đang thiết lập video source:', videoUrl);
+        videoEl.src = videoUrl;
+        videoEl.load();        // Tự động phát
+        videoEl.play().catch(err => {
             console.log('Autoplay bị chặn:', err);
+            showNotification('Video đã sẵn sàng. Nhấn để phát!', 'info');
         });
+        
+        console.log('✅ Video đã được thiết lập thành công');
+        hideLoading();
+    } else {
+        console.error('❌ Không thể thiết lập video element');
+        showNotification('Lỗi khi thiết lập video!', 'error');
+        hideLoading();
     }
 
     // Lưu index tập đang xem vào localStorage (nếu gọi trực tiếp)
@@ -1742,223 +1792,110 @@ function logout() {
     }, 1000);
 }
 
-// ===== MISSING FUNCTIONS =====
+// ===== DEBUG AND TEST FUNCTIONS =====
 
-// Toggle favorite movie
-function toggleFavorite() {
-    if (!isAuthenticated || !currentUser) {
-        showLoginPrompt();
-        return;
-    }
-
-    showNotification('Tính năng yêu thích đang được phát triển', 'info');
+// Hàm test để kiểm tra tất cả các element cần thiết
+function debugCheckElements() {
+    console.log('🔍 DEBUGGING: Kiểm tra các element...');
+    
+    // Kiểm tra video element
+    const videoEl = document.getElementById('videoElement');
+    console.log('Video element:', videoEl);
+    
+    // Kiểm tra episodes container
+    const episodeContainer = document.getElementById('episodes-container');
+    console.log('Episodes container:', episodeContainer);
+    
+    // Kiểm tra movie details
+    const movieDetails = document.querySelector('.movie-details h1');
+    console.log('Movie title element:', movieDetails);
+    
+    // Kiểm tra các element meta
+    const rating = document.getElementById('movieRating');
+    const year = document.getElementById('movieYear');
+    const duration = document.getElementById('movieDuration');
+    const genre = document.getElementById('movieGenre');
+    
+    console.log('Meta elements:', { rating, year, duration, genre });
+    
+    // Kiểm tra loading overlay
+    const loading = document.getElementById('loadingOverlay');
+    console.log('Loading overlay:', loading);
+    
+    // Kiểm tra notification
+    const notification = document.getElementById('notification');
+    console.log('Notification element:', notification);
+    
+    // Kiểm tra movieId
+    console.log('Current movieId:', movieId);
+    console.log('URL search params:', window.location.search);
+    
+    return {
+        video: !!videoEl,
+        episodes: !!episodeContainer,
+        movieTitle: !!movieDetails,
+        loading: !!loading,
+        notification: !!notification,
+        movieId: !!movieId
+    };
 }
 
-// Download movie
-function downloadMovie() {
-    if (!isAuthenticated || !currentUser) {
-        showLoginPrompt();
-        return;
-    }
-
-    showNotification('Tính năng tải xuống đang được phát triển', 'info');
-}
-
-// Share movie
-function shareMovie() {
-    if (navigator.share) {
-        navigator.share({
-            title: document.title,
-            url: window.location.href
-        }).then(() => {
-            showNotification('Đã chia sẻ thành công!', 'success');
-        }).catch(err => {
-            console.error('Error sharing:', err);
-            copyToClipboard();
-        });
-    } else {
-        copyToClipboard();
-    }
-}
-
-// Copy URL to clipboard
-function copyToClipboard() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-        showNotification('Đã sao chép link vào clipboard!', 'success');
-    }).catch(err => {
-        console.error('Error copying to clipboard:', err);
-        showNotification('Không thể sao chép link', 'error');
-    });
-}
-
-// Update movie info display
-function updateMovieInfo(movie) {
-    console.log('🎬 Updating movie info:', movie);
-
-    // Update rating
-    const ratingElement = document.getElementById('movieRating');
-    if (ratingElement) {
-        ratingElement.textContent = typeof movie.rating !== 'undefined' ? movie.rating : 'Chưa có';
-    }
-
-    // Update year
-    const yearElement = document.getElementById('movieYear');
-    if (yearElement) {
-        yearElement.textContent = movie.releaseYear || 'Chưa có';
-    }
-
-    // Update genre
-    const genreElement = document.getElementById('movieGenre');
-    if (genreElement) {
-        genreElement.textContent = movie.genre || 'Chưa có';
-    }
-
-    // Update duration (từ tập đầu tiên nếu có)
-    const durationElement = document.getElementById('movieDuration');
-    if (durationElement) {
-        if (currentEpisodes && currentEpisodes.length > 0 && (currentEpisodes[0].duration || currentEpisodes[0].duration_seconds)) {
-            // Ưu tiên lấy duration từ tập đầu tiên
-            let dur = currentEpisodes[0].duration;
-            if (!dur && currentEpisodes[0].duration_seconds) {
-                // Nếu backend trả về duration_seconds (giây)
-                const mins = Math.floor(currentEpisodes[0].duration_seconds / 60);
-                const secs = currentEpisodes[0].duration_seconds % 60;
-                dur = mins + ' phút ' + secs + ' giây';
-            }
-            durationElement.textContent = dur;
-        } else if (movie.duration) {
-            durationElement.textContent = movie.duration + ' phút';
-        } else {
-            durationElement.textContent = 'Chưa có';
-        }
-    }
-}
-
-// Sau khi loadEpisodes xong, hãy gọi lại updateMovieInfo để cập nhật thời lượng
-// Hàm loadEpisodes đã được triển khai đầy đủ ở trên
-
-// Lưu lại dữ liệu phim khi loadMovieData
-const _originalLoadMovieData = loadMovieData;
-loadMovieData = function() {
-    fetch(`http://localhost:8080/api/cartoons/${movieId}`)
-        .then(res => res.json())
-        .then(data => {
-            // Dữ liệu phim nằm trong data.cartoon
-            const movie = data.cartoon || {};
-            // Lưu lại dữ liệu phim cho updateMovieInfo
-            window._lastMovieData = movie;
-            // Cập nhật tiêu đề trang
-            document.title = movie.title + ' | Maxion';
-            // Cập nhật tiêu đề hiển thị
-            const h1 = document.querySelector('.movie-details h1');
-            if (h1) h1.textContent = movie.title;
-            // Cập nhật thông tin meta phim
-            updateMovieInfo(movie);
-            // Cập nhật mô tả phim
-            const description = document.querySelector('.movie-details .description');
-            if (description && movie.description) {
-                description.textContent = movie.description;
-            }
-        })
-        .catch(err => {
-            console.error("Lỗi khi tải thông tin phim:", err);
-        });
-};
-
-// ===== UI INTERACTION FUNCTIONS =====
-
-// Toggle comments section visibility
-function toggleComments() {
-    const commentsSection = document.getElementById('comments-section');
-    if (commentsSection) {
-        const isHidden = commentsSection.style.display === 'none';
-        commentsSection.style.display = isHidden ? 'block' : 'none';
-        
-        // Tự động scroll nếu hiển thị comments
-        if (isHidden) {
-            commentsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-}
-
-// Load like/dislike state for the current movie from API
-async function loadLikeDislikeState() {
-    if (!movieId || !isAuthenticated || !currentUser) {
-        console.log('❌ Không thể tải trạng thái like/dislike: Thiếu movieId hoặc chưa đăng nhập');
-        return;
-    }
+// Test function để kiểm tra API
+async function testAPI() {
+    console.log('🔍 Testing API connection...');
     
     try {
-        const token = localStorage.getItem('token');
-        const headers = {
-            'Content-Type': 'application/json'
-        };
-        if (token) headers['Authorization'] = 'Bearer ' + token;
+        // Test endpoint cơ bản
+        const response = await fetch('http://localhost:8080/api/cartoons');
+        console.log('API cartoons response status:', response.status);
         
-        const response = await fetch(`http://localhost:8080/api/cartoons/${movieId}/like-status`, {
-            method: 'GET',
-            credentials: 'include',
-            headers
-        });
-        
-        if (!response.ok) {
-            console.log('❌ API trả về lỗi:', response.status);
-            return;
+        if (movieId) {
+            // Test endpoint cụ thể cho phim
+            const movieResponse = await fetch(`http://localhost:8080/api/cartoons/${movieId}`);
+            console.log('API movie response status:', movieResponse.status);
+            
+            if (movieResponse.ok) {
+                const movieData = await movieResponse.json();
+                console.log('Movie data:', movieData);
+            }
+            
+            // Test endpoint episodes
+            const episodesResponse = await fetch(`http://localhost:8080/api/cartoons/${movieId}/episodes`);
+            console.log('API episodes response status:', episodesResponse.status);
+            
+            if (episodesResponse.ok) {
+                const episodesData = await episodesResponse.json();
+                console.log('Episodes data:', episodesData);
+            }
         }
-        
-        // Kiểm tra nội dung trả về có phải JSON không
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            console.log('❌ API không trả về JSON:', contentType);
-            return;
-        }
-        
-        const data = await response.json();
-        console.log('✅ Trạng thái like/dislike:', data);
-        
-        isLiked = data.isLiked || false;
-        isDisliked = data.isDisliked || false;
-        likeCount = data.likeCount || 0;
-        dislikeCount = data.dislikeCount || 0;
-          updateLikeDislikeUI();
     } catch (error) {
-        console.error('❌ Error loading like/dislike state:', error);
-        // Không báo lỗi cho người dùng vì đây không phải lỗi quan trọng
-        // Sử dụng giá trị mặc định thay vì báo lỗi
-        isLiked = false;
-        isDisliked = false;
-        updateLikeDislikeUI();
+        console.error('API test failed:', error);
     }
 }
 
-window.toggleLike = toggleLike;
-window.toggleDislike = toggleDislike;
-window.toggleFavorite = toggleFavorite;
-window.downloadMovie = downloadMovie;
-window.shareMovie = shareMovie;
-window.toggleComments = toggleComments;
-window.playRelatedMovie = playRelatedMovie;
+// Expose functions for debugging
+window.debugCheckElements = debugCheckElements;
+window.testAPI = testAPI;
 
-// Make functions available globally for onclick handlers
-window.loadEpisodeByIndex = loadEpisodeByIndex;
-window.togglePlayPause = togglePlayPause;
-window.toggleMute = toggleMute;
-window.changePlaybackSpeed = changePlaybackSpeed;
-window.toggleFullscreen = toggleFullscreen;
-window.toggleTheaterMode = toggleTheaterMode;
-window.togglePictureInPicture = togglePictureInPicture;
-window.toggleQuality = toggleQuality;
-window.changeQuality = changeQuality;
-window.toggleSubtitles = toggleSubtitles;
-window.closePiP = closePiP;
-window.goBack = goBack;
-window.restartMovie = restartMovie;
-window.postComment = postComment;
-window.sortComments = sortComments;
-window.likeComment = likeComment;
-window.showReplyForm = showReplyForm;
-window.hideReplyForm = hideReplyForm;
-window.postReply = postReply;
-window.deleteComment = deleteComment;
-window.playRelatedMovie = playRelatedMovie;
-window.logout = logout;
+// Force reload functions for debugging
+window.forceLoadMovie = function() {
+    console.log('🔧 Force loading movie data...');
+    if (!movieId) {
+        movieId = getMovieIdFromUrl();
+        console.log('Updated movieId:', movieId);
+    }
+    if (movieId) {
+        loadMovieData();
+    } else {
+        console.error('❌ No movieId found!');
+    }
+};
+
+window.forceLoadEpisodes = function() {
+    console.log('🔧 Force loading episodes...');
+    if (movieId) {
+        loadEpisodes();
+    } else {
+        console.error('❌ No movieId for episodes!');
+    }
+};
