@@ -17,10 +17,31 @@ function initNotificationSystem() {
     // Setup notification bell click handler
     setupNotificationBell();
     
+    // Show initial state in dropdown
+    const listContainer = document.getElementById('notificationList');
+    if (listContainer) {
+        if (isLoggedIn()) {
+            listContainer.innerHTML = `
+                <div class="notification-empty">
+                    <div class="notification-empty-icon">🔔</div>
+                    <div class="notification-empty-text">Chưa có thông báo</div>
+                    <div class="notification-empty-subtext">Hover vào chuông để xem thông báo mới</div>
+                </div>
+            `;
+        } else {
+            listContainer.innerHTML = `
+                <div class="notification-empty">
+                    <div class="notification-empty-icon">🔐</div>
+                    <div class="notification-empty-text">Vui lòng đăng nhập</div>
+                    <div class="notification-empty-subtext">Đăng nhập để xem thông báo của bạn</div>
+                </div>
+            `;
+        }
+    }
+    
     // Start checking for new notifications if user is logged in
     if (isLoggedIn()) {
         startNotificationPolling();
-        loadNotifications();
     }
     
     // Listen for login/logout events
@@ -53,9 +74,35 @@ function setupNotificationBell() {
         toggleNotificationDropdown();
     });
     
+    // Show dropdown on hover
+    notificationBell.addEventListener('mouseenter', () => {
+        showNotificationDropdown();
+    });
+    
+    // Hide dropdown when mouse leaves the bell area
+    notificationBell.addEventListener('mouseleave', (e) => {
+        // Add delay to allow user to move to dropdown
+        setTimeout(() => {
+            if (!notificationDropdown.matches(':hover') && !notificationBell.matches(':hover')) {
+                hideNotificationDropdown();
+            }
+        }, 200);
+    });
+    
+    // Keep dropdown open when hovering over it
+    notificationDropdown.addEventListener('mouseenter', () => {
+        // Cancel any pending hide
+        clearTimeout(notificationDropdown.hideTimeout);
+    });
+    
+    // Hide when leaving dropdown
+    notificationDropdown.addEventListener('mouseleave', () => {
+        hideNotificationDropdown();
+    });
+    
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
-        if (!notificationBell.contains(e.target)) {
+        if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
             hideNotificationDropdown();
         }
     });
@@ -81,6 +128,18 @@ function showNotificationDropdown() {
     if (!dropdown) return;
     
     dropdown.style.display = 'block';
+    
+    // If no notifications have been loaded yet, show loading
+    const listContainer = document.getElementById('notificationList');
+    if (listContainer && listContainer.innerHTML.trim() === '') {
+        listContainer.innerHTML = `
+            <div class="notification-loading">
+                <div class="notification-loading-spinner"></div>
+                <div>Đang tải thông báo...</div>
+            </div>
+        `;
+    }
+    
     loadNotifications();
     console.log('📖 Notification dropdown opened');
 }
@@ -90,8 +149,11 @@ function hideNotificationDropdown() {
     const dropdown = document.getElementById('notificationDropdown');
     if (!dropdown) return;
     
-    dropdown.style.display = 'none';
-    console.log('📕 Notification dropdown closed');
+    // Add small delay for better UX
+    dropdown.hideTimeout = setTimeout(() => {
+        dropdown.style.display = 'none';
+        console.log('📕 Notification dropdown closed');
+    }, 150);
 }
 
 // Start polling for new notifications
@@ -183,9 +245,30 @@ function updateNotificationBadge(count) {
 
 // Load and display notifications
 async function loadNotifications() {
+    const listContainer = document.getElementById('notificationList');
+    
+    // Don't reload if we're not logged in
+    if (!isLoggedIn()) {
+        if (listContainer) {
+            listContainer.innerHTML = `
+                <div class="notification-empty">
+                    <div class="notification-empty-icon">🔐</div>
+                    <div class="notification-empty-text">Vui lòng đăng nhập</div>
+                    <div class="notification-empty-subtext">Đăng nhập để xem thông báo của bạn</div>
+                </div>
+            `;
+        }
+        return;
+    }
+    
     try {
         const token = localStorage.getItem('token');
         if (!token) return;
+        
+        // Show loading if container is empty
+        if (listContainer && listContainer.innerHTML.includes('Đang tải thông báo')) {
+            // Keep the loading state
+        }
         
         const response = await fetch(`${NOTIFICATION_CONFIG.BASE_URL}`, {
             method: 'GET',
@@ -219,9 +302,9 @@ function displayNotifications(notifications) {
     if (!notifications || notifications.length === 0) {
         listContainer.innerHTML = `
             <div class="notification-empty">
-                <div class="notification-empty-icon">📭</div>
-                <div class="notification-empty-text">Không có thông báo nào</div>
-                <div class="notification-empty-subtext">Thông báo sẽ xuất hiện ở đây</div>
+                <div class="notification-empty-icon">�</div>
+                <div class="notification-empty-text">Chưa có thông báo</div>
+                <div class="notification-empty-subtext">Thông báo sẽ xuất hiện ở đây khi có hoạt động mới</div>
             </div>
         `;
         return;

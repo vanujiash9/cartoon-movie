@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notification Hover</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            background: #f5f5f5;
+        }
+        
+        /* Simplified notification bell for testing */
+        .test-notification-bell {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-size: 20px;
+            margin: 20px;
+        }
+        
+        .test-notification-bell:hover {
+            background: #5a6bd8;
+            transform: scale(1.1);
+        }
+        
+        .test-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            color: #333;
+            min-width: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            z-index: 1000;
+            display: none;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .test-notification-bell:hover .test-dropdown {
+            display: block !important;
+        }
+        
+        .test-dropdown:hover {
+            display: block !important;
+        }
+        
+        .dropdown-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+        }
+        
+        .dropdown-content {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .test-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+        
+        .message {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .submessage {
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Test Notification Hover</h1>
+    <p>Hover vào chuông bên dưới để test dropdown:</p>
+    
+    <div class="test-notification-bell">
+        🔔
+        <div class="test-dropdown">
+            <div class="dropdown-header">
+                🔔 Thông báo
+            </div>
+            <div class="dropdown-content">
+                <div class="test-icon">🔔</div>
+                <div class="message">Chưa có thông báo</div>
+                <div class="submessage">Thông báo sẽ xuất hiện ở đây khi có hoạt động mới</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-notification-bell">
+        🔔
+        <span style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; font-size: 12px; padding: 2px 6px;">3</span>
+        <div class="test-dropdown">
+            <div class="dropdown-header">
+                🔔 Thông báo <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">3</span>
+            </div>
+            <div class="dropdown-content">
+                <div style="text-align: left; border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">❤️ Có người thích bình luận của bạn</div>
+                    <div style="font-size: 14px; color: #666;">John Doe đã thích bình luận của bạn</div>
+                    <div style="font-size: 12px; color: #999; margin-top: 5px;">5 phút trước</div>
+                </div>
+                <div style="text-align: left; border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">🏆 Thành tựu mới!</div>
+                    <div style="font-size: 14px; color: #666;">Bạn đã mở khóa thành tựu: Người xem tích cực</div>
+                    <div style="font-size: 12px; color: #999; margin-top: 5px;">1 giờ trước</div>
+                </div>
+                <div style="text-align: left; padding: 10px 0;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">✅ Cập nhật thành công</div>
+                    <div style="font-size: 14px; color: #666;">Thông tin cá nhân đã được cập nhật</div>
+                    <div style="font-size: 12px; color: #999; margin-top: 5px;">2 giờ trước</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <p><strong>Test Results:</strong></p>
+    <ul>
+        <li>Hover vào chuông đầu tiên (trống) - sẽ hiện "Chưa có thông báo"</li>
+        <li>Hover vào chuông thứ hai (có badge đỏ) - sẽ hiện danh sách thông báo mẫu</li>
+        <li>Dropdown sẽ ở lại khi bạn di chuyển chuột vào dropdown</li>
+        <li>Dropdown sẽ biến mất khi rời khỏi vùng chuông + dropdown</li>
+    </ul>
+    
+    <p><a href="../index.html">← Quay lại trang chính</a></p>
+    
+    <script>
+        console.log('🔔 Notification hover test page loaded');
+        
+        // Test hover functionality
+        document.querySelectorAll('.test-notification-bell').forEach(bell => {
+            bell.addEventListener('mouseenter', () => {
+                console.log('🔔 Mouse entered notification bell');
+            });
+            
+            bell.addEventListener('mouseleave', () => {
+                console.log('🔔 Mouse left notification bell');
+            });
+        });
+        
+        document.querySelectorAll('.test-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('mouseenter', () => {
+                console.log('📋 Mouse entered dropdown');
+            });
+            
+            dropdown.addEventListener('mouseleave', () => {
+                console.log('📋 Mouse left dropdown');
+            });
+        });
+    </script>
+</body>
+</html>

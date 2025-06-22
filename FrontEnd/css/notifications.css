@@ -16,6 +16,25 @@
     transform: rotate(15deg);
 }
 
+/* Show dropdown on hover */
+.notification-bell:hover .notification-dropdown {
+    display: block !important;
+}
+
+/* Keep dropdown visible when hovering over the entire notification area */
+.notification-bell:hover .notification-dropdown,
+.notification-bell .notification-dropdown:hover {
+    display: block !important;
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Smooth transition when showing/hiding */
+.notification-bell .notification-dropdown {
+    transition: all 0.2s ease;
+}
+
 /* Notification Badge */
 #notificationBadge {
     position: absolute;
@@ -56,9 +75,20 @@
     opacity: 0;
     transition: all 0.3s ease;
     pointer-events: none;
+    display: none;
 }
 
-.notification-dropdown[style*="block"] {
+.notification-dropdown[style*="block"],
+.notification-bell:hover .notification-dropdown {
+    display: block !important;
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Keep dropdown visible when hovering over it */
+.notification-dropdown:hover {
+    display: block !important;
     transform: translateY(0);
     opacity: 1;
     pointer-events: all;
@@ -221,17 +251,21 @@
 .notification-empty-icon {
     font-size: 48px;
     margin-bottom: 12px;
-    opacity: 0.5;
+    opacity: 0.6;
+    color: #ccc;
 }
 
 .notification-empty-text {
     font-size: 16px;
     margin-bottom: 8px;
+    color: #666;
+    font-weight: 500;
 }
 
 .notification-empty-subtext {
     font-size: 14px;
     color: #aaa;
+    line-height: 1.4;
 }
 
 /* Loading State */
