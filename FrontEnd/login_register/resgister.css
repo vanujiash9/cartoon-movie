@@ -611,6 +611,24 @@
             transform: translateY(-2px);
         }
 
+        /* Form note */
+        .form-note {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .form-group:has(.form-note) .form-input {
+            margin-bottom: 5px;
+        }
+
+        .form-note.success {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             body {

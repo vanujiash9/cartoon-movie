@@ -1,4 +1,22 @@
--- Sample data for Cartoon Movie System
+-- ========================================================================================
+-- CẢNH BÁO: FILE NÀY ĐÃ BỊ VÔ HIỆU HÓA
+-- ========================================================================================
+-- File data.sql này chỉ dành cho test với H2 database hoặc database trống.
+-- Khi sử dụng MySQL production với dữ liệu thật, file này SẼ GHI ĐÈ toàn bộ dữ liệu hiện có.
+-- 
+-- Lý do disable:
+-- 1. Bạn đã có dữ liệu thật trong MySQL
+-- 2. Phim trong MySQL bắt đầu từ ID 2, không phải ID 1
+-- 3. Để tránh mất dữ liệu khi restart ứng dụng
+--
+-- Nếu muốn sử dụng file này, hãy uncomment các dòng bên dưới và cẩn thận kiểm tra trước.
+-- ========================================================================================
+
+-- ========================================================================================
+-- SAMPLE DATA (DISABLED - CHỈ DÀNH CHO H2 DATABASE)
+-- ========================================================================================
+
+/*
 -- Clear existing data
 DELETE FROM episodes;
 DELETE FROM cartoons;
@@ -40,3 +58,12 @@ INSERT INTO episodes (id, cartoon_id, episode_number, title, video_url, thumbnai
 -- Demon Slayer episodes
 (14, 6, 1, 'Cruelty', 'https://youtu.be/032ctWjilU0', 'https://i.ytimg.com/vi/032ctWjilU0/maxresdefault.jpg', 24, 'Tanjiro''s family is attacked', NOW()),
 (15, 6, 2, 'Trainer Sakonji Urokodaki', 'https://youtu.be/dQw4w9WgXcQ', 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg', 24, 'Tanjiro begins training', NOW());
+*/
+
+-- ========================================================================================
+-- GHI CHÚ CHO DEV:
+-- - Để test achievements system, sử dụng cartoonId >= 2 (theo dữ liệu MySQL thật)
+-- - Trong test_social_referral.html đã được cập nhật để dùng cartoonId = 2 làm mặc định
+-- - Không cần lo lắng về data.sql ghi đè dữ liệu nữa
+-- - Tất cả sample data trên đã được disable bằng comment block /* */
+-- ========================================================================================

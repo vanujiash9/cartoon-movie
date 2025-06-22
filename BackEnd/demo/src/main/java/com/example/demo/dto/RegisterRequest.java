@@ -9,6 +9,8 @@ public class RegisterRequest {
     private String gender;
     private String dateOfBirth; // Sử dụng String để nhận từ FE, backend sẽ convert
     private String fullName;
+    private String referralCode;
+
     // getters and setters
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -26,4 +28,6 @@ public class RegisterRequest {
     public void setDateOfBirth(String dateOfBirth) { this.dateOfBirth = dateOfBirth; }
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getReferralCode() { return referralCode; }
+    public void setReferralCode(String referralCode) { this.referralCode = referralCode; }
 }

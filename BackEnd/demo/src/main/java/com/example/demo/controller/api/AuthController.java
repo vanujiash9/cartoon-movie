@@ -5,6 +5,7 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserAchievementService;
 import com.example.demo.service.UserService;
+import com.example.demo.service.ReferralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,12 +30,15 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserAchievementService userAchievementService;
+    @Autowired
+    private ReferralService referralService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         if (userService.findByUsername(request.getUsername()) != null) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
+        
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -45,14 +49,47 @@ public class AuthController {
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setGender(request.getGender());
+        
         if (request.getDateOfBirth() != null && !request.getDateOfBirth().isEmpty()) {
             try {
                 user.setDateOfBirth(java.time.LocalDateTime.parse(request.getDateOfBirth()));
             } catch (Exception e) {}
         }
-        userService.save(user);
-        // Gán thành tựu "Đăng ký tài khoản" (giả sử id = 1)
-        userAchievementService.grantAchievementIfNotExists(user, 1);
+        
+        // Save user first
+        User savedUser = userService.save(user);
+        
+        // Gán thành tựu "Đăng ký tài khoản" (id = 1)
+        userAchievementService.grantAchievementIfNotExists(savedUser, 1);
+        
+        // Process referral code if provided
+        if (request.getReferralCode() != null && !request.getReferralCode().trim().isEmpty()) {
+            try {
+                // Extract referrer username from referral code (format: REF_USERNAME_XXXX)
+                String referralCode = request.getReferralCode().trim();
+                String[] parts = referralCode.split("_");
+                
+                if (parts.length >= 2 && "REF".equals(parts[0])) {
+                    String referrerUsername = parts[1];
+                    User referrer = userService.findByUsername(referrerUsername);
+                    
+                    if (referrer != null) {
+                        // Record the referral
+                        referralService.recordReferral(referrer, savedUser, referralCode);
+                        
+                        // Complete the referral (since user successfully registered)
+                        referralService.completeReferral(savedUser);
+                        
+                        // This will trigger achievement check for the referrer
+                        userAchievementService.checkAndGrantAchievements(referrer);
+                    }
+                }
+            } catch (Exception e) {
+                // Log error but don't fail registration
+                System.err.println("Failed to process referral: " + e.getMessage());
+            }
+        }
+        
         return ResponseEntity.ok("Register success");
     }
 

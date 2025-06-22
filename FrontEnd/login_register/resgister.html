@@ -38,10 +38,14 @@
                     <option value="nữ">Nữ</option>
                     <option value="khác">Khác</option>
                 </select>
-            </div>
-            <div class="form-group">
+            </div>            <div class="form-group">
                 <label for="dateOfBirth">Ngày sinh</label>
                 <input type="date" id="dateOfBirth" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="referralCode">Mã giới thiệu (tuỳ chọn)</label>
+                <input type="text" id="referralCode" class="form-input" placeholder="Nhập mã giới thiệu nếu có">
+                <small class="form-note">Bạn và người giới thiệu sẽ nhận được thành tựu đặc biệt!</small>
             </div>
             <button type="submit" class="submit-btn" id="submitBtn">Đăng ký</button>
         </form>
@@ -68,11 +72,11 @@
             // Lấy dữ liệu từ form
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const email = document.getElementById('email').value.trim();
-            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();            const fullName = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const gender = document.getElementById('gender').value;
             const dateInput = document.getElementById('dateOfBirth').value;
+            const referralCode = document.getElementById('referralCode').value.trim();
 
             // Validate form
             if (!username || !password || !email || !fullName || !phone || !gender || !dateInput) {
@@ -95,7 +99,8 @@
                 fullName,
                 phone,
                 gender,
-                dateOfBirth
+                dateOfBirth,
+                referralCode: referralCode || null
             };try {
                 console.log('Sending data:', data); // Debug: xem dữ liệu gửi đi
                 const res = await fetch('http://localhost:8080/api/auth/register', {
@@ -135,16 +140,25 @@
             setTimeout(() => {
                 messageBox.classList.add('show');
             }, 10);
-        }
-
-        // TỰ ĐỘNG LƯU VÀ KHÔI PHỤC DỮ LIỆU FORM
-        const formFields = ['username', 'password', 'email', 'fullName', 'phone', 'gender', 'dateOfBirth'];
+        }        // TỰ ĐỘNG LƯU VÀ KHÔI PHỤC DỮ LIỆU FORM
+        const formFields = ['username', 'password', 'email', 'fullName', 'phone', 'gender', 'dateOfBirth', 'referralCode'];
+        
         // Khôi phục dữ liệu khi load lại trang
         window.addEventListener('DOMContentLoaded', function() {
+            // Check for referral code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralFromUrl = urlParams.get('ref');
+            
+            if (referralFromUrl) {
+                document.getElementById('referralCode').value = referralFromUrl;
+                // Show a welcome message
+                showMessage(`Chào mừng! Bạn được giới thiệu bởi mã: ${referralFromUrl}`, 'success');
+            }
+            
             const saved = JSON.parse(localStorage.getItem('registerFormData') || '{}');
             formFields.forEach(id => {
                 const el = document.getElementById(id);
-                if (el && saved[id]) {
+                if (el && saved[id] && !el.value) { // Don't override referral code from URL
                     el.value = saved[id];
                 }
             });

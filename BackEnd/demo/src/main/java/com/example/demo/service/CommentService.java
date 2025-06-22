@@ -23,6 +23,9 @@ public class CommentService {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserAchievementService userAchievementService;
 
     // Lấy danh sách comments của một phim
     public List<Comment> getCommentsByCartoonId(Long cartoonId) {
@@ -36,7 +39,14 @@ public class CommentService {
 
     // Lưu comment
     public Comment save(Comment comment) {
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        
+        // Trigger achievement check for first review
+        if (savedComment.getUser() != null) {
+            userAchievementService.checkAndGrantAchievements(savedComment.getUser());
+        }
+        
+        return savedComment;
     }
 
     // Tìm comment theo ID
@@ -74,6 +84,9 @@ public class CommentService {
     public void toggleLike(Long commentId, Integer userId, boolean isLiked) {
         Optional<CommentLike> existingLike = commentLikeRepository.findByCommentIdAndUserId(commentId, userId);
         
+        Comment comment = commentRepository.findById(commentId).orElse(null);
+        User commentOwner = comment != null ? comment.getUser() : null;
+        
         if (existingLike.isPresent()) {
             CommentLike like = existingLike.get();
             if (like.isLiked() == isLiked) {
@@ -86,7 +99,6 @@ public class CommentService {
             }
         } else {
             // Create new like/dislike
-            Comment comment = commentRepository.findById(commentId).orElse(null);
             Optional<User> userOpt = userService.getById(userId);
             if (comment != null && userOpt.isPresent()) {
                 CommentLike newLike = new CommentLike();
@@ -95,6 +107,11 @@ public class CommentService {
                 newLike.setLiked(isLiked);
                 commentLikeRepository.save(newLike);
             }
+        }
+        
+        // Trigger achievement check for comment owner (100 likes achievement)
+        if (commentOwner != null && isLiked) {
+            userAchievementService.checkAndGrantAchievements(commentOwner);
         }
     }
 

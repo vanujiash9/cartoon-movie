@@ -231,4 +231,432 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
+    // --- SOCIAL SHARING & REFERRAL FUNCTIONS ---
+
+    // Movie information (in a real app, this would come from the backend)
+    const currentMovie = {
+        id: 1, // This should be dynamic
+        title: "Demon Slayer",
+        url: window.location.href
+    };
+
+    // Current user (in a real app, this would come from authentication)
+    const currentUser = {
+        id: JSON.parse(localStorage.getItem('currentUser') || '{}').id || 1,
+        username: JSON.parse(localStorage.getItem('currentUser') || '{}').username || 'user'
+    };
+
+    // Open share modal
+    window.openShareModal = () => {
+        const modal = document.getElementById('shareModal');
+        modal.style.display = 'flex';
+        generateReferralLink();
+    };
+
+    // Close share modal
+    window.closeShareModal = () => {
+        const modal = document.getElementById('shareModal');
+        modal.style.display = 'none';
+    };
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('shareModal');
+        if (event.target === modal) {
+            closeShareModal();
+        }
+    }
+
+    // Share to Facebook
+    window.shareToFacebook = async () => {
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentMovie.url)}&quote=${encodeURIComponent(`Tôi đang xem "${currentMovie.title}" trên MAXION! Cùng xem nhé!`)}`;
+        
+        // Record the share
+        await recordShare('facebook');
+        
+        // Open share window
+        window.open(shareUrl, 'facebook-share', 'width=600,height=400');
+    };
+
+    // Share to Twitter
+    window.shareToTwitter = async () => {
+        const shareText = `Tôi đang xem "${currentMovie.title}" trên MAXION! Cùng xem nhé! ${currentMovie.url} #MaxionMovies #AnimeLovers`;
+        const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+        
+        // Record the share
+        await recordShare('twitter');
+        
+        // Open share window
+        window.open(shareUrl, 'twitter-share', 'width=600,height=400');
+    };
+
+    // Share to Telegram
+    window.shareToTelegram = async () => {
+        const shareText = `Tôi đang xem "${currentMovie.title}" trên MAXION! Cùng xem nhé!`;
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(currentMovie.url)}&text=${encodeURIComponent(shareText)}`;
+        
+        // Record the share
+        await recordShare('telegram');
+        
+        // Open share window
+        window.open(shareUrl, 'telegram-share', 'width=600,height=400');
+    };
+
+    // Copy share link
+    window.copyShareLink = async () => {
+        try {
+            await navigator.clipboard.writeText(currentMovie.url);
+            
+            // Record the share
+            await recordShare('link');
+            
+            // Show success message
+            const button = document.querySelector('.copy-link');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span>✅</span> Đã sao chép!';
+            button.style.background = '#00d4aa';
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.style.background = '';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy link: ', err);
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = currentMovie.url;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            await recordShare('link');
+            alert('Link đã được sao chép!');
+        }
+    };
+
+    // Record share action to backend
+    async function recordShare(platform) {
+        try {
+            const response = await fetch('/api/social/share', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: currentUser.id,
+                    cartoonId: currentMovie.id,
+                    platform: platform
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                console.log('Share recorded successfully');
+                // Could show a notification about achievement if earned
+                checkForNewAchievements();
+            }
+        } catch (error) {
+            console.error('Failed to record share:', error);
+        }
+    }
+
+    // Generate referral link
+    async function generateReferralLink() {
+        try {
+            const response = await fetch('/api/referral/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: currentUser.id
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('referralLink').value = result.referralUrl;
+            }
+        } catch (error) {
+            console.error('Failed to generate referral link:', error);
+            document.getElementById('referralLink').value = 'https://maxion-movie.com/register?ref=ERROR';
+        }
+    }
+
+    // Copy referral link
+    window.copyReferralLink = async () => {
+        const referralLink = document.getElementById('referralLink').value;
+        
+        try {
+            await navigator.clipboard.writeText(referralLink);
+            
+            // Show success message
+            const button = document.querySelector('.referral-link-container button');
+            const originalText = button.innerHTML;
+            button.innerHTML = '✅ Đã sao chép!';
+            button.style.background = '#00d4aa';
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.style.background = '';
+            }, 2000);
+        } catch (err) {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = referralLink;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            alert('Link mời bạn bè đã được sao chép!');
+        }
+    }
+
+    // Check for new achievements
+    async function checkForNewAchievements() {
+        try {
+            const response = await fetch(`/api/achievements/progress/${currentUser.id}`);
+            const achievements = await response.json();
+            
+            // Check if user just earned social sharing or referral achievements
+            const socialAchievement = achievements.find(a => a.id === 8 && a.completed);
+            const referralAchievement = achievements.find(a => a.id === 10 && a.completed);
+            
+            if (socialAchievement) {
+                showAchievementNotification("🎉 Thành tựu mở khóa: Chia sẻ phim lên mạng xã hội!");
+            }
+            
+            if (referralAchievement) {
+                showAchievementNotification("🎉 Thành tựu mở khóa: Mời bạn bè đăng ký!");
+            }
+        } catch (error) {
+            console.error('Failed to check achievements:', error);
+        }
+    }
+
+    // Show achievement notification
+    function showAchievementNotification(message) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 10000;
+            font-weight: 500;
+            max-width: 300px;
+            animation: slideIn 0.5s ease-out;
+        `;
+        notification.innerHTML = message;
+        
+        // Add animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideIn 0.5s ease-out reverse';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 500);
+        }, 5000);
+    }
 }); // End DOMContentLoaded
+
+// API Configuration
+const API_BASE = 'http://localhost:8080';
+let authToken = localStorage.getItem('authToken');
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+// Get current movie ID from URL or set default
+const urlParams = new URLSearchParams(window.location.search);
+const currentMovieId = urlParams.get('id') || 2; // Default to 2 if no ID in URL
+
+// API Helper Functions
+async function apiCall(url, method = 'GET', body = null) {
+    try {
+        const options = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        
+        if (authToken) {
+            options.headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
+        if (body) {
+            options.body = JSON.stringify(body);
+        }
+        
+        const response = await fetch(API_BASE + url, options);
+        const data = await response.json();
+        
+        return { success: response.ok, data, status: response.status };
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Social Sharing Functions
+async function shareToFacebook() {
+    if (await shareMovie(currentMovieId, 'facebook')) {
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        showShareSuccess('Facebook');
+    }
+}
+
+async function shareToTwitter() {
+    if (await shareMovie(currentMovieId, 'twitter')) {
+        const text = `Tôi đang xem phim này trên Maxion! Cùng xem nhé!`;
+        const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        showShareSuccess('Twitter');
+    }
+}
+
+async function shareToTelegram() {
+    if (await shareMovie(currentMovieId, 'telegram')) {
+        const text = `Tôi đang xem phim này trên Maxion! Cùng xem nhé! ${window.location.href}`;
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        showShareSuccess('Telegram');
+    }
+}
+
+async function copyShareLink() {
+    if (await shareMovie(currentMovieId, 'link')) {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            showShareSuccess('Đã sao chép link');
+        } catch (err) {
+            console.error('Failed to copy link:', err);
+            alert('Không thể sao chép link. Vui lòng thử lại.');
+        }
+    }
+}
+
+async function shareMovie(cartoonId, platform) {
+    if (!currentUser?.id) {
+        alert('Vui lòng đăng nhập để chia sẻ và nhận thành tựu!');
+        return false;
+    }
+    
+    try {
+        const result = await apiCall('/api/social/share', 'POST', {
+            userId: currentUser.id,
+            cartoonId: parseInt(cartoonId),
+            platform
+        });
+        
+        if (result.success) {
+            console.log('✅ Share recorded successfully, achievements check triggered');
+            return true;
+        } else {
+            console.error('❌ Share failed:', result);
+            alert('Không thể ghi nhận chia sẻ. Vui lòng thử lại.');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error sharing movie:', error);
+        alert('Lỗi khi chia sẻ. Vui lòng thử lại.');
+        return false;
+    }
+}
+
+function showShareSuccess(platform) {
+    // Create and show success notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        z-index: 10000;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    `;
+    notification.textContent = `✅ Đã chia sẻ thành công trên ${platform}! Kiểm tra thành tựu mới.`;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 4000);
+}
+
+// Referral Functions
+async function generateReferralLink() {
+    if (!currentUser?.id) {
+        alert('Vui lòng đăng nhập để tạo link mời bạn bè!');
+        return;
+    }
+    
+    try {
+        const result = await apiCall('/api/referral/generate', 'POST', {
+            userId: currentUser.id
+        });
+        
+        if (result.success && result.data.referralCode) {
+            const referralLink = `${window.location.origin}?ref=${result.data.referralCode}`;
+            document.getElementById('referralLink').value = referralLink;
+            return referralLink;
+        } else {
+            console.error('Failed to generate referral:', result);
+            document.getElementById('referralLink').placeholder = 'Không thể tạo link mời';
+        }
+    } catch (error) {
+        console.error('Error generating referral:', error);
+        document.getElementById('referralLink').placeholder = 'Lỗi khi tạo link mời';
+    }
+}
+
+async function copyReferralLink() {
+    const linkInput = document.getElementById('referralLink');
+    if (!linkInput.value || linkInput.value === 'Đang tạo link mời...') {
+        await generateReferralLink();
+    }
+    
+    if (linkInput.value) {
+        try {
+            await navigator.clipboard.writeText(linkInput.value);
+            showShareSuccess('Đã sao chép link mời bạn bè');
+        } catch (err) {
+            console.error('Failed to copy referral link:', err);
+            alert('Không thể sao chép link. Vui lòng thử lại.');
+        }
+    }
+}
+
+// Modal Functions
+function openShareModal() {
+    document.getElementById('shareModal').style.display = 'block';
+    // Generate referral link when modal opens
+    generateReferralLink();
+}
+
+function closeShareModal() {
+    document.getElementById('shareModal').style.display = 'none';
+}

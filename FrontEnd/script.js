@@ -1085,10 +1085,10 @@ function updateHeaderLoginStatus() {
             userMenu.style.display = 'flex';
             userMenu.classList.add('visible');
             console.log('🔄 Showed user menu');
-        }
-
-        if (displayUserName) {
-            displayUserName.textContent = fullName ? fullName : username;
+        }        if (displayUserName) {
+            const displayName = fullName ? fullName : username;
+            displayUserName.textContent = displayName;
+            console.log('🎯 script.js set display name to:', displayName, 'from fullName:', fullName, 'username:', username);
         }
 
         if (userAvatar) {

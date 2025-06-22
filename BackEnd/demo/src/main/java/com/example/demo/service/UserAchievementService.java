@@ -4,10 +4,18 @@ import com.example.demo.entity.Achievement;
 import com.example.demo.entity.User;
 import com.example.demo.entity.UserAchievement;
 import com.example.demo.entity.UserWatchHistory;
+import com.example.demo.entity.Comment;
+import com.example.demo.entity.Cartoon;
+import com.example.demo.entity.UserShare;
+import com.example.demo.entity.Referral;
 import com.example.demo.repository.AchievementRepository;
 import com.example.demo.repository.UserAchievementRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.UserWatchHistoryRepository;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.CartoonRepository;
+import com.example.demo.repository.UserShareRepository;
+import com.example.demo.repository.ReferralRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -16,15 +24,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserAchievementService {
-    @Autowired
+public class UserAchievementService {    @Autowired
     private UserAchievementRepository userAchievementRepository;
     @Autowired
     private AchievementRepository achievementRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private UserWatchHistoryRepository userWatchHistoryRepository;
+    private UserWatchHistoryRepository userWatchHistoryRepository;    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private CartoonRepository cartoonRepository;
+    @Autowired
+    private UserShareRepository userShareRepository;
+    @Autowired 
+    private ReferralRepository referralRepository;
 
     // Gán thành tựu cho user nếu chưa có
     public void grantAchievementIfNotExists(User user, int achievementId) {
@@ -39,9 +53,7 @@ public class UserAchievementService {
                 userAchievementRepository.save(ua);
             }
         }
-    }
-
-    // Kiểm tra và tự động cấp thành tựu cho user
+    }    // Kiểm tra và tự động cấp thành tựu cho user
     public void checkAndGrantAchievements(User user) {
         // 1. Đăng ký tài khoản (ID: 1) - tự động cấp
         grantAchievementIfNotExists(user, 1);
@@ -60,6 +72,19 @@ public class UserAchievementService {
 
         // 4. Thành viên tích cực - hoạt động thường xuyên trong 1 tháng (ID: 4)
         checkActiveUserAchievement(user);
+
+        // 3. Viết đánh giá đầu tiên (ID: 3)
+        checkFirstReviewAchievement(user);
+
+        // 7. Xem hết 1 series (ID: 7)
+        checkSeriesCompletionAchievement(user);        // 9. Đạt 100 lượt thích review (ID: 9)
+        checkReviewLikesAchievement(user);
+
+        // 8. Chia sẻ phim lên mạng xã hội (ID: 8)
+        checkSocialSharingAchievement(user);
+
+        // 10. Mời bạn bè đăng ký (ID: 10)
+        checkReferralAchievement(user);
     }
 
     // Kiểm tra xem user có xem phim liên tục trong n ngày không
@@ -94,9 +119,7 @@ public class UserAchievementService {
                 consecutiveCount = 1;
             }
         }
-    }
-
-    // Kiểm tra thành viên tích cực
+    }    // Kiểm tra thành viên tích cực
     private void checkActiveUserAchievement(User user) {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
         List<UserWatchHistory> recentActivity = userWatchHistoryRepository.findByUser(user)
@@ -107,6 +130,76 @@ public class UserAchievementService {
         // Nếu có ít nhất 15 lần xem trong tháng qua
         if (recentActivity.size() >= 15) {
             grantAchievementIfNotExists(user, 4);
+        }
+    }
+
+    // Kiểm tra thành tựu viết đánh giá đầu tiên (ID: 3)
+    private void checkFirstReviewAchievement(User user) {
+        List<Comment> userComments = commentRepository.findByUserId(Long.valueOf(user.getId()));
+        if (!userComments.isEmpty()) {
+            grantAchievementIfNotExists(user, 3);
+        }
+    }    // Kiểm tra thành tựu xem hết 1 series (ID: 7)
+    private void checkSeriesCompletionAchievement(User user) {
+        List<UserWatchHistory> watchHistory = userWatchHistoryRepository.findByUser(user);
+        
+        // Nhóm lịch sử xem theo cartoon và đếm số lần xem
+        Map<Integer, Integer> watchCountByCartoon = new HashMap<>();
+        
+        for (UserWatchHistory watch : watchHistory) {
+            Integer cartoonId = watch.getCartoon().getId();
+            watchCountByCartoon.put(cartoonId, 
+                watchCountByCartoon.getOrDefault(cartoonId, 0) + 1);
+        }
+        
+        // Kiểm tra xem có cartoon nào đã xem đủ số tập chưa
+        for (Map.Entry<Integer, Integer> entry : watchCountByCartoon.entrySet()) {
+            Integer cartoonId = entry.getKey();
+            Integer watchCount = entry.getValue();
+            
+            Optional<Cartoon> cartoonOpt = cartoonRepository.findById(cartoonId);
+            if (cartoonOpt.isPresent()) {
+                Cartoon cartoon = cartoonOpt.get();
+                Integer totalEpisodes = cartoon.getTotalEpisodes();
+                
+                // Nếu số lần xem >= tổng số tập của series
+                // (giả định user xem mỗi tập ít nhất 1 lần)
+                if (totalEpisodes != null && watchCount >= totalEpisodes) {
+                    grantAchievementIfNotExists(user, 7);
+                    return;
+                }
+            }
+        }
+    }    // Kiểm tra thành tựu đạt 100 lượt thích review (ID: 9)
+    private void checkReviewLikesAchievement(User user) {
+        List<Comment> userComments = commentRepository.findByUserId(Long.valueOf(user.getId()));
+        
+        int totalLikes = 0;
+        for (Comment comment : userComments) {
+            // Đếm số likes của mỗi comment (chỉ đếm likes, không đếm dislikes)
+            totalLikes += comment.getLikes().stream()
+                    .mapToInt(like -> like.isLiked() ? 1 : 0)
+                    .sum();
+        }
+        
+        if (totalLikes >= 100) {
+            grantAchievementIfNotExists(user, 9);
+        }
+    }
+
+    // Kiểm tra thành tựu chia sẻ phim lên mạng xã hội (ID: 8)
+    private void checkSocialSharingAchievement(User user) {
+        List<UserShare> userShares = userShareRepository.findByUser(user);
+        if (!userShares.isEmpty()) {
+            grantAchievementIfNotExists(user, 8);
+        }
+    }
+
+    // Kiểm tra thành tựu mời bạn bè đăng ký (ID: 10)
+    private void checkReferralAchievement(User user) {
+        List<Referral> successfulReferrals = referralRepository.findCompletedByReferrer(user);
+        if (!successfulReferrals.isEmpty()) {
+            grantAchievementIfNotExists(user, 10);
         }
     }
 
@@ -204,46 +297,38 @@ public class UserAchievementService {
                 progress.put("target", 15);
                 progress.put("progressPercent", Math.min(100, (recentActivity * 100) / 15));
                 progress.put("icon", "⭐");
-                break;
-
-            case 11: // Xem phim ban đêm (22:00-02:00 trong 5 ngày)
-                int nightWatchingDays = getNightWatchingDays(user);
-                progress.put("current", Math.min(nightWatchingDays, 5));
-                progress.put("target", 5);
-                progress.put("progressPercent", Math.min(100, (nightWatchingDays * 100) / 5));
-                progress.put("icon", "🌙");
-                break;
-
-            case 13: // Tốc độ ánh sáng - 5 phim trong 1 ngày
-                int maxMoviesInDay = getMaxMoviesInOneDay(user);
-                progress.put("current", Math.min(maxMoviesInDay, 5));
-                progress.put("target", 5);
-                progress.put("progressPercent", Math.min(100, (maxMoviesInDay * 100) / 5));
-                progress.put("icon", "⚡");
-                break;
-
-            case 17: // Collector - 100 phim yêu thích
-                // Cần thêm logic cho favorites
-                progress.put("current", 0);
+                break;            case 3: // Viết đánh giá đầu tiên
+                List<Comment> userComments = commentRepository.findByUserId(Long.valueOf(user.getId()));
+                progress.put("current", userComments.isEmpty() ? 0 : 1);
+                progress.put("target", 1);
+                progress.put("progressPercent", userComments.isEmpty() ? 0 : 100);
+                progress.put("icon", "📝");
+                break;            case 7: // Xem hết 1 series
+                boolean hasCompletedSeries = hasCompletedAnySeries(user);
+                progress.put("current", hasCompletedSeries ? 1 : 0);
+                progress.put("target", 1);
+                progress.put("progressPercent", hasCompletedSeries ? 100 : 0);
+                progress.put("icon", "📺");
+                break;            case 8: // Chia sẻ phim lên mạng xã hội
+                List<UserShare> userShares = userShareRepository.findByUser(user);
+                boolean hasShared = !userShares.isEmpty();
+                progress.put("current", hasShared ? 1 : 0);
+                progress.put("target", 1);
+                progress.put("progressPercent", hasShared ? 100 : 0);
+                progress.put("icon", "📤");
+                break;case 9: // Đạt 100 lượt thích review
+                int totalLikes = getTotalReviewLikes(user);
+                progress.put("current", Math.min(totalLikes, 100));
                 progress.put("target", 100);
-                progress.put("progressPercent", 0);
-                progress.put("icon", "💎");
-                break;
-
-            case 21: // Marathon runner - 10 giờ liên tục
-                int maxHoursInDay = getMaxHoursInOneDay(user);
-                progress.put("current", Math.min(maxHoursInDay, 10));
-                progress.put("target", 10);
-                progress.put("progressPercent", Math.min(100, (maxHoursInDay * 100) / 10));
-                progress.put("icon", "🏃");
-                break;
-
-            case 26: // Night owl - sau 01:00 trong 10 ngày
-                int lateNightDays = getLateNightWatchingDays(user);
-                progress.put("current", Math.min(lateNightDays, 10));
-                progress.put("target", 10);
-                progress.put("progressPercent", Math.min(100, (lateNightDays * 100) / 10));
-                progress.put("icon", "🦉");
+                progress.put("progressPercent", Math.min(100, totalLikes));
+                progress.put("icon", "👍");
+                break;            case 10: // Mời bạn bè đăng ký
+                List<Referral> successfulReferrals = referralRepository.findCompletedByReferrer(user);
+                boolean hasSuccessfulReferral = !successfulReferrals.isEmpty();
+                progress.put("current", hasSuccessfulReferral ? 1 : 0);
+                progress.put("target", 1);
+                progress.put("progressPercent", hasSuccessfulReferral ? 100 : 0);
+                progress.put("icon", "👥");
                 break;
 
             default:
@@ -252,55 +337,55 @@ public class UserAchievementService {
                 progress.put("progressPercent", 0);
                 progress.put("icon", "🏆");
                 break;
-        }
-
-        return progress;
+        }        return progress;
     }
 
-    // Helper methods cho các thành tựu mới
-    private int getNightWatchingDays(User user) {
-        List<UserWatchHistory> history = userWatchHistoryRepository.findByUser(user);
-        Set<String> nightWatchingDays = new HashSet<>();
-
-        for (UserWatchHistory watch : history) {
-            int hour = watch.getWatchedAt().getHour();
-            if (hour >= 22 || hour <= 2) {
-                nightWatchingDays.add(watch.getWatchedAt().toLocalDate().toString());
+    // Helper method: Kiểm tra user có hoàn thành series nào chưa
+    private boolean hasCompletedAnySeries(User user) {
+        List<UserWatchHistory> watchHistory = userWatchHistoryRepository.findByUser(user);
+        
+        // Nhóm lịch sử xem theo cartoon và đếm số lần xem
+        Map<Integer, Integer> watchCountByCartoon = new HashMap<>();
+        
+        for (UserWatchHistory watch : watchHistory) {
+            Integer cartoonId = watch.getCartoon().getId();
+            watchCountByCartoon.put(cartoonId, 
+                watchCountByCartoon.getOrDefault(cartoonId, 0) + 1);
+        }
+        
+        // Kiểm tra xem có cartoon nào đã xem đủ số tập chưa
+        for (Map.Entry<Integer, Integer> entry : watchCountByCartoon.entrySet()) {
+            Integer cartoonId = entry.getKey();
+            Integer watchCount = entry.getValue();
+            
+            Optional<Cartoon> cartoonOpt = cartoonRepository.findById(cartoonId);
+            if (cartoonOpt.isPresent()) {
+                Cartoon cartoon = cartoonOpt.get();
+                Integer totalEpisodes = cartoon.getTotalEpisodes();
+                
+                // Nếu số lần xem >= tổng số tập của series
+                if (totalEpisodes != null && watchCount >= totalEpisodes) {
+                    return true;
+                }
             }
         }
-
-        return nightWatchingDays.size();
+        
+        return false;
     }
 
-    private int getMaxMoviesInOneDay(User user) {
-        List<UserWatchHistory> history = userWatchHistoryRepository.findByUser(user);
-        Map<String, Integer> moviesPerDay = new HashMap<>();
-
-        for (UserWatchHistory watch : history) {
-            String day = watch.getWatchedAt().toLocalDate().toString();
-            moviesPerDay.put(day, moviesPerDay.getOrDefault(day, 0) + 1);
+    // Helper method: Tính tổng số likes của tất cả reviews của user
+    private int getTotalReviewLikes(User user) {
+        List<Comment> userComments = commentRepository.findByUserId(Long.valueOf(user.getId()));
+        
+        int totalLikes = 0;
+        for (Comment comment : userComments) {
+            // Đếm số likes của mỗi comment (chỉ đếm likes, không đếm dislikes)
+            totalLikes += comment.getLikes().stream()
+                    .mapToInt(like -> like.isLiked() ? 1 : 0)
+                    .sum();
         }
-
-        return moviesPerDay.values().stream().mapToInt(Integer::intValue).max().orElse(0);
-    }
-
-    private int getMaxHoursInOneDay(User user) {
-        // Giả sử mỗi phim trung bình 2 giờ
-        return getMaxMoviesInOneDay(user) * 2;
-    }
-
-    private int getLateNightWatchingDays(User user) {
-        List<UserWatchHistory> history = userWatchHistoryRepository.findByUser(user);
-        Set<String> lateNightDays = new HashSet<>();
-
-        for (UserWatchHistory watch : history) {
-            int hour = watch.getWatchedAt().getHour();
-            if (hour >= 1 && hour <= 6) {
-                lateNightDays.add(watch.getWatchedAt().toLocalDate().toString());
-            }
-        }
-
-        return lateNightDays.size();
+        
+        return totalLikes;
     }
 
     // Tính số ngày xem phim liên tiếp hiện tại
@@ -344,5 +429,59 @@ public class UserAchievementService {
         }
 
         return consecutiveCount;
+    }    // Lấy tất cả thành tựu của user với thông tin tiến độ
+    public List<UserAchievement> getUserAchievements(User user) {
+        return userAchievementRepository.findByUser(user);
+    }
+    
+    // Lấy thành tựu với thông tin tiến độ chi tiết
+    public List<Map<String, Object>> getUserAchievementsWithProgress(User user) {
+        List<Achievement> allAchievements = achievementRepository.findAll();
+        List<UserAchievement> userAchievements = userAchievementRepository.findByUser(user);
+        
+        return allAchievements.stream().map(achievement -> {
+            Map<String, Object> result = new HashMap<>();
+            result.put("id", achievement.getId());
+            result.put("name", achievement.getName());            result.put("description", achievement.getDescription());
+            
+            // Kiểm tra user đã đạt thành tựu này chưa
+            boolean completed = userAchievements.stream()
+                .anyMatch(ua -> ua.getAchievement().getId().equals(achievement.getId()));
+            result.put("completed", completed);
+            
+            if (completed) {
+                result.put("progressPercent", 100);
+            } else {
+                // Tính toán tiến độ dựa trên loại thành tựu
+                int progress = calculateProgressPercent(user, achievement.getId());
+                result.put("progressPercent", progress);
+            }
+            
+            return result;
+        }).collect(Collectors.toList());
+    }
+    
+    // Tính toán tiến độ cho từng thành tựu
+    private int calculateProgressPercent(User user, int achievementId) {
+        switch (achievementId) {
+            case 1: // Đăng ký tài khoản - đã đăng ký thì 100%
+                return 100;
+            case 2: // Xem 10 phim
+                List<UserWatchHistory> watchHistory = userWatchHistoryRepository.findByUser(user);
+                return Math.min(100, (watchHistory.size() * 100) / 10);            case 3: // Viết review đầu tiên
+                List<Comment> reviews = commentRepository.findByUserId(user.getId().longValue());
+                return reviews.size() > 0 ? 100 : 0;
+            case 8: // Chia sẻ phim lên mạng xã hội (5 lần)
+                List<UserShare> shares = userShareRepository.findByUser(user);
+                return Math.min(100, (shares.size() * 100) / 5);
+            case 10: // Mời bạn bè (3 người)
+                List<Referral> referrals = referralRepository.findByReferrer(user);
+                long successfulReferrals = referrals.stream()
+                    .filter(r -> r.getReferee() != null)
+                    .count();
+                return Math.min(100, (int)(successfulReferrals * 100) / 3);
+            default:
+                return 0;
+        }
     }
 }

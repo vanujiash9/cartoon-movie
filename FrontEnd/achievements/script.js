@@ -1,5 +1,89 @@
 // achievements-page/script.js
 
+// API Configuration
+const API_BASE = 'http://localhost:8080';
+let authToken = localStorage.getItem('authToken');
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+// API Helper Functions
+async function apiCall(url, method = 'GET', body = null) {
+    try {
+        const options = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        
+        if (authToken) {
+            options.headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
+        if (body) {
+            options.body = JSON.stringify(body);
+        }
+        
+        const response = await fetch(API_BASE + url, options);
+        const data = await response.json();
+        
+        return { success: response.ok, data, status: response.status };
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function getUserAchievements() {
+    if (!currentUser?.id) {
+        console.warn('No user logged in');
+        return { success: false, error: 'User not logged in' };
+    }
+    
+    const result = await apiCall(`/api/achievements/progress/${currentUser.id}`);
+    return result;
+}
+
+async function triggerAchievementCheck() {
+    if (!currentUser?.id) return;
+    
+    try {
+        await apiCall(`/api/achievements/check/${currentUser.id}`, 'POST');
+    } catch (error) {
+        console.error('Error triggering achievement check:', error);
+    }
+}
+
+// Social Sharing Function for integration with movie pages
+async function shareMovie(cartoonId, platform = 'facebook') {
+    if (!currentUser?.id) {
+        alert('Vui lòng đăng nhập để chia sẻ!');
+        return false;
+    }
+    
+    try {
+        const result = await apiCall('/api/social/share', 'POST', {
+            userId: currentUser.id,
+            cartoonId,
+            platform
+        });
+        
+        if (result.success) {
+            // Trigger achievement check after successful share
+            await triggerAchievementCheck();
+            return true;
+        } else {
+            console.error('Share failed:', result);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error sharing movie:', error);
+        return false;
+    }
+}
+
+// Make shareMovie globally available for other pages
+window.shareMovie = shareMovie;
+
 // --- Iframe and Theme Sync Logic (MUST BE AT THE TOP or accessible globally) ---
 const mainPageBody = document.body;
 const headerIframeEl = document.getElementById("header-iframe");
@@ -186,25 +270,19 @@ class AchievementsPage {
             `;
     }
   }
-
   // Tải danh sách thành tựu
   async loadAchievements() {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${this.baseUrl}/user-achievements/user/${this.userId}/detailed-progress`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        this.achievements = await response.json();
+      // Use our new API function
+      const result = await getUserAchievements();
+      
+      if (result.success && result.data) {
+        this.achievements = result.data;
         this.renderAchievements();
         this.updateStats();
       } else {
-        console.error('Failed to load achievements:', response.status);
-        this.showError('Không thể tải thành tựu. Vui lòng thử lại.');
+        console.error('Failed to load achievements:', result.error);
+        this.showError('Không thể tải thành tựu. Vui lòng đăng nhập hoặc thử lại.');
       }
     } catch (error) {
       console.error('Error loading achievements:', error);

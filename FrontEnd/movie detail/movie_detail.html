@@ -56,11 +56,10 @@
                         <span class="stars">★★★★★</span>
                         <span>9.2/10</span>
                         <span>(2.5k đánh giá)</span>
-                    </div>
-                    <div class="action-buttons">
+                    </div>                    <div class="action-buttons">
                         <button class="btn btn-primary btn-lg">▶ Xem ngay</button>
                         <button class="btn btn-outline btn-lg">+ Thêm vào danh sách</button>
-                        <button class="btn btn-outline btn-lg">Chia sẻ</button>
+                        <button class="btn btn-outline btn-lg" onclick="openShareModal()">📤 Chia sẻ</button>
                     </div>
                     
                     <div class="tabs">
@@ -383,8 +382,42 @@
         style="width: 100%; border: none;" 
         onload="adjustIframeHeight(this);"
         title="Footer Information"
-        loading="lazy">
-    </iframe>
+        loading="lazy">    </iframe>
+
+    <!-- Social Sharing Modal -->
+    <div id="shareModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Chia sẻ phim</h3>
+                <span class="close" onclick="closeShareModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Chia sẻ phim "Demon Slayer" với bạn bè:</p>
+                <div class="share-buttons">
+                    <button class="share-btn facebook" onclick="shareToFacebook()">
+                        <span>📘</span> Facebook
+                    </button>
+                    <button class="share-btn twitter" onclick="shareToTwitter()">
+                        <span>🐦</span> Twitter
+                    </button>
+                    <button class="share-btn telegram" onclick="shareToTelegram()">
+                        <span>✈️</span> Telegram
+                    </button>
+                    <button class="share-btn copy-link" onclick="copyShareLink()">
+                        <span>🔗</span> Sao chép link
+                    </button>
+                </div>
+                <div class="referral-section">
+                    <h4>Mời bạn bè đăng ký</h4>
+                    <p>Nhận thành tựu đặc biệt khi mời bạn bè tham gia!</p>
+                    <div class="referral-link-container">
+                        <input type="text" id="referralLink" readonly placeholder="Đang tạo link mời...">
+                        <button onclick="copyReferralLink()">📋 Sao chép</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="./script.js"></script>
     <script>

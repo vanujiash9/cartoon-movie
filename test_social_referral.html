@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Social Sharing & Referral</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 20px auto; 
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        button { 
+            background: #6c5ce7; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        button:hover { background: #5f4fcf; }
+        input { 
+            background: #333; 
+            color: #fff; 
+            border: 1px solid #555; 
+            padding: 8px 12px; 
+            border-radius: 5px; 
+            margin: 5px;
+        }
+        select {
+            background: #333; 
+            color: #fff; 
+            border: 1px solid #555; 
+            padding: 8px 12px; 
+            border-radius: 5px; 
+            margin: 5px;
+        }
+        label {
+            display: inline-block;
+            margin-right: 10px;
+            min-width: 100px;
+        }
+        .result { 
+            background: #333; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            white-space: pre-wrap;
+        }
+        .success { border-left: 4px solid #00d4aa; }
+        .error { border-left: 4px solid #ff6b6b; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Social Sharing & Referral APIs</h1>
+    
+    <div class="test-section">
+        <h2>🔐 Authentication</h2>
+        <div id="authStatus" class="result">Not authenticated</div>
+        <div>
+            <label>Username:</label>
+            <input type="text" id="loginUsername" value="admin" placeholder="Enter username">
+            <label>Password:</label>
+            <input type="password" id="loginPassword" value="123456" placeholder="Enter password">
+        </div>
+        <button onclick="testLogin()">🔑 Login</button>
+        <button onclick="testLogout()">🚪 Logout</button>
+        <button onclick="createTestUser()">👤 Create Test User</button>
+        <div id="authResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📤 Test Social Sharing</h2>
+        <p style="color: #ffa726; font-size: 14px;">⚠️ Lưu ý: Sử dụng Cartoon ID >= 2 (theo dữ liệu MySQL thật). Không dùng ID = 1!</p>
+        <div>
+            <label>User ID:</label>
+            <input type="number" id="shareUserId" value="1">
+            <label>Cartoon ID:</label>
+            <input type="number" id="shareCartoonId" value="2">
+            <label>Platform:</label>
+            <select id="sharePlatform">
+                <option value="facebook">Facebook</option>
+                <option value="twitter">Twitter</option>
+                <option value="telegram">Telegram</option>
+                <option value="link">Copy Link</option>
+            </select>
+        </div>
+        <button onclick="testShare()">🚀 Test Share</button>
+        <button onclick="testGetShareCount()">📊 Get Share Count</button>
+        <div id="shareResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>👥 Test Referral System</h2>
+        <div>
+            <label>User ID:</label>
+            <input type="number" id="referralUserId" value="1">
+        </div>
+        <button onclick="testGenerateReferral()">🔗 Generate Referral</button>
+        <button onclick="testGetReferralStats()">📈 Get Referral Stats</button>
+        <div>
+            <label>Test Referral Code:</label>
+            <input type="text" id="testReferralCode" placeholder="REF_USERNAME_XXXX">
+            <button onclick="testValidateReferral()">✅ Validate Code</button>
+        </div>
+        <div id="referralResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🏆 Test Achievements</h2>
+        <div>
+            <label>User ID:</label>
+            <input type="number" id="achievementUserId" value="1">
+        </div>
+        <button onclick="testGetAchievements()">🎯 Get Achievements</button>
+        <button onclick="testTriggerAchievementCheck()">🔄 Trigger Check</button>
+        <div id="achievementResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Test Complete Flow</h2>
+        <p>Test the complete workflow: Share → Get Achievements → Check for Social Achievement</p>
+        <button onclick="testCompleteFlow()">🚀 Test Complete Flow</button>
+        <div id="flowResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080';
+        let authToken = null;
+        let currentUser = null;
+
+        async function apiCall(url, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                // Add auth token if available
+                if (authToken) {
+                    options.headers['Authorization'] = `Bearer ${authToken}`;
+                }
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(API_BASE + url, options);
+                
+                // Check if response has content
+                const contentType = response.headers.get('content-type');
+                let data;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const textData = await response.text();
+                    // Try to parse as JSON, fallback to text
+                    try {
+                        data = JSON.parse(textData);
+                    } catch (e) {
+                        data = textData;
+                    }
+                }
+                
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function displayResult(elementId, result) {
+            const element = document.getElementById(elementId);
+            element.className = 'result ' + (result.success ? 'success' : 'error');
+            element.textContent = JSON.stringify(result, null, 2);
+        }
+
+        async function testLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                displayResult('authResult', { success: false, error: 'Please enter username and password' });
+                return;
+            }
+            
+            const result = await apiCall('/api/auth/login', 'POST', {
+                username,
+                password
+            });
+            
+            if (result.success && result.data.token) {
+                authToken = result.data.token;
+                currentUser = result.data.user;
+                localStorage.setItem('authToken', authToken);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Update UI
+                document.getElementById('authStatus').textContent = `Authenticated as: ${currentUser.username}`;
+                document.getElementById('authStatus').className = 'result success';
+                
+                // Update default user IDs in forms
+                if (currentUser.id) {
+                    document.getElementById('shareUserId').value = currentUser.id;
+                    document.getElementById('referralUserId').value = currentUser.id;
+                    document.getElementById('achievementUserId').value = currentUser.id;
+                }
+            }
+            
+            displayResult('authResult', result);
+        }
+
+        async function testLogout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            
+            document.getElementById('authStatus').textContent = 'Not authenticated';
+            document.getElementById('authStatus').className = 'result';
+            
+            displayResult('authResult', { success: true, message: 'Logged out successfully' });
+        }
+
+        async function createTestUser() {
+            const username = 'testuser_' + Date.now();
+            const password = 'test123';
+            
+            const result = await apiCall('/api/auth/register', 'POST', {
+                username,
+                password,
+                email: username + '@test.com',
+                fullName: 'Test User',
+                phone: '0123456789',
+                gender: 'nam',
+                dateOfBirth: '1990-01-01T00:00:00'
+            });
+            
+            if (result.success) {
+                // Auto-fill login form
+                document.getElementById('loginUsername').value = username;
+                document.getElementById('loginPassword').value = password;
+                
+                displayResult('authResult', {
+                    success: true,
+                    message: `Test user created: ${username}`,
+                    user: { username, password }
+                });
+            } else {
+                displayResult('authResult', result);
+            }
+        }
+
+        // Check for existing auth on page load
+        function checkExistingAuth() {
+            const savedToken = localStorage.getItem('authToken');
+            const savedUser = localStorage.getItem('currentUser');
+            
+            if (savedToken && savedUser) {
+                authToken = savedToken;
+                currentUser = JSON.parse(savedUser);
+                
+                document.getElementById('authStatus').textContent = `Authenticated as: ${currentUser.username}`;
+                document.getElementById('authStatus').className = 'result success';
+                
+                // Update default user IDs
+                if (currentUser.id) {
+                    document.getElementById('shareUserId').value = currentUser.id;
+                    document.getElementById('referralUserId').value = currentUser.id;
+                    document.getElementById('achievementUserId').value = currentUser.id;
+                }
+            }
+        }
+
+        async function testShare() {
+            if (!authToken) {
+                displayResult('shareResult', { success: false, error: 'Please login first!' });
+                return;
+            }
+            
+            const userId = parseInt(document.getElementById('shareUserId').value);
+            const cartoonId = parseInt(document.getElementById('shareCartoonId').value);
+            const platform = document.getElementById('sharePlatform').value;
+            
+            const result = await apiCall('/api/social/share', 'POST', {
+                userId,
+                cartoonId,
+                platform
+            });
+            
+            displayResult('shareResult', result);
+        }
+
+        async function testGetShareCount() {
+            if (!authToken) {
+                displayResult('shareResult', { success: false, error: 'Please login first!' });
+                return;
+            }
+            
+            const userId = parseInt(document.getElementById('shareUserId').value);
+            const result = await apiCall(`/api/social/shares/${userId}`);
+            displayResult('shareResult', result);
+        }
+
+        async function testGenerateReferral() {
+            if (!authToken) {
+                displayResult('referralResult', { success: false, error: 'Please login first!' });
+                return;
+            }
+            
+            const userId = parseInt(document.getElementById('referralUserId').value);
+            const result = await apiCall('/api/referral/generate', 'POST', { userId });
+            
+            // Auto-fill the test referral code field
+            if (result.success && result.data.referralCode) {
+                document.getElementById('testReferralCode').value = result.data.referralCode;
+            }
+            
+            displayResult('referralResult', result);
+        }
+
+        async function testGetReferralStats() {
+            if (!authToken) {
+                displayResult('referralResult', { success: false, error: 'Please login first!' });
+                return;
+            }
+            
+            const userId = parseInt(document.getElementById('referralUserId').value);
+            const result = await apiCall(`/api/referral/stats/${userId}`);
+            displayResult('referralResult', result);
+        }
+
+        async function testValidateReferral() {
+            const code = document.getElementById('testReferralCode').value;
+            if (!code) {
+                displayResult('referralResult', { success: false, error: 'Please enter a referral code' });
+                return;
+            }
+            
+            const result = await apiCall(`/api/referral/validate/${code}`);
+            displayResult('referralResult', result);
+        }
+
+        async function testGetAchievements() {
+            if (!authToken) {
+                displayResult('achievementResult', { success: false, error: 'Please login first!' });
+                return;
+            }
+            
+            const userId = parseInt(document.getElementById('achievementUserId').value);
+            const result = await apiCall(`/api/achievements/progress/${userId}`);
+            
+            // Check if we got HTML error page instead of JSON
+            if (result.success && typeof result.data === 'string' && result.data.includes('<!DOCTYPE html>')) {
+                displayResult('achievementResult', { 
+                    success: false, 
+                    error: 'Backend returned HTML error page. Check server logs for details.',
+                    hint: 'Try using /api/achievements/progress/{id} endpoint instead'
+                });
+                return;
+            }
+            
+            displayResult('achievementResult', result);
+        }
+
+        async function testTriggerAchievementCheck() {
+            if (!authToken) {
+                displayResult('achievementResult', { success: false, error: 'Please login first!' });
+                return;
+            }
+            
+            const userId = parseInt(document.getElementById('achievementUserId').value);
+            
+            // Try the trigger check endpoint first
+            const checkResult = await apiCall(`/api/achievements/check/${userId}`, 'POST');
+            
+            // Check if we got HTML error page
+            if (checkResult.success && typeof checkResult.data === 'string' && checkResult.data.includes('<!DOCTYPE html>')) {
+                displayResult('achievementResult', { 
+                    success: false, 
+                    error: 'Backend API error - check server logs',
+                    suggestion: 'Make sure UserAchievementController is working properly'
+                });
+                return;
+            }
+            
+            displayResult('achievementResult', checkResult);
+        }
+
+        async function testCompleteFlow() {
+            const flowResult = document.getElementById('flowResult');
+            flowResult.textContent = 'Testing complete flow...\n';
+            flowResult.className = 'result';
+            
+            if (!authToken) {
+                flowResult.textContent = '❌ Please login first!';
+                flowResult.className = 'result error';
+                return;
+            }
+            
+            const userId = currentUser?.id || parseInt(document.getElementById('shareUserId').value);
+            const cartoonId = parseInt(document.getElementById('shareCartoonId').value) || 2; // Use cartoonId from form
+            
+            try {
+                // Step 1: Get initial achievements
+                flowResult.textContent += '1. Getting initial achievements...\n';
+                const initialAchievements = await apiCall(`/api/achievements/progress/${userId}`);
+                
+                if (!initialAchievements.success) {
+                    throw new Error(`Failed to get achievements: ${JSON.stringify(initialAchievements)}`);
+                }
+                
+                // Check if we got HTML error instead of JSON
+                if (typeof initialAchievements.data === 'string' && initialAchievements.data.includes('<!DOCTYPE html>')) {
+                    throw new Error('Backend returned HTML error page - check server logs');
+                }
+                
+                // Handle achievements data safely
+                let socialAchievementBefore = null;
+                if (initialAchievements.success && initialAchievements.data && Array.isArray(initialAchievements.data)) {
+                    socialAchievementBefore = initialAchievements.data.find(a => a.id === 8);
+                }
+                
+                flowResult.textContent += `   Social sharing achievement before: ${socialAchievementBefore?.completed || false}\n`;
+                flowResult.textContent += `   Current progress: ${socialAchievementBefore?.progressPercent || 0}%\n`;
+                
+                // Step 2: Test sharing
+                flowResult.textContent += '2. Testing social share...\n';
+                const shareResult = await apiCall('/api/social/share', 'POST', {
+                    userId,
+                    cartoonId,
+                    platform: 'facebook'
+                });
+                
+                if (!shareResult.success) {
+                    flowResult.textContent += `   Share failed: ${JSON.stringify(shareResult)}\n`;
+                } else {
+                    flowResult.textContent += `   Share result: SUCCESS (ID: ${shareResult.data?.shareId || 'unknown'})\n`;
+                }
+                
+                // Step 3: Wait a moment then check achievements
+                flowResult.textContent += '3. Checking achievements after share...\n';
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const finalAchievements = await apiCall(`/api/achievements/progress/${userId}`);
+                if (finalAchievements.success && finalAchievements.data && Array.isArray(finalAchievements.data)) {
+                    const socialAchievementAfter = finalAchievements.data.find(a => a.id === 8);
+                    
+                    flowResult.textContent += `   Social sharing achievement after: ${socialAchievementAfter?.completed || false}\n`;
+                    flowResult.textContent += `   New progress: ${socialAchievementAfter?.progressPercent || 0}%\n`;
+                    
+                    if (socialAchievementAfter?.completed && !socialAchievementBefore?.completed) {
+                        flowResult.textContent += '   🎉 ACHIEVEMENT UNLOCKED! Social sharing achievement earned!\n';
+                    }
+                } else {
+                    flowResult.textContent += `   Failed to check final achievements: ${JSON.stringify(finalAchievements)}\n`;
+                }
+                
+                // Step 4: Test referral
+                flowResult.textContent += '4. Testing referral generation...\n';
+                const referralResult = await apiCall('/api/referral/generate', 'POST', { userId });
+                if (referralResult.success) {
+                    flowResult.textContent += `   Referral result: SUCCESS\n`;
+                    flowResult.textContent += `   Referral code: ${referralResult.data?.referralCode || 'unknown'}\n`;
+                } else {
+                    flowResult.textContent += `   Referral result: FAILED - ${JSON.stringify(referralResult)}\n`;
+                }
+                
+                flowResult.textContent += '\n✅ Complete flow test finished!';
+                flowResult.className = 'result success';
+                
+            } catch (error) {
+                flowResult.textContent += `\n❌ Error: ${error.message}`;
+                flowResult.className = 'result error';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Test page loaded. Ready to test APIs!');
+            checkExistingAuth();
+        });
+    </script>
+</body>
+</html>
