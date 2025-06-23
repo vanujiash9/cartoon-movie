@@ -35,10 +35,34 @@ class AchievementManager {
             this.checkAchievementsByUsername();
             this.setupNavigation();
             this.setupResize();
+            this.setupGlobalListeners(); // Lắng nghe các sự kiện toàn cục
         } else {
             console.log('❌ No username/token found, achievements will not load');
         }
-    }// Lấy user ID từ localStorage hoặc API
+    }
+    
+    // Tải lại dữ liệu thành tựu (public method)
+    async reloadAchievements() {
+        console.log('🔄 Reloading achievements data...');
+        if (this.username) {
+            await this.loadAchievementsByUsername();
+        } else {
+            console.log('Cannot reload, username not found.');
+        }
+    }
+
+    // Thiết lập event listeners cho các sự kiện toàn cục
+    setupGlobalListeners() {
+        document.addEventListener('achievement-progress-updated', () => {
+            console.log('🎉 Received achievement-progress-updated event. Reloading achievements.');
+            // Thêm một chút delay để đảm bảo backend đã xử lý xong
+            setTimeout(() => {
+                this.reloadAchievements();
+            }, 500); 
+        });
+    }
+
+    // Lấy user ID từ localStorage hoặc API
     async getCurrentUserId() {
         const userInfo = localStorage.getItem('userInfo');
         if (userInfo) {

@@ -314,8 +314,7 @@
     </style>
 </head>
 
-<body>
-    <!-- Integrated Header (No iframe) -->
+<body>    <!-- Integrated Header (No iframe) -->
     <header>
         <div class="navbar" id="navbar">
             <a href="#" class="navbar-brand" onclick="scrollToTop()">
@@ -346,18 +345,20 @@
 
                 <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
                     <span>🎤</span>
-                </button>                <!-- Notification Bell -->
-                <div class="notification-bell" id="notificationBell"
-                    style="position: relative; margin-right: 16px; cursor: pointer;">
-                    <span style="font-size: 22px; transition: transform 0.2s;">🔔</span>
-                    <span id="notificationBadge"
-                        style="position: absolute; top: -4px; right: -4px; background: #ff4757; color: white; border-radius: 50%; font-size: 11px; padding: 2px 6px; display: none; min-width: 18px; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0</span>
-                    <div id="notificationDropdown" class="notification-dropdown"
-                        style="position: absolute; right: 0; top: 32px; background: #fff; color: #222; min-width: 350px; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-radius: 12px; z-index: 1000; border: 1px solid #e9ecef; overflow: hidden;">
-                        <div style="padding: 16px; font-weight: 600; font-size: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; justify-content: space-between; align-items: center;">
+                </button>
+                                                  <!-- Notification Menu (structured like user menu) -->
+                <div class="notification-menu" id="notificationMenu" style="position: relative; margin-right: 16px;">
+                    <div class="notification-bell-display" id="notificationBellDisplay" style="cursor: pointer;">
+                        <span style="font-size: 22px; transition: transform 0.2s;">🔔</span>
+                        <span id="notificationBadge"
+                            style="position: absolute; top: -4px; right: -4px; background: #ff4757; color: white; border-radius: 50%; font-size: 11px; padding: 2px 6px; display: none; min-width: 18px; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0</span>
+                    </div>
+                    <div id="notificationDropdown" class="notification-dropdown notification-dropdown-hidden">
+                        <div class="notification-header">
                             <span>🔔 Thông báo</span>
                             <span id="notificationCount" style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">0</span>
-                        </div>                        <div id="notificationList" style="max-height: 400px; overflow-y: auto;">
+                        </div>
+                        <div id="notificationList" style="max-height: 400px; overflow-y: auto;">
                             <!-- Initial empty state - will be replaced by JS -->
                         </div>
                         <div style="padding: 12px; text-align: center; border-top: 1px solid #eee; background: #f8f9fa;">
@@ -546,7 +547,8 @@
                         <div class="total">55</div>
                     </div>
                 </div>
-            </section>            <section class="achievements" id="achievements">
+            </section>
+            <section class="achievements" id="achievements">
                 <h2 class="section-heading">Thành tựu của bạn</h2>
                 
                 <!-- Loading state -->
@@ -560,7 +562,7 @@
                     <div class="login-prompt">
                         <h3>🔒 Vui lòng đăng nhập để xem thành tựu</h3>
                         <p>Đăng nhập để theo dõi tiến độ và mở khóa các thành tựu đặc biệt!</p>
-                        <a href="./login_register/login.html" class="login-btn">Đăng nhập ngay</a>
+                        <a href="./login-register/login.html" class="login-btn">Đăng nhập ngay</a>
                     </div>
                 </div>
                 
@@ -596,38 +598,7 @@
                             <!-- Thành tựu sẽ được load từ backend -->
                         </div>
                     </div>                      <!-- Share feature -->
-                    <div class="achievements-share">
-                        <p>Chia sẻ phim để mở khóa thành tựu mới!</p>
-                        <button class="share-demo-btn" onclick="openShareDemo()">
-                            📱 Thử chia sẻ phim
-                        </button>
-                        <button class="share-demo-btn" onclick="debugAchievements()" style="background: #e74c3c; margin-left: 10px;">
-                            🔍 Debug Achievements
-                        </button>
-                        
-                        <!-- Notification Test Buttons -->
-                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <p style="margin-bottom: 15px; color: #666;">🔔 Test Notification System:</p>
-                            <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-                                <button onclick="createTestNotification('LIKE', 'Test Like', 'Ai đó đã thích bình luận của bạn')" 
-                                    style="background: #FF6B6B; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
-                                    ❤️ Test Like
-                                </button>
-                                <button onclick="createTestNotification('COMMENT', 'Test Comment', 'Có bình luận mới trên phim bạn đã xem')" 
-                                    style="background: #4ECDC4; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
-                                    💬 Test Comment
-                                </button>
-                                <button onclick="createTestNotification('ACHIEVEMENT', 'Thành tựu mới!', 'Bạn đã mở khóa thành tựu: Người xem tích cực')" 
-                                    style="background: #FFD700; color: #333; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
-                                    🏆 Test Achievement
-                                </button>
-                                <button onclick="createTestNotification('SUCCESS', 'Cập nhật thành công', 'Thông tin cá nhân đã được cập nhật')" 
-                                    style="background: #00B894; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
-                                    ✅ Test Success
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </section>
         </main>
@@ -639,53 +610,32 @@
     <script src="./js/shared-api.js"></script>
     <script src="./js/notifications.js"></script>
     <script>
-        // Achievements Integration        let achievementsData = null;
+        // Achievements Integration        let achievementsData = null;                                         
         let isLoadingAchievements = false; // Prevent multiple simultaneous loads
         let debounceTimeout = null; // For debouncing function calls
-        
-        // Initialize achievements when page loads
+          // Initialize achievements when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Page loaded, initializing achievements...');
+              // Initialize notification system first
+            console.log('🔔 Initializing notification system...');
+            initNotificationSystem();
             
             // Add achievements loading after other initial loads
             setTimeout(() => {
-                console.log('⏰ First attempt to load achievements...');
+                console.log('⏰ Loading achievements...');
                 loadUserAchievements();
             }, 1000);
             
             // Try again after a longer delay in case authentication is slow
             setTimeout(() => {
                 console.log('⏰ Second attempt to load achievements...');
-                if (!achievementsData) { // Only if not already loaded
+                if (!achievementsData) {
                     loadUserAchievements();
                 }
             }, 3000);
-              // Listen for login status changes
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'token' || e.key === 'username') {
-                    console.log('🔄 Storage changed, reloading achievements...', e.key, e.newValue);
-                    setTimeout(() => {
-                        if (!isLoadingAchievements) { // Prevent multiple calls
-                            loadUserAchievementsDebounced(); // Use debounced version
-                        }
-                    }, 500);
-                }
-            });
-              // Listen for focus events (when user comes back to tab) - reduced frequency
-            let lastFocusTime = 0;
-            window.addEventListener('focus', function() {
-                const now = Date.now();
-                if (now - lastFocusTime > 5000) { // Only check every 5 seconds
-                    console.log('👁️ Window focus, checking achievements...');
-                    lastFocusTime = now;
-                    setTimeout(() => {
-                        if (!isLoadingAchievements) {
-                            loadUserAchievementsDebounced(); // Use debounced version
-                        }
-                    }, 1000);
-                }
-            });
-        });
+        });        
+        // === ACHIEVEMENTS LOADING ===
+        // (Moved achievements logic here)
         
         // Debounced version of loadUserAchievements
         function loadUserAchievementsDebounced() {
@@ -1161,8 +1111,7 @@
                     setTimeout(() => {
                         loadUserAchievements();
                     }, 1000);
-                } else {
-                    const error = await response.text();
+                } else {                    const error = await response.text();
                     console.error('Share error:', error);
                     alert('❌ Không thể chia sẻ. Vui lòng thử lại.');
                 }
@@ -1187,7 +1136,6 @@
                 originalScrollToSection(sectionId);
             }
         };    </script>
-    <!-- <script src="./js/achievements.js"></script> <!-- DISABLED: Using integrated achievements logic instead -->
 
     <!-- Integrated Header JavaScript -->
     <script>
@@ -1392,25 +1340,71 @@
                 console.log('❌ User not logged in');
             }
         });
-    </script>
-
-    <script>
-        // Hiển thị drop menu khi click vào user-info-display
-        const userInfoDisplay = document.getElementById('userInfoDisplay');
-        const userDropdown = document.getElementById('userDropdown');
-
-        if (userInfoDisplay && userDropdown) {
-            userInfoDisplay.addEventListener('click', function (e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('active');
-            });
-            // Ẩn dropdown khi click ra ngoài
-            document.addEventListener('click', function (e) {
-                if (!userDropdown.contains(e.target) && !userInfoDisplay.contains(e.target)) {
+    </script>    <script>
+        // ===== SIMPLE DROPDOWN HANDLERS =====
+        // Clean và đơn giản - chỉ xử lý click để mở/đóng dropdown
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing dropdown system...');
+            
+            // === NOTIFICATION DROPDOWN ===
+            // Notification dropdown is handled by notifications.js
+            // No need to setup here to avoid conflicts
+            
+            // === USER DROPDOWN ===
+            const userDisplay = document.getElementById('userInfoDisplay');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userDisplay && userDropdown) {
+                console.log('✅ User dropdown found');
+                
+                userDisplay.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('👤 User menu clicked');
+                    
+                    // Close notification dropdown if open
+                    if (notificationDropdown) {
+                        notificationDropdown.classList.add('notification-dropdown-hidden');
+                    }
+                    
+                    // Toggle user dropdown
+                    const isActive = userDropdown.classList.contains('active');
+                    if (isActive) {
+                        userDropdown.classList.remove('active');
+                        console.log('👤 User dropdown CLOSED');
+                    } else {
+                        userDropdown.classList.add('active');
+                        console.log('👤 User dropdown OPENED');
+                    }
+                });
+            } else {
+                console.warn('⚠️ User menu elements not found');
+            }
+            
+            // === CLICK OUTSIDE TO CLOSE ===
+            document.addEventListener('click', function(e) {
+                // Close notification dropdown if clicking outside
+                if (notificationDropdown && notificationBell &&
+                    !notificationDropdown.contains(e.target) && !notificationBell.contains(e.target)) {
+                    notificationDropdown.classList.add('notification-dropdown-hidden');
+                    console.log('🔔 Notification dropdown closed (clicked outside)');
+                }
+                
+                // Close user dropdown if clicking outside
+                if (userDropdown && userDisplay &&
+                    !userDropdown.contains(e.target) && !userDisplay.contains(e.target)) {
                     userDropdown.classList.remove('active');
+                    console.log('👤 User dropdown closed (clicked outside)');
                 }
             });
-        } document.addEventListener('DOMContentLoaded', function () {
+            
+            // Initialize notification system
+            console.log('🔔 Initializing notification system...');
+            initNotificationSystem();
+        });
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
             // Update header when page loads
             updateHeaderLoginStatus();
 
@@ -1444,47 +1438,9 @@
                 console.log('== storage event: Calling updateHeaderLoginStatus ==');
                 updateHeaderLoginStatus();
             }
-        });
-    </script>
-    <script>
-        (function () {
-            const bell = document.getElementById('notificationBell');
-            const dropdown = document.getElementById('notificationDropdown');
-            if (!bell || !dropdown) return;
-            // Hiển thị khi hover hoặc click
-            let dropdownTimeout;
-            function showDropdown() {
-                clearTimeout(dropdownTimeout);
-                dropdown.classList.add('active');
-            }
-            function hideDropdown() {
-                dropdownTimeout = setTimeout(() => {
-                    dropdown.classList.remove('active');
-                }, 120);
-            }
-            bell.addEventListener('mouseenter', showDropdown);
-            bell.addEventListener('mouseleave', hideDropdown);
-            bell.addEventListener('click', function (e) {
-                e.stopPropagation();
-                if (dropdown.classList.contains('active')) {
-                    dropdown.classList.remove('active');
-                } else {
-                    showDropdown();
-                }
-            });
-            dropdown.addEventListener('mouseenter', showDropdown);
-            dropdown.addEventListener('mouseleave', hideDropdown);
-            // Đóng khi click ra ngoài
-            document.addEventListener('click', function (e) {
-                if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-        })();
-    </script>
-    <script>
+        });    </script>    <script>
         function playBannerMovie() {
-            window.location.href = './moive player/moive.html';
+            window.location.href = './movie-player/movie.html';
         }
     </script>
 </body>

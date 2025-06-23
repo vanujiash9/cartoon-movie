@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "users")
@@ -24,6 +25,10 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Notification> notifications;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAchievement> achievements;
@@ -91,6 +96,14 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public List<UserAchievement> getAchievements() {

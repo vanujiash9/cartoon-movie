@@ -1,3 +1,5 @@
+import { trackUserAction } from './js/user-actions.js';
+
 // Like/Dislike Functionality
 class LikeDislikeManager {
     constructor() {
@@ -118,34 +120,14 @@ class LikeDislikeManager {
                 body: JSON.stringify({ isLike })
             });
 
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                // Update UI with new data
+            if (response.ok) {
+                const data = await response.json();
                 this.updateUI(commentId, data);
-                
-                // Add animation to count
-                const countElement = commentElement.querySelector(isLike ? '.like-count' : '.dislike-count');
-                if (countElement) {
-                    countElement.classList.add('count-change');
-                    setTimeout(() => countElement.classList.remove('count-change'), 400);
-                }
 
-                // Show feedback based on action
-                let message = '';
-                switch (data.action) {
-                    case 'liked':
-                        message = '👍 Đã thích bình luận';
-                        break;
-                    case 'disliked':
-                        message = '👎 Đã không thích bình luận';
-                        break;
-                    case 'removed':
-                        message = '✨ Đã hủy đánh giá';
-                        break;
+                // Track achievement progress for 'like' action
+                if (isLike) {
+                    trackUserAction('LIKE_COMMENT');
                 }
-                this.showFeedback(message, 'success');
-
             } else {
                 this.showFeedback(data.message || 'Có lỗi xảy ra', 'error');
             }

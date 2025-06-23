@@ -53,7 +53,7 @@ public class CommentService {
         if (savedComment.getParentComment() != null && savedComment.getParentComment().getUser() != null) {
             User parentCommentOwner = savedComment.getParentComment().getUser();
             User replier = savedComment.getUser();
-            notificationService.notifyCommentReplied(parentCommentOwner, replier, 
+            notificationService.notifyCommentReply(parentCommentOwner, replier, 
                 savedComment.getParentComment().getId().intValue());
         }
         

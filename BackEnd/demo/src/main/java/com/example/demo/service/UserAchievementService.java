@@ -55,7 +55,7 @@ public class UserAchievementService {    @Autowired
                 // Send notification for new achievement
                 Achievement achievement = achievementOpt.get();
                 if (notificationService != null) {
-                    notificationService.notifyAchievementUnlocked(user, achievement.getName());
+                    notificationService.createAchievementNotification(user, achievement);
                 }
             }
         }

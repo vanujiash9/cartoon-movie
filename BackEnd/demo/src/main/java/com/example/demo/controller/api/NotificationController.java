@@ -36,9 +36,7 @@ public class NotificationController {
     // Đánh dấu đã đọc thông báo
     @PostMapping("/read/{id}")
     public ResponseEntity<?> markAsRead(@PathVariable Integer id) {
-        Notification notification = notificationService.getById(id);
-        if (notification == null) return ResponseEntity.badRequest().body("Không tìm thấy thông báo");
-        notificationService.markAsRead(notification);
+        notificationService.markAsRead(id);
         return ResponseEntity.ok("Đã đánh dấu đã đọc");
     }
 
@@ -89,7 +87,7 @@ public class NotificationController {
             type = Notification.NotificationType.SYSTEM;
         }
         
-        notificationService.createNotification(user, title, content, type);
+        notificationService.createNotification(user, title, content, type, null, null);
         return ResponseEntity.ok("Đã tạo thông báo test thành công");
     }
 }

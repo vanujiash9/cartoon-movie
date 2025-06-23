@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false, length = 255)
@@ -67,7 +69,31 @@ public class Notification {
         PROFILE_UPDATE("👤", "#96CEB4"),
         SYSTEM("⚙️", "#6C5CE7"),
         WARNING("⚠️", "#FDCB6E"),
-        SUCCESS("✅", "#00B894");
+        SUCCESS("✅", "#00B894"),
+        SOCIAL("👥", "#3498db"),
+        SUPPORT_REQUEST("🛠️", "#f39c12"),
+        EVENT("📅", "#FF8C00"),
+        MEETING("🤝", "#1E90FF"),
+        NOTE("📝", "#32CD32"),
+        TASK("✔️", "#FF4500"),
+        PROJECT("📁", "#8A2BE2"),
+        KANBAN("📋", "#20B2AA"),
+        CHECKLIST("☑️", "#5F9EA0"),
+        CALENDAR("🗓️", "#FF69B4"),
+        DASHBOARD("📊", "#6A5ACD"),
+        REPORT("📈", "#4682B4"),
+        REPORT_TEMPLATE("📄", "#D2B48C"),
+        FORM("✍️", "#DAA520"),
+        CONTRACT("📜", "#B8860B"),
+        INVOICE("🧾", "#8B4513"),
+        EXPENSE("💸", "#DC143C"),
+        RECEIPT("🧾", "#CD5C5C"),
+        SALARY_TABLE("💰", "#FFD700"),
+        EMPLOYMENT_CONTRACT("✍️", "#A0522D"),
+        TIMESHEET("🕒", "#2E8B57"),
+        FEEDBACK("👍", "#6495ED"),
+        SURVEY("📊", "#008B8B"),
+        SURVEY_FORM("📝", "#BDB76B");
 
         private final String icon;
         private final String color;

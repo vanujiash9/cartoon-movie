@@ -109,6 +109,16 @@ async function getUserAchievements() {
     return result;
 }
 
+async function sendAchievementUpdate(userId, actionType) {
+    const result = await apiCall(`/api/achievements/progress?userId=${userId}&actionType=${actionType}`, 'POST');
+
+    if (!result.success) {
+        throw new Error(result.data?.message || 'Failed to update achievement progress');
+    }
+
+    return result;
+}
+
 async function triggerAchievementCheck() {
     const currentUser = getCurrentUser();
     if (!currentUser?.id) return;
