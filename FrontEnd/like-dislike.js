@@ -1,5 +1,3 @@
-import { trackUserAction } from './js/user-actions.js';
-
 // Like/Dislike Functionality
 class LikeDislikeManager {
     constructor() {

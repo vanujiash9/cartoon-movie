@@ -17,7 +17,7 @@ public class ReferralService {
     private ReferralRepository referralRepository;
     
     @Autowired
-    private UserAchievementService userAchievementService;
+    private AchievementService achievementService;
 
     // Tạo referral code cho user
     public String generateReferralCode(User user) {
@@ -40,8 +40,8 @@ public class ReferralService {
             referral.markCompleted();
             referralRepository.save(referral);
             
-            // Trigger achievement check for referrer
-            userAchievementService.checkAndGrantAchievements(referral.getReferrer());
+            // Trigger achievement check for referrer using new AchievementService
+            achievementService.updateUserAchievementProgress(referral.getReferrer().getId(), "REFERRAL", null);
         }
     }
 

@@ -310,7 +310,261 @@ function setupEventListeners() {
             }
         });
     });
+
+    // Search functionality
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const voiceBtn = document.getElementById('voiceBtn');
+
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            performSearch();
+        });
+    }
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', performSearch);
+    }
+
+    if (voiceBtn) {
+        voiceBtn.addEventListener('click', startVoiceSearch);
+    }
 }
+
+// ====================================
+// HELPER & NAVIGATION FUNCTIONS (for voice commands & onclicks)
+// ====================================
+
+/**
+ * Navigates to the movie player page for a given movie ID.
+ * This function is added because it appears to be missing from the global scope.
+ */
+function watchFirstEpisode(movieId, movieTitle) {
+    console.log(`Navigating to watch movie ID: ${movieId}, Title: ${movieTitle}`);
+    if (!movieId) {
+        showNotification('Lỗi: Không tìm thấy ID phim.', 'error');
+        return;
+    }
+    showNotification(`Đang chuẩn bị phát: ${movieTitle}`, 'success');
+    window.location.href = `./movie-player/movie.html?id=${movieId}`;
+}
+
+/**
+ * Navigates to the movie detail page for a given movie title.
+ * This function is added because it appears to be missing from the global scope.
+ */
+function showMovieDetails(movieTitle) {
+    const movie = (window.movies || []).find(m => m.title === movieTitle);
+    if (movie && movie.id) {
+        console.log(`Navigating to details for movie ID: ${movie.id}`);
+        showNotification(`Đang mở chi tiết phim: ${movieTitle}`, 'success');
+        window.location.href = `./movie-detail/movie_detail.html?id=${movie.id}`;
+    } else {
+        showNotification(`Lỗi: Không tìm thấy chi tiết cho phim "${movieTitle}"`, 'error');
+    }
+}
+
+/**
+ * Scrolls smoothly to a specific section on the page.
+ * This function is added because it appears to be missing from the global scope.
+ */
+function scrollToSection(sectionId) {
+    console.log(`Scrolling to section: ${sectionId}`);
+    const target = document.getElementById(sectionId);
+    if (target) {
+        const headerHeight = 100; // As defined in other parts of the script
+        const targetPosition = target.offsetTop - headerHeight;
+
+        window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+        });
+        if (history.pushState) {
+            history.pushState(null, null, `#${sectionId}`);
+        }
+    } else {
+        console.warn(`Section with id "${sectionId}" not found for scrolling.`);
+    }
+}
+
+// ====================================
+// SEARCH & VOICE SEARCH FUNCTIONS
+// ====================================
+
+function performSearch() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+
+    const query = searchInput.value.trim().toLowerCase();
+    console.log('Performing search for:', query);
+
+    if (!query) {
+        // If search is cleared, reset to the default filtered view
+        filterMovies();
+        return;
+    }
+
+    // Filter all movies based on the query
+    const allMovies = window.movies || [];
+    currentMovies = allMovies.filter(movie => {
+        const title = movie.title ? movie.title.toLowerCase() : '';
+        const description = movie.description ? movie.description.toLowerCase() : '';
+        const genre = movie.genre ? movie.genre.toLowerCase() : '';
+        
+        return title.includes(query) || description.includes(query) || genre.includes(query);
+    });
+
+    console.log(`Found ${currentMovies.length} movies matching "${query}"`);
+    showNotification(`Tìm thấy ${currentMovies.length} phim cho "${query}"`, 'success');
+    
+    // Reset filters and display search results
+    if (genreFilter) genreFilter.value = 'all';
+    if (yearFilter) yearFilter.value = 'all';
+    displayMovies();
+}
+
+function processVoiceCommand(command) {
+    const lowerCommand = command.toLowerCase().trim();
+    const searchInput = document.getElementById('searchInput');
+
+    console.log(`Processing voice command: "${lowerCommand}"`);
+
+    // 1. Navigation & Action Commands
+    const commands = [
+        { keywords: ['trang cá nhân', 'hồ sơ', 'tài khoản'], action: () => navigateToProfile(), notification: 'Đang mở trang hồ sơ...' },
+        { keywords: ['trang chủ', 'về đầu'], action: () => scrollToSection('top'), notification: 'Đang quay về trang chủ...' },
+        { keywords: ['danh sách phim', 'phim hot'], action: () => scrollToSection('movies'), notification: 'Hiển thị danh sách phim...' },
+        { keywords: ['thành tựu'], action: () => scrollToSection('achievements'), notification: 'Hiển thị thành tựu của bạn...' },
+        { keywords: ['thể loại'], action: () => scrollToSection('category'), notification: 'Hiển thị các thể loại phim...' },
+        { keywords: ['tv trực tiếp', 'xem live'], action: () => scrollToSection('live'), notification: 'Hiển thị TV trực tiếp...' },
+        { keywords: ['đăng xuất'], action: () => logoutExternal(), notification: null } // logoutExternal has its own notifications
+    ];
+
+    for (const cmd of commands) {
+        for (const keyword of cmd.keywords) {
+            if (lowerCommand.includes(keyword)) {
+                if (cmd.notification) showNotification(cmd.notification, 'info');
+                cmd.action();
+                return;
+            }
+        }
+    }
+
+    // 2. Play Movie Command
+    const playKeywords = ['mở phim', 'xem phim', 'phát phim'];
+    for (const keyword of playKeywords) {
+        if (lowerCommand.startsWith(keyword)) {
+            const movieName = command.substring(keyword.length).trim();
+            if (movieName) {
+                showNotification(`Đang tìm phim: ${movieName}`, 'info');
+                if (searchInput) searchInput.value = movieName;
+                performSearch();
+
+                setTimeout(() => {
+                    if (currentMovies && currentMovies.length > 0) {
+                        const firstMovie = currentMovies[0];
+                        showNotification(`Đã tìm thấy! Đang mở: ${firstMovie.title}`, 'success');
+                        watchFirstEpisode(firstMovie.id, firstMovie.title);
+                    } else {
+                        showNotification(`Không tìm thấy phim "${movieName}"`, 'error');
+                    }
+                }, 800);
+            } else {
+                showNotification('Đề xuất một bộ phim ngẫu nhiên cho bạn!', 'info');
+                const randomMovie = getRandomRecommendation();
+                if (randomMovie) {
+                    setTimeout(() => {
+                        watchFirstEpisode(randomMovie.id, randomMovie.title);
+                    }, 1500);
+                }
+            }
+            return;
+        }
+    }
+
+    // 3. Explicit Search or Default Action
+    const searchKeywords = ['tìm kiếm', 'tìm'];
+    let isSearch = false;
+    for (const keyword of searchKeywords) {
+        if (lowerCommand.startsWith(keyword)) {
+            const query = command.substring(keyword.length).trim();
+            if (searchInput) searchInput.value = query;
+            performSearch();
+            isSearch = true;
+            break;
+        }
+    }
+
+    if (!isSearch) {
+        if (searchInput) searchInput.value = command;
+        performSearch();
+    }
+}
+
+function startVoiceSearch() {
+    const voiceBtn = document.getElementById('voiceBtn');
+    const searchInput = document.getElementById('searchInput');
+
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        showNotification('Trình duyệt của bạn không hỗ trợ tìm kiếm bằng giọng nói.', 'error');
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'vi-VN'; // Set language to Vietnamese
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+        console.log('Voice search started...');
+        showNotification('🎤 Đang nghe... Vui lòng nói vào micro.', 'info');
+        if (voiceBtn) {
+            voiceBtn.style.color = 'var(--light-azure)';
+            voiceBtn.style.transform = 'scale(1.2)';
+        }
+    };
+
+    recognition.onresult = (event) => {
+        const speechResult = event.results[0][0].transcript;
+        console.log('Voice result:', speechResult);
+        showNotification(`Bạn đã nói: "${speechResult}"`, 'success');
+
+        // Process the command instead of just searching
+        processVoiceCommand(speechResult);
+    };
+
+    recognition.onspeechend = () => {
+        recognition.stop();
+        console.log('Voice search ended.');
+    };
+
+    recognition.onend = () => {
+        if (voiceBtn) {
+            voiceBtn.style.color = ''; // Reset color
+            voiceBtn.style.transform = 'scale(1)';
+        }
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Voice search error:', event.error);
+        let errorMessage = 'Đã xảy ra lỗi khi nhận dạng giọng nói.';
+        if (event.error === 'no-speech') {
+            errorMessage = 'Không phát hiện thấy giọng nói. Vui lòng thử lại.';
+        } else if (event.error === 'audio-capture') {
+            errorMessage = 'Không thể truy cập micro. Vui lòng cấp quyền.';
+        } else if (event.error === 'not-allowed') {
+            errorMessage = 'Quyền truy cập micro đã bị từ chối.';
+        }
+        showNotification(errorMessage, 'error');
+    };
+
+    recognition.start();
+}
+
 
 // Movie filtering and sorting
 function filterMovies() {

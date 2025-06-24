@@ -342,11 +342,12 @@
                     </button>
                     <div class="search-suggestions" id="searchSuggestions"></div>
                 </form>
-
+                
                 <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
                     <span>🎤</span>
                 </button>
-                                                  <!-- Notification Menu (structured like user menu) -->
+
+
                 <div class="notification-menu" id="notificationMenu" style="position: relative; margin-right: 16px;">
                     <div class="notification-bell-display" id="notificationBellDisplay" style="cursor: pointer;">
                         <span style="font-size: 22px; transition: transform 0.2s;">🔔</span>
@@ -1271,15 +1272,7 @@
             }
         }
 
-        // Voice search
-        function setupVoiceSearch() {
-            const voiceBtn = document.getElementById('voiceBtn');
-            if (voiceBtn) {
-                voiceBtn.addEventListener('click', function () {
-                    alert('Tính năng tìm kiếm bằng giọng nói đang phát triển!');
-                });
-            }
-        }
+        
 
         // Initialize header
         function initializeIntegratedHeader() {

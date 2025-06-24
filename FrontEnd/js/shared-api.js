@@ -109,8 +109,12 @@ async function getUserAchievements() {
     return result;
 }
 
-async function sendAchievementUpdate(userId, actionType) {
-    const result = await apiCall(`/api/achievements/progress?userId=${userId}&actionType=${actionType}`, 'POST');
+async function sendAchievementUpdate(userId, actionType, cartoonId = null) {
+    let url = `/api/achievements/progress?userId=${userId}&actionType=${actionType}`;
+    if (cartoonId) {
+        url += `&cartoonId=${cartoonId}`;
+    }
+    const result = await apiCall(url, 'POST');
 
     if (!result.success) {
         throw new Error(result.data?.message || 'Failed to update achievement progress');
@@ -224,6 +228,7 @@ window.MaxionAPI = {
     recordShare,
     generateReferral,
     getUserAchievements,
+    sendAchievementUpdate, // Make sendAchievementUpdate globally accessible
     triggerAchievementCheck,
     showNotification,
     getShareUrl,

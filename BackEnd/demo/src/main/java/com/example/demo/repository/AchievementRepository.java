@@ -9,4 +9,13 @@ import java.util.List;
 @Repository
 public interface AchievementRepository extends JpaRepository<Achievement, Integer> {
     List<Achievement> findByActionType(String actionType);
+
+    // Tìm achievements theo danh sách ID
+    List<Achievement> findByIdIn(List<Integer> ids);
+
+    // Tìm achievements đang active
+    List<Achievement> findByIsActiveTrue();
+
+    // Tìm achievements theo category
+    List<Achievement> findByCategory(String category);
 }

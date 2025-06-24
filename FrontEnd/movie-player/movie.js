@@ -1332,13 +1332,13 @@ function updateProgress() {
         const progressPercent = (video.currentTime / video.duration) * 100;
         if (progressFilled) progressFilled.style.width = `${progressPercent}%`;
         if (progressThumb) progressThumb.style.left = `${progressPercent}%`;
-        if (timeDisplay) timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
-
-        // Track watching halfway through the movie
+        if (timeDisplay) timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;        // Track watching halfway through the movie
         if (!hasTrackedHalfway && progressPercent >= 50) {
             console.log('🎬 User has watched 50% of the movie. Tracking action...');
             if (typeof trackUserAction === 'function') {
-                trackUserAction('WATCH_MOVIE_HALF', { movieId: movieId, episodeId: getCurrentEpisodeId() });
+                // Gửi cả 2 loại achievement: xem phim và xem phim khác nhau
+                trackUserAction('WATCH_MOVIE', movieId);
+                trackUserAction('WATCH_DIFFERENT_MOVIES', movieId);
             }
             hasTrackedHalfway = true; // Đánh dấu đã gửi để không gửi lại
         }
@@ -1354,7 +1354,7 @@ function onVideoEnded() {
 
     // Gửi sự kiện hoàn thành xem phim
     if (typeof trackUserAction === 'function') {
-        trackUserAction('WATCH_MOVIE', { movieId: movieId, episodeId: getCurrentEpisodeId() });
+        trackUserAction('WATCH_MOVIE', movieId);
     }
 
     // Tự động chuyển tập tiếp theo
@@ -1606,7 +1606,7 @@ function onVideoEnded() {
 
     // Gửi sự kiện hoàn thành xem phim
     if (typeof trackUserAction === 'function') {
-        trackUserAction('WATCH_MOVIE', { movieId: movieId, episodeId: getCurrentEpisodeId() });
+        trackUserAction('WATCH_MOVIE', movieId);
     }
 
     // Tự động chuyển tập tiếp theo
@@ -2112,7 +2112,7 @@ async function postComment() {
                 localStorage.removeItem('token');
                 showLoginPrompt();
                 return;
-            }
+                       }
 
             const errorText = await response.text();
             let errorMessage = 'Không thể đăng bình luận';

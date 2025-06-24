@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Header Height - Maxion</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            padding: 20px;
+            margin-top: 100px; /* Initial offset */
+        }
+        
+        .test-info {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .header-debug {
+            background: #34495e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        #header-iframe {
+            width: 100%;
+            border: 2px solid #3498db;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            height: 80px;
+        }
+        
+        .measurements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .measure-box {
+            background: #2ecc71;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header iframe -->
+    <iframe 
+        id="header-iframe" 
+        src="../header.html" 
+        onload="measureHeader()"
+        title="Header Navigation">
+    </iframe>
+
+    <div class="test-container">
+        <div class="test-info">
+            <h1>🔧 Header Height Test</h1>
+            <p>Testing header height để đảm bảo movie-detail page layout đúng.</p>
+        </div>
+
+        <div class="header-debug">
+            <h3>📏 Header Measurements:</h3>
+            <div class="measurements">
+                <div class="measure-box">
+                    <strong>CSS Height:</strong><br>
+                    <span id="css-height">Calculating...</span>
+                </div>
+                <div class="measure-box">
+                    <strong>Actual Height:</strong><br>
+                    <span id="actual-height">Calculating...</span>
+                </div>
+                <div class="measure-box">
+                    <strong>Content Height:</strong><br>
+                    <span id="content-height">Calculating...</span>
+                </div>
+                <div class="measure-box">
+                    <strong>Scroll Height:</strong><br>
+                    <span id="scroll-height">Calculating...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-debug">
+            <h3>🎯 Recommendations:</h3>
+            <ul id="recommendations"></ul>
+        </div>
+
+        <div class="test-info">
+            <h3>🧪 Test Movie Detail Links:</h3>
+            <p>Click these links to test movie detail page với header height mới:</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                <a href="movie-detail/movie_detail.html?id=1" style="color: #3498db; padding: 8px 16px; background: #2c2c2c; border-radius: 5px; text-decoration: none;">Dragon Ball Z</a>
+                <a href="movie-detail/movie_detail.html?id=2" style="color: #3498db; padding: 8px 16px; background: #2c2c2c; border-radius: 5px; text-decoration: none;">Naruto</a>
+                <a href="movie-detail/movie_detail.html?id=6" style="color: #3498db; padding: 8px 16px; background: #2c2c2c; border-radius: 5px; text-decoration: none;">Demon Slayer</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function measureHeader() {
+            const iframe = document.getElementById('header-iframe');
+            
+            setTimeout(() => {
+                try {
+                    // CSS height
+                    const cssHeight = window.getComputedStyle(iframe).height;
+                    document.getElementById('css-height').textContent = cssHeight;
+                    
+                    // Actual dimensions
+                    const actualHeight = iframe.offsetHeight;
+                    document.getElementById('actual-height').textContent = actualHeight + 'px';
+                    
+                    // Content dimensions (if accessible)
+                    try {
+                        const contentDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const contentHeight = contentDoc.body.scrollHeight;
+                        const scrollHeight = contentDoc.documentElement.scrollHeight;
+                        
+                        document.getElementById('content-height').textContent = contentHeight + 'px';
+                        document.getElementById('scroll-height').textContent = scrollHeight + 'px';
+                        
+                        // Generate recommendations
+                        generateRecommendations(actualHeight, contentHeight, scrollHeight);
+                        
+                    } catch (e) {
+                        document.getElementById('content-height').textContent = 'Cross-origin blocked';
+                        document.getElementById('scroll-height').textContent = 'Cross-origin blocked';
+                        generateRecommendations(actualHeight);
+                    }
+                    
+                } catch (e) {
+                    console.error('Error measuring header:', e);
+                }
+            }, 1000);
+        }
+        
+        function generateRecommendations(actualHeight, contentHeight, scrollHeight) {
+            const recommendations = document.getElementById('recommendations');
+            recommendations.innerHTML = '';
+            
+            const addRecommendation = (text, type = 'info') => {
+                const li = document.createElement('li');
+                li.style.margin = '8px 0';
+                li.style.padding = '8px';
+                li.style.borderRadius = '4px';
+                li.style.backgroundColor = type === 'warning' ? '#f39c12' : type === 'success' ? '#27ae60' : '#3498db';
+                li.textContent = text;
+                recommendations.appendChild(li);
+            };
+            
+            if (actualHeight === 80) {
+                addRecommendation('✅ Header height is exactly 80px (perfect!)', 'success');
+            } else {
+                addRecommendation(`⚠️ Header height is ${actualHeight}px, expected 80px`, 'warning');
+            }
+            
+            if (contentHeight && Math.abs(contentHeight - actualHeight) > 5) {
+                addRecommendation(`📐 Content height (${contentHeight}px) differs from actual height`, 'warning');
+            }
+            
+            addRecommendation(`🎯 Use margin-top: ${actualHeight}px in movie-detail hero section`);
+            addRecommendation('🔍 Check Console for detailed logs');
+            
+            // Log detailed info
+            console.log('📊 Header Measurements:', {
+                actualHeight,
+                contentHeight,
+                scrollHeight,
+                cssHeight: window.getComputedStyle(document.getElementById('header-iframe')).height
+            });
+        }
+        
+        // Adjust test container margin
+        setTimeout(() => {
+            const iframe = document.getElementById('header-iframe');
+            const container = document.querySelector('.test-container');
+            const headerHeight = iframe.offsetHeight;
+            container.style.marginTop = (headerHeight + 20) + 'px';
+        }, 1500);
+    </script>
+</body>
+</html>

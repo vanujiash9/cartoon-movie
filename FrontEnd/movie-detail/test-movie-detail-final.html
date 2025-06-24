@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Movie Detail - Final</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #3a3a3a;
+            border-radius: 8px;
+        }
+        .test-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover {
+            background: #2980b9;
+        }
+        .login-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .login-form input {
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #2a2a2a;
+            color: white;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status.success { background: #27ae60; }
+        .status.error { background: #e74c3c; }
+        .status.info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 Test Movie Detail Page - Final Check</h1>
+        
+        <div class="test-section">
+            <h3>🔑 Login Status</h3>
+            <div id="loginStatus" class="status info">Checking login status...</div>
+            
+            <div class="login-form">
+                <input type="text" id="usernameInput" placeholder="Username" value="testuser">
+                <input type="text" id="fullNameInput" placeholder="Full Name" value="Test User">
+                <input type="email" id="emailInput" placeholder="Email" value="test@example.com">
+                <button class="test-btn" onclick="simulateLogin()">Simulate Login</button>
+                <button class="test-btn" onclick="simulateLogout()">Simulate Logout</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 Movie Detail Tests</h3>
+            <p>Test the movie detail page with different movie IDs:</p>
+            <button class="test-btn" onclick="testMovie(1)">Test Movie ID 1</button>
+            <button class="test-btn" onclick="testMovie(2)">Test Movie ID 2</button>
+            <button class="test-btn" onclick="testMovie(3)">Test Movie ID 3</button>
+            <button class="test-btn" onclick="testMovie(999)">Test Invalid Movie (999)</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔗 Quick Links</h3>
+            <button class="test-btn" onclick="window.open('movie_detail.html?id=1', '_blank')">Open Movie Detail (ID 1)</button>
+            <button class="test-btn" onclick="window.open('../index.html', '_blank')">Open Main Page</button>
+            <button class="test-btn" onclick="checkConsole()">Check Console Logs</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Backend API Tests</h3>
+            <button class="test-btn" onclick="testAPI()">Test Backend APIs</button>
+            <div id="apiResults"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 Feature Tests</h3>
+            <button class="test-btn" onclick="testHeaderFeatures()">Test Header Features</button>
+            <button class="test-btn" onclick="testCommentFeatures()">Test Comment Features</button>
+            <div id="featureResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Check initial login status
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const email = localStorage.getItem('email');
+            const fullName = localStorage.getItem('fullName');
+            
+            const statusEl = document.getElementById('loginStatus');
+            
+            if (username) {
+                statusEl.innerHTML = `
+                    <strong>✅ Logged In</strong><br>
+                    Username: ${username}<br>
+                    Full Name: ${fullName || 'Not set'}<br>
+                    Email: ${email || 'Not set'}<br>
+                    Token: ${token ? 'Present' : 'Missing'}
+                `;
+                statusEl.className = 'status success';
+            } else {
+                statusEl.innerHTML = '<strong>❌ Not Logged In</strong>';
+                statusEl.className = 'status error';
+            }
+        }
+        
+        function simulateLogin() {
+            const username = document.getElementById('usernameInput').value;
+            const fullName = document.getElementById('fullNameInput').value;
+            const email = document.getElementById('emailInput').value;
+            
+            localStorage.setItem('token', 'fake-jwt-token-for-testing');
+            localStorage.setItem('username', username);
+            localStorage.setItem('fullName', fullName);
+            localStorage.setItem('email', email);
+            
+            checkLoginStatus();
+            alert('✅ Simulated login successful!');
+        }
+        
+        function simulateLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('email');
+            
+            checkLoginStatus();
+            alert('✅ Logged out successfully!');
+        }
+        
+        function testMovie(movieId) {
+            const url = `movie_detail.html?id=${movieId}`;
+            window.open(url, '_blank');
+        }
+        
+        function checkConsole() {
+            console.log('=== MOVIE DETAIL TEST CONSOLE ===');
+            console.log('Login Status:', {
+                token: localStorage.getItem('token'),
+                username: localStorage.getItem('username'),
+                fullName: localStorage.getItem('fullName'),
+                email: localStorage.getItem('email')
+            });
+            alert('Check the browser console for detailed logs');
+        }
+        
+        async function testAPI() {
+            const resultsEl = document.getElementById('apiResults');
+            resultsEl.innerHTML = '<p>Testing APIs...</p>';
+            
+            const tests = [
+                { name: 'Movies API', url: 'http://localhost:8080/api/movies' },
+                { name: 'Comments API', url: 'http://localhost:8080/api/comments/cartoon/1' },
+                { name: 'Movie Detail', url: 'http://localhost:8080/api/movies/1' }
+            ];
+            
+            let results = '<h4>API Test Results:</h4>';
+            
+            for (const test of tests) {
+                try {
+                    const response = await fetch(test.url);
+                    const status = response.status;
+                    results += `<p>✅ ${test.name}: ${status} ${response.statusText}</p>`;
+                } catch (error) {
+                    results += `<p>❌ ${test.name}: Error - ${error.message}</p>`;
+                }
+            }
+            
+            resultsEl.innerHTML = results;
+        }
+        
+        function testHeaderFeatures() {
+            const resultsEl = document.getElementById('featureResults');
+            resultsEl.innerHTML = '<h4>Header Feature Test Results:</h4>';
+            
+            // Test if we can access header functions
+            const tests = [
+                { name: 'updateHeaderLoginStatus', test: () => typeof updateHeaderLoginStatus === 'function' },
+                { name: 'initializeUserInterface', test: () => typeof initializeUserInterface === 'function' },
+                { name: 'startVoiceSearch', test: () => typeof startVoiceSearch === 'function' },
+                { name: 'showNotification', test: () => typeof showNotification === 'function' },
+                { name: 'adjustIframeHeight', test: () => typeof adjustIframeHeight === 'function' }
+            ];
+            
+            tests.forEach(test => {
+                const result = test.test();
+                resultsEl.innerHTML += `<p>${result ? '✅' : '❌'} ${test.name}: ${result ? 'Available' : 'Missing'}</p>`;
+            });
+        }
+        
+        function testCommentFeatures() {
+            const resultsEl = document.getElementById('featureResults');
+            resultsEl.innerHTML += '<h4>Comment Feature Test Results:</h4>';
+            
+            // Test comment-related functions
+            const tests = [
+                { name: 'loadComments', test: () => typeof loadComments === 'function' },
+                { name: 'postComment', test: () => typeof postComment === 'function' },
+                { name: 'likeComment', test: () => typeof likeComment === 'function' },
+                { name: 'deleteComment', test: () => typeof deleteComment === 'function' }
+            ];
+            
+            tests.forEach(test => {
+                const result = test.test();
+                resultsEl.innerHTML += `<p>${result ? '✅' : '❌'} ${test.name}: ${result ? 'Available' : 'Missing'}</p>`;
+            });
+        }
+        
+        // Initialize page
+        window.addEventListener('load', () => {
+            checkLoginStatus();
+        });
+    </script>
+</body>
+</html>

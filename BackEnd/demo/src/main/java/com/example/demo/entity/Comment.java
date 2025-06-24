@@ -100,6 +100,10 @@ public class Comment {
         this.cartoon = cartoon;
     }
 
+    public Integer getCartoonId() {
+        return (this.cartoon != null) ? this.cartoon.getId() : null;
+    }
+
     public Comment getParentComment() {
         return parentComment;
     }

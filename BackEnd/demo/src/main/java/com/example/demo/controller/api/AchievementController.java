@@ -16,8 +16,10 @@ public class AchievementController {
     private AchievementService achievementService;
 
     @PostMapping("/progress")
-    public ResponseEntity<?> updateUserAchievementProgress(@RequestParam Integer userId, @RequestParam String actionType) {
-        achievementService.updateUserAchievementProgress(userId, actionType);
+    public ResponseEntity<?> updateUserAchievementProgress(@RequestParam Integer userId, 
+                                                         @RequestParam String actionType,
+                                                         @RequestParam(required = false) Integer cartoonId) {
+        achievementService.updateUserAchievementProgress(userId, actionType, cartoonId);
         return ResponseEntity.ok().build();
     }
 }

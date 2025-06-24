@@ -25,7 +25,7 @@ public class CommentService {
     private UserService userService;
     
     @Autowired
-    private UserAchievementService userAchievementService;
+    private AchievementService achievementService;
     
     @Autowired
     private NotificationService notificationService;
@@ -46,7 +46,7 @@ public class CommentService {
         
         // Trigger achievement check for first review
         if (savedComment.getUser() != null) {
-            userAchievementService.checkAndGrantAchievements(savedComment.getUser());
+            achievementService.updateUserAchievementProgress(savedComment.getUser().getId(), "REVIEW", savedComment.getCartoonId());
         }
         
         // Send notification if this is a reply to another comment
@@ -133,7 +133,8 @@ public class CommentService {
         
         // Trigger achievement check for comment owner (100 likes achievement)
         if (commentOwner != null && isLiked) {
-            userAchievementService.checkAndGrantAchievements(commentOwner);
+            // Kích hoạt thành tựu cho người chủ comment (ví dụ: nhận 100 likes)
+            achievementService.updateUserAchievementProgress(commentOwner.getId(), "RECEIVE_LIKE", null);
         }
     }
 

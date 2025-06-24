@@ -23,6 +23,9 @@ public class UserAchievement {
     @Temporal(TemporalType.TIMESTAMP)
     private Date achievedAt;
 
+    @Column(name = "progress_details", columnDefinition = "TEXT")
+    private String progressDetails; // JSON string to store details like watched movie IDs
+
     // Getters and setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -34,4 +37,6 @@ public class UserAchievement {
     public void setProgress(int progress) { this.progress = progress; }
     public Date getAchievedAt() { return achievedAt; }
     public void setAchievedAt(Date achievedAt) { this.achievedAt = achievedAt; }
+    public String getProgressDetails() { return progressDetails; }
+    public void setProgressDetails(String progressDetails) { this.progressDetails = progressDetails; }
 }

@@ -1,662 +1,1299 @@
-// script.js
-document.addEventListener('DOMContentLoaded', () => {
-    const headerIframe = document.getElementById('header-iframe');
-    const footerIframe = document.getElementById('footer-iframe');
-    const body = document.body;
+// === GLOBAL HELPERS ===
+// Dummy notification function if not globally available from another script
+if (typeof showNotification === 'undefined') {
+    window.showNotification = function(message, type = 'info') {
+        console.log(`[Notification] ${type.toUpperCase()}: ${message}`);
+        
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#3498db'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 300px;
+            word-wrap: break-word;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        `;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        // Remove after 4 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 4000);
+    }
+}
 
-    // --- THEME MANAGEMENT ---
-    const applyTheme = (themeName) => {
-        body.classList.remove('light-mode', 'dark-mode');
-        body.classList.add(themeName + '-mode');
-        localStorage.setItem('theme', themeName);
-        syncThemeWithIframes(themeName);
-    };
+// Helper function to validate and provide fallback for image URLs
+function getValidImageUrl(url, fallback) {
+    if (!url || url.trim() === '' || url.includes('/api/placeholder/')) {
+        return fallback;
+    }
+    return url;
+}
 
-    const syncThemeWithIframes = (themeName) => {
-        const themeMessage = { type: 'themeChange', theme: themeName };
-        if (headerIframe && headerIframe.contentWindow) {
-            headerIframe.contentWindow.postMessage(themeMessage, '*');
-        }
-        if (footerIframe && footerIframe.contentWindow) {
-            footerIframe.contentWindow.postMessage(themeMessage, '*');
-        }
-    };
+// Helper function to create SVG placeholder
+function createSVGPlaceholder(text, width, height, bgColor = '#3498db', textColor = '#ffffff') {
+    const svgContent = `
+        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="${width}" height="${height}" fill="${bgColor}"/>
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+                  font-family="Arial, sans-serif" font-size="${Math.min(width, height) / 10}" 
+                  fill="${textColor}" font-weight="bold">${text.slice(0, 20)}</text>
+        </svg>
+    `;
+    return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgContent)));
+}
 
-    const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
-    applyTheme(savedTheme);
+// === USER INTERFACE INITIALIZATION ===
 
-
-    // --- IFRAME MANAGEMENT ---
-    const adjustIframeHeight = (iframeElement) => {
-        if (!iframeElement || !iframeElement.contentWindow) return;
-        try {
-            const iframeBody = iframeElement.contentWindow.document.body;
-            const iframeHtml = iframeElement.contentWindow.document.documentElement;
-            const height = Math.max(
-                iframeBody.scrollHeight, iframeBody.offsetHeight,
-                iframeHtml.clientHeight, iframeHtml.scrollHeight, iframeHtml.offsetHeight
-            );
-            iframeElement.style.height = height + 'px';
-
-            // Send theme to iframe upon load, as it might have missed the initial sync
-            const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
-            iframeElement.contentWindow.postMessage({ type: 'themeChange', theme: currentTheme }, '*');
-
-        } catch (e) {
-            console.warn("Could not adjust iframe height or sync theme for: " + iframeElement.id, e);
-        }
-    };
+// Initialize user interface and header features
+function initializeUserInterface() {
+    console.log('🔧 Initializing user interface...');
     
-    // Make adjustIframeHeight globally accessible for iframe onload
-    window.adjustIframeHeight = adjustIframeHeight;
+    // Update header login status
+    updateHeaderLoginStatus();
+    
+    // Initialize voice search if available
+    initializeVoiceSearch();
+    
+    // Initialize notification bell
+    initializeNotificationBell();
+    
+    // Initialize user dropdown
+    initializeUserDropdown();
+    
+    // Initialize search form
+    initializeSearchForm();
+    
+    console.log('✅ User interface initialized');
+}
 
+// Update header login status
+function updateHeaderLoginStatus() {
+    console.log('🔍 updateHeaderLoginStatus called');
 
-    const adjustContentForFixedHeader = () => {
-        if (headerIframe && headerIframe.contentWindow) {
-            try {
-                const headerHeight = headerIframe.contentWindow.document.body.offsetHeight;
-                const movieHero = document.querySelector('.movie-detail-hero'); // Target specific element
-                if (movieHero) {
-                    movieHero.style.marginTop = headerHeight + 'px';
-                } else { // Fallback for other pages if needed
-                    body.style.paddingTop = headerHeight + 'px'; // Or use a class like .fixed-header-padding
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    const email = localStorage.getItem('email') || '';
+    const fullName = localStorage.getItem('fullName') || '';
+
+    console.log('📋 Login status check:', { token: !!token, username, email, fullName });
+
+    // Get header elements
+    const signInBtn = document.getElementById('signInBtn');
+    const userMenu = document.getElementById('userMenu');
+    const displayUserName = document.getElementById('displayUserName');
+    const userAvatar = document.getElementById('userAvatar');
+
+    console.log('🎯 Header elements:', {
+        signInBtn: !!signInBtn,
+        userMenu: !!userMenu,
+        displayUserName: !!displayUserName,
+        userAvatar: !!userAvatar
+    });
+
+    // Check login status (only need username)
+    if (username) {
+        console.log('✅ User is logged in:', username);
+
+        if (signInBtn) {
+            signInBtn.style.display = 'none';
+            console.log('🔄 Hidden sign in button');
+        }
+
+        if (userMenu) {
+            userMenu.style.display = 'flex';
+            userMenu.classList.add('visible');
+            console.log('🔄 Showed user menu');
+        }
+
+        if (displayUserName) {
+            const displayName = fullName ? fullName : username;
+            displayUserName.textContent = displayName;
+            console.log('🎯 script.js set display name to:', displayName, 'from fullName:', fullName, 'username:', username);
+        }
+
+        if (userAvatar) {
+            // Avatar with first letter of fullName if available, otherwise username
+            const firstLetter = (fullName ? fullName : username).charAt(0).toUpperCase();
+            userAvatar.src = `data:image/svg+xml;base64,${btoa(`
+                <svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <circle cx='20' cy='20' r='20' fill='#3498db'/>
+                    <text x='20' y='26' text-anchor='middle' font-family='Arial' font-size='16' font-weight='bold' fill='white'>${firstLetter}</text>
+                </svg>
+            `)}`;
+            console.log('🔄 Updated avatar:', firstLetter);
+        }
+    } else {
+        console.log('❌ User not logged in');
+
+        if (signInBtn) {
+            signInBtn.style.display = 'flex';
+            console.log('🔄 Showed sign in button');
+        }
+
+        if (userMenu) {
+            userMenu.style.display = 'none';
+            userMenu.classList.remove('visible');
+            console.log('🔄 Hidden user menu');
+        }
+    }
+}
+
+// Initialize voice search functionality
+function initializeVoiceSearch() {
+    const voiceBtn = document.getElementById('voiceBtn');
+    if (voiceBtn) {
+        voiceBtn.addEventListener('click', startVoiceSearch);
+        console.log('🎤 Voice search initialized');
+    }
+}
+
+// Initialize notification bell
+function initializeNotificationBell() {
+    const bellIcon = document.querySelector('.notification-bell');
+    const dropdown = document.querySelector('.notification-dropdown');
+    
+    if (bellIcon && dropdown) {
+        bellIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+            console.log('🔔 Notification dropdown toggled');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+        });
+
+        // Prevent dropdown from closing when clicking inside it
+        dropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        console.log('🔔 Notification bell initialized');
+    }
+}
+
+// Initialize user dropdown menu
+function initializeUserDropdown() {
+    const userMenu = document.getElementById('userMenu');
+    const userDropdown = document.querySelector('.user-dropdown');
+    
+    if (userMenu && userDropdown) {
+        userMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+            console.log('👤 User dropdown toggled');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            userDropdown.classList.remove('show');
+        });
+
+        // Prevent dropdown from closing when clicking inside it
+        userDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Handle logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                localStorage.removeItem('email');
+                localStorage.removeItem('fullName');
+                showNotification('Đã đăng xuất thành công!', 'success');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 1000);
+            });
+        }
+
+        console.log('👤 User dropdown initialized');
+    }
+}
+
+// Initialize search form
+function initializeSearchForm() {
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            if (query) {
+                showNotification(`Đang tìm kiếm: ${query}`, 'info');
+                // Redirect to main page with search query
+                window.location.href = `../index.html?search=${encodeURIComponent(query)}`;
+            }
+        });
+        console.log('🔍 Search form initialized');
+    }
+}
+
+// Voice search functionality
+function startVoiceSearch() {
+    const voiceBtn = document.getElementById('voiceBtn');
+    
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showNotification('Trình duyệt không hỗ trợ tìm kiếm giọng nói', 'error');
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'vi-VN';
+
+    recognition.start();
+    
+    recognition.onstart = function() {
+        console.log('Voice search started...');
+        showNotification('Đang nghe... Hãy nói từ khóa tìm kiếm', 'info');
+        
+        if (voiceBtn) {
+            voiceBtn.style.color = 'var(--light-azure)';
+            voiceBtn.style.transform = 'scale(1.2)';
+        }
+    };
+
+    recognition.onresult = function(event) {
+        const speechResult = event.results[0][0].transcript;
+        console.log('Voice result:', speechResult);
+        
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = speechResult;
+            showNotification(`Đã nhận diện: "${speechResult}"`, 'success');
+            // Auto-submit search
+            setTimeout(() => {
+                const searchForm = document.getElementById('searchForm');
+                if (searchForm) {
+                    searchForm.dispatchEvent(new Event('submit'));
                 }
-            } catch (e) {
-                const fallbackHeight = '70px';
-                const movieHero = document.querySelector('.movie-detail-hero');
-                if (movieHero) movieHero.style.marginTop = fallbackHeight;
-                else body.style.paddingTop = fallbackHeight;
-                console.warn("Could not get header height for margin adjustment.", e);
-            }
+            }, 1000);
         }
     };
 
-    if (headerIframe) {
-        headerIframe.addEventListener('load', () => {
-            adjustIframeHeight(headerIframe); // Ensure height is set
-            adjustContentForFixedHeader();   // Then adjust margin
-        });
+    recognition.onend = function() {
+        console.log('Voice search ended.');
+        
+        if (voiceBtn) {
+            voiceBtn.style.color = ''; // Reset color
+            voiceBtn.style.transform = ''; // Reset scale
+        }
+    };
+
+    recognition.onerror = function(event) {
+        console.error('Voice search error:', event.error);
+        showNotification('Lỗi tìm kiếm giọng nói: ' + event.error, 'error');
+        
+        if (voiceBtn) {
+            voiceBtn.style.color = '';
+            voiceBtn.style.transform = '';
+        }
+    };
+}
+
+// Show notification function
+function showNotification(message, type = 'success') {
+    // Try to use existing notification system first
+    if (window.showNotification && typeof window.showNotification === 'function') {
+        window.showNotification(message, type);
+        return;
     }
-    if (footerIframe) {
-        footerIframe.addEventListener('load', () => {
-            adjustIframeHeight(footerIframe);
-        });
+    
+    // Fallback toast notification
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
+    
+    // Set colors based on type
+    const colors = {
+        success: '#27ae60',
+        error: '#e74c3c',
+        info: '#3498db',
+        warning: '#f39c12'
+    };
+    toast.style.backgroundColor = colors[type] || colors.info;
+    
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+    }, 10);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Adjust iframe height for footer
+function adjustIframeHeight(iframe) {
+    try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const height = iframeDoc.body.scrollHeight;
+        iframe.style.height = height + 'px';
+        console.log('📐 Adjusted iframe height to:', height + 'px');
+    } catch (error) {
+        console.warn('Could not adjust iframe height:', error);
+        // Set a default height if we can't access the content
+        iframe.style.height = '200px';
+    }
+}
+
+// === MAIN LOGIC ===
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🎬 Movie detail page loaded');
+    
+    // Initialize user interface first
+    initializeUserInterface();
+    
+    // --- MOVIE DETAIL FETCHING ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get('id');
+
+    console.log('📋 URL Parameters:', {
+        movieId,
+        fullURL: window.location.href,
+        search: window.location.search
+    });
+
+    if (movieId) {
+        fetchMovieDetails(movieId);
+        // In a real app, you'd also fetch episodes, reviews, etc.
+        // fetchMovieEpisodes(movieId);
+        // fetchMovieReviews(movieId);
+    } else {
+        console.warn('⚠️ No movie ID found in URL');
+        handleFetchError('Không tìm thấy ID phim trong URL.');
     }
 
+    // --- INITIALIZE EVENT LISTENERS ---
+    setupEventListeners();
+    
+    // Add some global error handling
+    window.addEventListener('error', (event) => {
+        console.error('🚨 Global error:', event.error);
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('🚨 Unhandled promise rejection:', event.reason);
+    });
+});
 
-    // --- MODAL MANAGEMENT ---
-    const modals = document.querySelectorAll('.modal');
+// === DATA FETCHING FUNCTIONS ===
 
-    window.openModal = (modalId) => {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = 'flex';
-            body.style.overflow = 'hidden';
-            // Add specific class for video modal content for styling
-            if (modalId === 'video-player-modal' || modalId === 'trailer-modal') {
-                modal.querySelector('.modal-content').classList.add('video-modal-padding');
-            }
+async function fetchMovieDetails(movieId) {
+    const apiUrl = `http://localhost:8080/api/cartoons/${movieId}`;
+    console.log(`🎬 Fetching details for movie ID: ${movieId} from ${apiUrl}`);
+    
+    // Show loading state
+    showLoadingState();
+    
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }        const movieResponse = await response.json();
+        console.log('✅ API Response received:', movieResponse);
+        
+        // Extract the actual cartoon data from the API response
+        const movie = movieResponse.cartoon || movieResponse;
+        const stats = {
+            likeCount: movieResponse.likeCount || 0,
+            dislikeCount: movieResponse.dislikeCount || 0,
+            isLiked: movieResponse.isLiked || false,
+            isDisliked: movieResponse.isDisliked || false
+        };
+        
+        console.log('✅ Movie details extracted successfully:', {
+            id: movie.id,
+            title: movie.title,
+            description: movie.description ? movie.description.substring(0, 50) + '...' : 'No description',
+            stats: stats,
+            fields: Object.keys(movie)
+        });
+        populateMovieDetails(movie, stats);
+    } catch (error) {
+        console.error('❌ Failed to fetch movie details:', error);
+        handleFetchError('Lỗi khi tải dữ liệu phim.', error.message);
+    }
+}
+
+function showLoadingState() {
+    const heroTitle = document.getElementById('movie-banner-title');
+    const movieTitle = document.getElementById('movie-title');
+    
+    if (heroTitle) heroTitle.textContent = 'Đang tải...';
+    if (movieTitle) movieTitle.textContent = 'Đang tải...';
+}
+
+// === DOM POPULATION FUNCTIONS ===
+
+function populateMovieDetails(movie, stats = {}) {
+    console.log('🎬 populateMovieDetails called with:');
+    console.log('Raw movie data:', movie);
+    console.log('Stats data:', stats);
+    console.log('Movie object keys:', Object.keys(movie));
+    
+    // Handle different possible title fields and ensure we have a valid title
+    const movieTitle = movie.title || movie.name || movie.movieTitle || 'Tên phim không xác định';
+    const movieDescription = movie.description || movie.overview || movie.summary || 'Chưa có mô tả cho bộ phim này.';
+    
+    console.log('✅ Processed data:');
+    console.log('- Final title:', movieTitle);
+    console.log('- Final description:', movieDescription.substring(0, 100) + '...');
+    console.log('- Original title field:', movie.title);
+    console.log('- Original description field:', movie.description);
+    
+    // Update page title
+    document.title = `${movieTitle} - Maxion`;
+
+    // --- Hero Section ---
+    const heroImg = document.getElementById('movie-banner-img');
+    const heroTitle = document.getElementById('movie-banner-title');
+    const heroDesc = document.getElementById('movie-banner-description');
+    
+    if(heroImg) {
+        const bannerUrl = movie.bannerUrl || movie.imageUrl || movie.poster_path;
+        if (bannerUrl && !bannerUrl.includes('/api/placeholder/')) {
+            heroImg.src = bannerUrl;
+            heroImg.onerror = () => {
+                heroImg.src = createSVGPlaceholder(movieTitle, 1200, 500, '#2c3e50', '#ffffff');
+            };
+        } else {
+            heroImg.src = createSVGPlaceholder(movieTitle, 1200, 500, '#2c3e50', '#ffffff');
         }
-    };
+    }
+    if(heroTitle) heroTitle.textContent = movieTitle;
+    if(heroDesc) heroDesc.textContent = movieDescription;
 
-    window.closeModal = (modalId) => {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = 'none';
-            body.style.overflow = '';
+    // --- Main Info Section ---
+    const posterImg = document.getElementById('movie-poster-img');
+    const mainMovieTitle = document.getElementById('movie-title');
+    const metaInfo = document.getElementById('movie-meta-info');
 
-            // Remove specific class
-            modal.querySelector('.modal-content').classList.remove('video-modal-padding');
-
-            const iframe = modal.querySelector('iframe');
-            if (iframe && iframe.contentWindow) {
-                // Best way to stop YouTube video is to reset src or use postMessage API
-                const originalSrc = iframe.src;
-                iframe.src = ''; // Detach to stop
-                setTimeout(() => { iframe.src = originalSrc; }, 50); // Reattach if needed later (optional)
-                // iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); // For YouTube API
-            }
-            const videoElement = modal.querySelector('video');
-            if (videoElement) {
-                videoElement.pause();
-            }
+    if(posterImg) {
+        const posterUrl = movie.imageUrl || movie.poster_path || movie.bannerUrl;
+        if (posterUrl && !posterUrl.includes('/api/placeholder/')) {
+            posterImg.src = posterUrl;
+            posterImg.onerror = () => {
+                posterImg.src = createSVGPlaceholder(movieTitle, 300, 450, '#34495e', '#ffffff');
+            };
+        } else {
+            posterImg.src = createSVGPlaceholder(movieTitle, 300, 450, '#34495e', '#ffffff');
         }
-    };
+    }
+    if(mainMovieTitle) mainMovieTitle.textContent = movieTitle;    if(metaInfo) {
+        // Build meta info with better fallbacks
+        const metaItems = [];
+        
+        if (movie.releaseYear) metaItems.push(`${movie.releaseYear}`);
+        if (movie.totalEpisodes) {
+            metaItems.push(`${movie.totalEpisodes} tập`);
+        } else {
+            metaItems.push('Đang cập nhật');
+        }
+        if (movie.status && movie.status.trim() !== '') {
+            metaItems.push(movie.status);
+        } else {
+            metaItems.push('N/A');
+        }
+        if (movie.duration) {
+            metaItems.push(`${movie.duration} phút`);
+        } else {
+            metaItems.push('24 phút'); // Default
+        }
+        
+        // Age rating fallback
+        metaItems.push(movie.ageRating || '13+');
+        
+        metaInfo.innerHTML = metaItems.map(item => `<span>${item}</span>`).join('');
+    }// --- Action Buttons ---
+    const watchNowBtn = document.getElementById('watch-now-btn');
+    if(watchNowBtn) {
+        watchNowBtn.onclick = () => {
+            // Track user action if available
+            if (window.trackUserAction) {
+                window.trackUserAction('WATCH_MOVIE', movie.id);
+            }
+            window.location.href = `../movie-player/movie.html?id=${movie.id}`;
+        };
+    }
+    
+    // --- Like/Dislike Stats ---
+    const ratingSection = document.querySelector('.movie-rating');
+    if (ratingSection && stats) {
+        // Add like/dislike stats after the rating
+        let statsHtml = `
+            <div class="movie-stats" style="margin-top: 10px; display: flex; gap: 15px; align-items: center;">
+                <span class="stat-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span style="color: #27ae60;">👍</span>
+                    <span>${stats.likeCount || 0} lượt thích</span>
+                </span>
+                <span class="stat-item" style="display: flex; align-items: center; gap: 5px;">
+                    <span style="color: #e74c3c;">👎</span>
+                    <span>${stats.dislikeCount || 0} không thích</span>
+                </span>
+            </div>
+        `;
+        
+        // Remove existing stats if any
+        const existingStats = ratingSection.querySelector('.movie-stats');
+        if (existingStats) {
+            existingStats.remove();
+        }
+        
+        ratingSection.insertAdjacentHTML('afterend', statsHtml);
+    }
+    // Note: Add to list and Share buttons can be enhanced here
 
-    modals.forEach(modal => {
-        // Close on backdrop click
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal(modal.id);
+    // --- Overview Tab ---
+    const overviewDesc = document.getElementById('movie-overview-description');
+    const categoryList = document.getElementById('movie-category-list');
+
+    if(overviewDesc) {
+        overviewDesc.innerHTML = `<p>${movieDescription.replace(/\n/g, '</p><p>')}</p>`;
+    }
+      if(categoryList) {
+        const genres = movie.genre || movie.genres;
+        if (genres && genres.trim() !== '') {
+            // Handle both comma-separated string and array
+            const genreArray = Array.isArray(genres) ? genres : genres.split(',');
+            const validGenres = genreArray.filter(g => g && g.trim() !== '').map(g => g.trim());
+            
+            if (validGenres.length > 0) {
+                categoryList.innerHTML = validGenres.map(g => `<div class="category-item">${g}</div>`).join('');
+            } else {
+                categoryList.innerHTML = '<span>Đang cập nhật</span>';
+            }
+        } else {
+            categoryList.innerHTML = '<span>Đang cập nhật</span>';
+        }
+    }
+    
+    // --- Trailer Modal ---
+    const trailerModal = document.getElementById('trailer-modal');
+    const playTrailerBtn = document.querySelector('.play-trailer-btn');
+    if (trailerModal && movie.trailerUrl && movie.trailerUrl.trim() !== '') {
+        const iframe = trailerModal.querySelector('iframe');
+        if (iframe) {
+            // Convert YouTube URLs to embed format if needed
+            let embedUrl = movie.trailerUrl;
+            if (movie.trailerUrl.includes('youtube.com/watch?v=')) {
+                const videoId = movie.trailerUrl.split('v=')[1].split('&')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            } else if (movie.trailerUrl.includes('youtu.be/')) {
+                const videoId = movie.trailerUrl.split('youtu.be/')[1].split('?')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            }
+            iframe.src = embedUrl;
+        }
+        if (playTrailerBtn) {
+            playTrailerBtn.style.display = 'flex';
+        }
+    } else {
+        // Hide trailer button if no trailer available
+        if (playTrailerBtn) {
+            playTrailerBtn.style.display = 'none';
+        }
+    }    console.log('✅ Movie details populated successfully for:', movieTitle);
+    console.log('📊 Summary:');
+    console.log('- Title:', movieTitle);
+    console.log('- Description length:', movieDescription.length, 'chars');
+    console.log('- Release year:', movie.releaseYear || 'N/A');
+    console.log('- Total episodes:', movie.totalEpisodes || 'N/A');
+    console.log('- Genre:', movie.genre || 'N/A');
+    console.log('- Like count:', stats.likeCount || 0);
+    console.log('- Has poster image:', !!(movie.imageUrl && !movie.imageUrl.includes('/api/placeholder/')));
+    console.log('- Has banner image:', !!(movie.bannerUrl || movie.imageUrl));
+    console.log('- Has trailer:', !!(movie.trailerUrl && movie.trailerUrl.trim()));
+    
+    // Initialize community discussion
+    if (movie.id) {
+        initializeCommunityDiscussion(movie.id);
+    }
+}
+
+function handleFetchError(userMessage, technicalMessage = '') {
+    console.error('🚨 Movie fetch error:', { userMessage, technicalMessage });
+    
+    const contentArea = document.querySelector('.movie-detail-content .container');
+    if (contentArea) {
+        contentArea.innerHTML = `
+            <div style="text-align: center; padding: 50px 20px; color: var(--text-color, #ffffff);">
+                <h2 style="color: #e74c3c; margin-bottom: 20px;">❌ ${userMessage}</h2>
+                <p style="margin-bottom: 15px;">Vui lòng kiểm tra lại đường dẫn hoặc thử lại sau.</p>
+                ${technicalMessage ? `
+                    <details style="margin: 20px 0; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <summary style="cursor: pointer; color: var(--text-secondary, #cccccc); font-size: 0.9rem;">Chi tiết lỗi (nhấp để xem)</summary>
+                        <pre style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; margin-top: 10px; font-size: 0.8rem; overflow-x: auto;">${technicalMessage}</pre>
+                    </details>
+                ` : ''}
+                <div style="margin-top: 30px;">
+                    <a href="../index.html" class="btn btn-primary" style="margin-right: 10px; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">🏠 Về trang chủ</a>
+                    <button onclick="window.location.reload()" class="btn btn-outline" style="padding: 10px 20px; border: 1px solid #3498db; color: #3498db; background: transparent; border-radius: 5px; cursor: pointer;">🔄 Thử lại</button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Hide hero section if there's a total failure  
+    const heroSection = document.querySelector('.movie-detail-hero');
+    if(heroSection) {
+        heroSection.style.display = 'none';
+    }
+    
+    // Update page title to reflect error
+    document.title = 'Lỗi tải phim - Maxion';
+}
+
+
+// === EVENT LISTENERS SETUP ===
+
+function setupEventListeners() {
+    // --- Tab Functionality ---
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+    
+    // --- Modal Triggers ---
+    const playTrailerBtn = document.querySelector('.play-trailer-btn');
+    if(playTrailerBtn) {
+        playTrailerBtn.addEventListener('click', () => openModal('trailer-modal'));
+    }
+    
+    // This is a placeholder for episode clicks. This should be delegated if episodes are loaded dynamically.
+    document.querySelectorAll('.episode-card').forEach(card => {
+        card.addEventListener('click', () => {
+            // In a real app, you'd pass the specific episode data to the player
+            openModal('video-player-modal');
+        });
+    });
+
+    // --- Modal Management (Global) ---
+    document.querySelectorAll('.modal').forEach(modal => {
+        // Close on background click
+        modal.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal(this.id);
             }
         });
         // Close button inside modal
-        const closeButton = modal.querySelector('.close-btn');
-        if (closeButton) {
-            closeButton.addEventListener('click', () => closeModal(modal.id));
+        const closeBtn = modal.querySelector('.close-btn, .close');
+        if(closeBtn) {
+            closeBtn.addEventListener('click', () => closeModal(modal.id));
         }
     });
 
-    // Close on Escape key
-    window.addEventListener('keydown', (event) => {
+    // Close modal on escape key
+    window.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
-            modals.forEach(modal => {
+            document.querySelectorAll('.modal').forEach(modal => {
                 if (modal.style.display === 'flex') {
                     closeModal(modal.id);
                 }
             });
         }
     });
+}
 
+// === MODAL FUNCTIONS (made globally accessible) ===
 
-    // --- TAB FUNCTIONALITY ---
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Deactivate all tabs and content
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-
-            // Activate clicked tab and corresponding content
-            tab.classList.add('active');
-            const targetContentId = tab.getAttribute('data-tab');
-            const targetContent = document.getElementById(targetContentId);
-            if (targetContent) {
-                targetContent.classList.add('active');
-            }
-        });
-    });
-
-
-    // --- MODAL TRIGGERS (Specific to this page) ---
-    const playTrailerButton = document.querySelector('.play-trailer-btn');
-    if (playTrailerButton) {
-        playTrailerButton.addEventListener('click', () => openModal('trailer-modal'));
-    }
-
-    const episodeCards = document.querySelectorAll('.episode-card');
-    episodeCards.forEach(card => {
-        card.addEventListener('click', () => {
-            // Potentially pass data to modal before opening
-            // For now, just opens the generic video player modal
-            openModal('video-player-modal');
-        });
-    });
-
-    const watchNowButton = document.querySelector('.action-buttons .btn-primary');
-    if (watchNowButton) {
-        watchNowButton.addEventListener('click', () => {
-            // Logic to determine which episode to play or open player
-            openModal('video-player-modal');
-        });
-    }
-    
-    // --- COMMUNITY FILTER TABS (Example, if dynamic content loading is not needed) ---
-    const filterTabs = document.querySelectorAll('.filter-tab');
-    filterTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            filterTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            // Add logic here to filter community topics if they are not loaded dynamically
-            // console.log('Filtering by:', tab.textContent);
-        });
-    });
-
-
-    // --- MESSAGE LISTENER (from iframes) ---
-    window.addEventListener('message', (event) => {
-        // IMPORTANT: Check event.origin for security in a production environment!
-        // Example: if (event.origin !== 'https://yourdomain.com') return;
-
-        if (event.data && event.data.type) {
-            switch (event.data.type) {
-                case 'requestHeightUpdate': // If an iframe's content changes dynamically
-                    const iframeToUpdate = document.getElementById(event.data.iframeId);
-                    if (iframeToUpdate) {
-                        adjustIframeHeight(iframeToUpdate);
-                    }
-                    break;
-                case 'scrollToTop': // If footer back-to-top sends this
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    break;
-                 case 'iframeLoaded': // Custom message from iframe after its own JS runs
-                    if (event.data.iframeId === 'header-iframe') {
-                        adjustContentForFixedHeader();
-                    }
-                    adjustIframeHeight(document.getElementById(event.data.iframeId));
-                    break;
-            }
-        }
-    });
-
-
-    // --- SOCIAL SHARING & REFERRAL FUNCTIONS ---
-
-    // Movie information (in a real app, this would come from the backend)
-    const currentMovie = {
-        id: 1, // This should be dynamic
-        title: "Demon Slayer",
-        url: window.location.href
-    };
-
-    // Current user (in a real app, this would come from authentication)
-    const currentUser = {
-        id: JSON.parse(localStorage.getItem('currentUser') || '{}').id || 1,
-        username: JSON.parse(localStorage.getItem('currentUser') || '{}').username || 'user'
-    };
-
-    // Open share modal
-    window.openShareModal = () => {
-        const modal = document.getElementById('shareModal');
+window.openModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if(modal) {
         modal.style.display = 'flex';
-        generateReferralLink();
-    };
+        document.body.style.overflow = 'hidden';
+    }
+};
 
-    // Close share modal
-    window.closeShareModal = () => {
-        const modal = document.getElementById('shareModal');
+window.closeModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if(modal) {
         modal.style.display = 'none';
-    };
+        document.body.style.overflow = '';
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('shareModal');
-        if (event.target === modal) {
-            closeShareModal();
+        // If it's a video modal, pause the video to save resources
+        const iframe = modal.querySelector('iframe');
+        if (iframe && iframe.contentWindow) {
+            const originalSrc = iframe.src;
+            iframe.src = ''; // This is a common trick to stop video playback
+            iframe.src = originalSrc;
         }
     }
+};
 
-    // Share to Facebook
-    window.shareToFacebook = async () => {
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentMovie.url)}&quote=${encodeURIComponent(`Tôi đang xem "${currentMovie.title}" trên MAXION! Cùng xem nhé!`)}`;
-        
-        // Record the share
-        await recordShare('facebook');
-        
-        // Open share window
-        window.open(shareUrl, 'facebook-share', 'width=600,height=400');
-    };
+// Make share modal functions global if they are called from HTML onclick
+window.openShareModal = function() {
+    openModal('shareModal');
+};
+window.closeShareModal = function() {
+    closeModal('shareModal');
+};
 
-    // Share to Twitter
-    window.shareToTwitter = async () => {
-        const shareText = `Tôi đang xem "${currentMovie.title}" trên MAXION! Cùng xem nhé! ${currentMovie.url} #MaxionMovies #AnimeLovers`;
-        const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-        
-        // Record the share
-        await recordShare('twitter');
-        
-        // Open share window
-        window.open(shareUrl, 'twitter-share', 'width=600,height=400');
-    };
+// === COMMUNITY DISCUSSION FUNCTIONS ===
 
-    // Share to Telegram
-    window.shareToTelegram = async () => {
-        const shareText = `Tôi đang xem "${currentMovie.title}" trên MAXION! Cùng xem nhé!`;
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(currentMovie.url)}&text=${encodeURIComponent(shareText)}`;
-        
-        // Record the share
-        await recordShare('telegram');
-        
-        // Open share window
-        window.open(shareUrl, 'telegram-share', 'width=600,height=400');
-    };
+let currentUser = null;
+let currentMovieId = null;
+let isLoadingComments = false;
 
-    // Copy share link
-    window.copyShareLink = async () => {
-        try {
-            await navigator.clipboard.writeText(currentMovie.url);
-            
-            // Record the share
-            await recordShare('link');
-            
-            // Show success message
-            const button = document.querySelector('.copy-link');
-            const originalText = button.innerHTML;
-            button.innerHTML = '<span>✅</span> Đã sao chép!';
-            button.style.background = '#00d4aa';
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.style.background = '';
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy link: ', err);
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = currentMovie.url;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
-            await recordShare('link');
-            alert('Link đã được sao chép!');
-        }
-    };
+// Initialize community discussion
+function initializeCommunityDiscussion(movieId) {
+    currentMovieId = movieId;
+    currentUser = getCurrentUser(); // Use shared function from shared-api.js
+    
+    // Load comments for the movie
+    loadComments(movieId);
+    
+    // Setup event listeners for comment form
+    setupCommentForm();
+    
+    // Update UI based on login status
+    updateUIForLoginStatus();
+}
 
-    // Record share action to backend
-    async function recordShare(platform) {
-        try {
-            const response = await fetch('/api/social/share', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: currentUser.id,
-                    cartoonId: currentMovie.id,
-                    platform: platform
-                })
-            });
-            
-            const result = await response.json();
-            if (result.success) {
-                console.log('Share recorded successfully');
-                // Could show a notification about achievement if earned
-                checkForNewAchievements();
-            }
-        } catch (error) {
-            console.error('Failed to record share:', error);
-        }
-    }
-
-    // Generate referral link
-    async function generateReferralLink() {
-        try {
-            const response = await fetch('/api/referral/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: currentUser.id
-                })
-            });
-            
-            const result = await response.json();
-            if (result.success) {
-                document.getElementById('referralLink').value = result.referralUrl;
-            }
-        } catch (error) {
-            console.error('Failed to generate referral link:', error);
-            document.getElementById('referralLink').value = 'https://maxion-movie.com/register?ref=ERROR';
-        }
-    }
-
-    // Copy referral link
-    window.copyReferralLink = async () => {
-        const referralLink = document.getElementById('referralLink').value;
-        
-        try {
-            await navigator.clipboard.writeText(referralLink);
-            
-            // Show success message
-            const button = document.querySelector('.referral-link-container button');
-            const originalText = button.innerHTML;
-            button.innerHTML = '✅ Đã sao chép!';
-            button.style.background = '#00d4aa';
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.style.background = '';
-            }, 2000);
-        } catch (err) {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = referralLink;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
-            alert('Link mời bạn bè đã được sao chép!');
-        }
-    }
-
-    // Check for new achievements
-    async function checkForNewAchievements() {
-        try {
-            const response = await fetch(`/api/achievements/progress/${currentUser.id}`);
-            const achievements = await response.json();
-            
-            // Check if user just earned social sharing or referral achievements
-            const socialAchievement = achievements.find(a => a.id === 8 && a.completed);
-            const referralAchievement = achievements.find(a => a.id === 10 && a.completed);
-            
-            if (socialAchievement) {
-                showAchievementNotification("🎉 Thành tựu mở khóa: Chia sẻ phim lên mạng xã hội!");
-            }
-            
-            if (referralAchievement) {
-                showAchievementNotification("🎉 Thành tựu mở khóa: Mời bạn bè đăng ký!");
-            }
-        } catch (error) {
-            console.error('Failed to check achievements:', error);
-        }
-    }
-
-    // Show achievement notification
-    function showAchievementNotification(message) {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            z-index: 10000;
-            font-weight: 500;
-            max-width: 300px;
-            animation: slideIn 0.5s ease-out;
-        `;
-        notification.innerHTML = message;
-        
-        // Add animation CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        document.body.appendChild(notification);
-        
-        // Remove after 5 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideIn 0.5s ease-out reverse';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 500);
-        }, 5000);
-    }
-}); // End DOMContentLoaded
-
-// API Configuration
-const API_BASE = 'http://localhost:8080';
-let authToken = localStorage.getItem('authToken');
-let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-
-// Get current movie ID from URL or set default
-const urlParams = new URLSearchParams(window.location.search);
-const currentMovieId = urlParams.get('id') || 2; // Default to 2 if no ID in URL
-
-// API Helper Functions
-async function apiCall(url, method = 'GET', body = null) {
-    try {
-        const options = {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        };
-        
-        if (authToken) {
-            options.headers['Authorization'] = `Bearer ${authToken}`;
-        }
-        
-        if (body) {
-            options.body = JSON.stringify(body);
-        }
-        
-        const response = await fetch(API_BASE + url, options);
-        const data = await response.json();
-        
-        return { success: response.ok, data, status: response.status };
-    } catch (error) {
-        console.error('API Error:', error);
-        return { success: false, error: error.message };
+// Update UI based on login status
+function updateUIForLoginStatus() {
+    const commentForm = document.getElementById('comment-form');
+    const loginPrompt = document.getElementById('login-prompt');
+    
+    if (currentUser) {
+        if (commentForm) commentForm.style.display = 'block';
+        if (loginPrompt) loginPrompt.style.display = 'none';
+    } else {
+        if (commentForm) commentForm.style.display = 'none';
+        if (loginPrompt) loginPrompt.style.display = 'block';
     }
 }
 
-// Social Sharing Functions
-async function shareToFacebook() {
-    if (await shareMovie(currentMovieId, 'facebook')) {
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
-        window.open(shareUrl, '_blank', 'width=600,height=400');
-        showShareSuccess('Facebook');
-    }
-}
-
-async function shareToTwitter() {
-    if (await shareMovie(currentMovieId, 'twitter')) {
-        const text = `Tôi đang xem phim này trên Maxion! Cùng xem nhé!`;
-        const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`;
-        window.open(shareUrl, '_blank', 'width=600,height=400');
-        showShareSuccess('Twitter');
-    }
-}
-
-async function shareToTelegram() {
-    if (await shareMovie(currentMovieId, 'telegram')) {
-        const text = `Tôi đang xem phim này trên Maxion! Cùng xem nhé! ${window.location.href}`;
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`;
-        window.open(shareUrl, '_blank', 'width=600,height=400');
-        showShareSuccess('Telegram');
-    }
-}
-
-async function copyShareLink() {
-    if (await shareMovie(currentMovieId, 'link')) {
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            showShareSuccess('Đã sao chép link');
-        } catch (err) {
-            console.error('Failed to copy link:', err);
-            alert('Không thể sao chép link. Vui lòng thử lại.');
-        }
-    }
-}
-
-async function shareMovie(cartoonId, platform) {
-    if (!currentUser?.id) {
-        alert('Vui lòng đăng nhập để chia sẻ và nhận thành tựu!');
-        return false;
-    }
+// Load comments for the movie
+async function loadComments(movieId) {
+    if (isLoadingComments) return;
+    isLoadingComments = true;
     
     try {
-        const result = await apiCall('/api/social/share', 'POST', {
-            userId: currentUser.id,
-            cartoonId: parseInt(cartoonId),
-            platform
-        });
+        showCommentsLoading(true);
         
-        if (result.success) {
-            console.log('✅ Share recorded successfully, achievements check triggered');
-            return true;
-        } else {
-            console.error('❌ Share failed:', result);
-            alert('Không thể ghi nhận chia sẻ. Vui lòng thử lại.');
-            return false;
+        const response = await fetch(`http://localhost:8080/api/comments/cartoon/${movieId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const comments = await response.json();
+        console.log('✅ Comments loaded:', comments);
+        
+        renderComments(comments);
+        showCommentsLoading(false);
+        
     } catch (error) {
-        console.error('Error sharing movie:', error);
-        alert('Lỗi khi chia sẻ. Vui lòng thử lại.');
-        return false;
+        console.error('❌ Error loading comments:', error);
+        showCommentsError('Không thể tải bình luận. Vui lòng thử lại.');
+        showCommentsLoading(false);
+    } finally {
+        isLoadingComments = false;
     }
 }
 
-function showShareSuccess(platform) {
-    // Create and show success notification
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #4CAF50;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        z-index: 10000;
-        font-weight: bold;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+// Show/hide comments loading state
+function showCommentsLoading(show) {
+    const loadingEl = document.getElementById('comments-loading');
+    const commentsContainer = document.getElementById('comments-container');
+    
+    if (loadingEl) {
+        loadingEl.style.display = show ? 'block' : 'none';
+    }
+    if (commentsContainer && show) {
+        commentsContainer.innerHTML = '';
+    }
+}
+
+// Show comments error
+function showCommentsError(message) {
+    const commentsContainer = document.getElementById('comments-container');
+    if (commentsContainer) {
+        commentsContainer.innerHTML = `
+            <div class="comments-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>${message}</p>
+                <button onclick="loadComments(${currentMovieId})" class="retry-btn">Thử lại</button>
+            </div>
+        `;
+    }
+}
+
+// Render comments list
+function renderComments(comments) {
+    const commentsContainer = document.getElementById('comments-container');
+    if (!commentsContainer) return;
+    
+    if (!comments || comments.length === 0) {
+        commentsContainer.innerHTML = `
+            <div class="no-comments">
+                <i class="fas fa-comments"></i>
+                <p>Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Filter only parent comments (not replies)
+    const parentComments = comments.filter(comment => !comment.parentId);
+    
+    commentsContainer.innerHTML = parentComments.map(comment => renderComment(comment)).join('');
+    
+    // Setup event listeners for comment actions
+    setupCommentEventListeners();
+}
+
+// Render a single comment
+function renderComment(comment) {
+    const isOwnComment = currentUser && (currentUser.id === comment.userId || currentUser.id === comment.user?.id);
+    const canDelete = isOwnComment || (currentUser && currentUser.role === 'ADMIN');
+    
+    const repliesHtml = comment.replies && comment.replies.length > 0 
+        ? comment.replies.map(reply => renderReply(reply, comment.id)).join('')
+        : '';
+    
+    return `
+        <div class="comment" data-comment-id="${comment.id}">
+            <div class="comment-main">
+                <div class="comment-avatar">
+                    <div class="avatar-circle">${comment.userAvatar || comment.userName.charAt(0).toUpperCase()}</div>
+                </div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">${comment.userName}</span>
+                        <span class="comment-time">${formatCommentTime(comment.createdAt)}</span>
+                        ${comment.rating ? `<span class="comment-rating">${'⭐'.repeat(comment.rating)}</span>` : ''}
+                    </div>
+                    <div class="comment-text">${comment.content}</div>
+                    <div class="comment-actions">
+                        <button class="action-btn like-btn ${comment.userLikeStatus === 'liked' ? 'active' : ''}" 
+                                onclick="toggleCommentLike(${comment.id}, true)">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span class="like-count">${comment.likeCount || 0}</span>
+                        </button>
+                        <button class="action-btn dislike-btn ${comment.userLikeStatus === 'disliked' ? 'active' : ''}" 
+                                onclick="toggleCommentLike(${comment.id}, false)">
+                            <i class="fas fa-thumbs-down"></i>
+                            <span class="dislike-count">${comment.dislikeCount || 0}</span>
+                        </button>
+                        ${currentUser ? `
+                            <button class="action-btn reply-btn" onclick="showReplyForm(${comment.id})">
+                                <i class="fas fa-reply"></i> Trả lời
+                            </button>
+                        ` : ''}
+                        ${canDelete ? `
+                            <button class="action-btn delete-btn" onclick="deleteComment(${comment.id})">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+            
+            ${repliesHtml ? `<div class="comment-replies">${repliesHtml}</div>` : ''}
+            
+            <div class="reply-form-container" id="reply-form-${comment.id}" style="display: none;">
+                <div class="reply-form">
+                    <textarea placeholder="Viết câu trả lời..." id="reply-content-${comment.id}"></textarea>
+                    <div class="reply-form-actions">
+                        <button onclick="submitReply(${comment.id})" class="submit-reply-btn">Gửi</button>
+                        <button onclick="hideReplyForm(${comment.id})" class="cancel-reply-btn">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     `;
-    notification.textContent = `✅ Đã chia sẻ thành công trên ${platform}! Kiểm tra thành tựu mới.`;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 4000);
 }
 
-// Referral Functions
-async function generateReferralLink() {
-    if (!currentUser?.id) {
-        alert('Vui lòng đăng nhập để tạo link mời bạn bè!');
+// Render a reply
+function renderReply(reply, parentId) {
+    const isOwnReply = currentUser && (currentUser.id === reply.userId || currentUser.id === reply.user?.id);
+    const canDelete = isOwnReply || (currentUser && currentUser.role === 'ADMIN');
+    
+    return `
+        <div class="comment-reply" data-comment-id="${reply.id}" data-parent-id="${parentId}">
+            <div class="comment-avatar">
+                <div class="avatar-circle small">${reply.userAvatar || reply.userName.charAt(0).toUpperCase()}</div>
+            </div>
+            <div class="comment-content">
+                <div class="comment-header">
+                    <span class="comment-author">${reply.userName}</span>
+                    <span class="comment-time">${formatCommentTime(reply.createdAt)}</span>
+                </div>
+                <div class="comment-text">${reply.content}</div>
+                <div class="comment-actions">
+                    ${canDelete ? `
+                        <button class="action-btn delete-btn" onclick="deleteComment(${reply.id})">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Format comment time
+function formatCommentTime(timeString) {
+    try {
+        const date = new Date(timeString);
+        const now = new Date();
+        const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+        
+        if (diffInMinutes < 1) return 'Vừa xong';
+        if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
+        
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) return `${diffInHours} giờ trước`;
+        
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays < 7) return `${diffInDays} ngày trước`;
+        
+        return date.toLocaleDateString('vi-VN');
+    } catch (e) {
+        return 'Không xác định';
+    }
+}
+
+// Setup comment form
+function setupCommentForm() {
+    const commentForm = document.getElementById('comment-form');
+    if (!commentForm) return;
+    
+    const submitBtn = commentForm.querySelector('.submit-comment-btn');
+    const textarea = commentForm.querySelector('#comment-content');
+    const ratingInputs = commentForm.querySelectorAll('input[name="rating"]');
+    
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitComment);
+    }
+    
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            // Auto-resize textarea
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+            
+            // Update submit button state
+            if (submitBtn) {
+                submitBtn.disabled = this.value.trim().length === 0;
+            }
+        });
+    }
+}
+
+// Submit new comment
+async function submitComment() {
+    if (!currentUser) {
+        showNotification('Bạn cần đăng nhập để bình luận', 'warning');
+        return;
+    }
+    
+    const content = document.getElementById('comment-content').value.trim();
+    const ratingEl = document.querySelector('input[name="rating"]:checked');
+    const rating = ratingEl ? parseInt(ratingEl.value) : 5;
+    
+    if (!content) {
+        showNotification('Vui lòng nhập nội dung bình luận', 'warning');
         return;
     }
     
     try {
-        const result = await apiCall('/api/referral/generate', 'POST', {
-            userId: currentUser.id
+        const response = await fetch(`http://localhost:8080/api/comments/cartoon/${currentMovieId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': currentUser.id.toString(),
+                'X-Username': currentUser.username
+            },
+            body: JSON.stringify({
+                content: content,
+                rating: rating
+            })
         });
         
-        if (result.success && result.data.referralCode) {
-            const referralLink = `${window.location.origin}?ref=${result.data.referralCode}`;
-            document.getElementById('referralLink').value = referralLink;
-            return referralLink;
-        } else {
-            console.error('Failed to generate referral:', result);
-            document.getElementById('referralLink').placeholder = 'Không thể tạo link mời';
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Không thể đăng bình luận');
         }
+        
+        const newComment = await response.json();
+        console.log('✅ Comment posted:', newComment);
+        
+        // Clear form
+        document.getElementById('comment-content').value = '';
+        document.querySelector('input[name="rating"]:checked').checked = false;
+        document.querySelector('input[name="rating"][value="5"]').checked = true;
+        
+        // Reload comments
+        loadComments(currentMovieId);
+        
+        showNotification('Đã đăng bình luận thành công!', 'success');
+        
     } catch (error) {
-        console.error('Error generating referral:', error);
-        document.getElementById('referralLink').placeholder = 'Lỗi khi tạo link mời';
+        console.error('❌ Error posting comment:', error);
+        showNotification(error.message, 'error');
     }
 }
 
-async function copyReferralLink() {
-    const linkInput = document.getElementById('referralLink');
-    if (!linkInput.value || linkInput.value === 'Đang tạo link mời...') {
-        await generateReferralLink();
+// Show reply form
+function showReplyForm(commentId) {
+    if (!currentUser) {
+        showNotification('Bạn cần đăng nhập để trả lời', 'warning');
+        return;
     }
     
-    if (linkInput.value) {
-        try {
-            await navigator.clipboard.writeText(linkInput.value);
-            showShareSuccess('Đã sao chép link mời bạn bè');
-        } catch (err) {
-            console.error('Failed to copy referral link:', err);
-            alert('Không thể sao chép link. Vui lòng thử lại.');
+    // Hide all other reply forms
+    document.querySelectorAll('.reply-form-container').forEach(form => {
+        form.style.display = 'none';
+    });
+    
+    // Show the specific reply form
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    if (replyForm) {
+        replyForm.style.display = 'block';
+        const textarea = replyForm.querySelector('textarea');
+        if (textarea) {
+            textarea.focus();
         }
     }
 }
 
-// Modal Functions
-function openShareModal() {
-    document.getElementById('shareModal').style.display = 'block';
-    // Generate referral link when modal opens
-    generateReferralLink();
+// Hide reply form
+function hideReplyForm(commentId) {
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    if (replyForm) {
+        replyForm.style.display = 'none';
+        const textarea = replyForm.querySelector('textarea');
+        if (textarea) {
+            textarea.value = '';
+        }
+    }
 }
 
-function closeShareModal() {
-    document.getElementById('shareModal').style.display = 'none';
+// Submit reply
+async function submitReply(parentId) {
+    if (!currentUser) {
+        showNotification('Bạn cần đăng nhập để trả lời', 'warning');
+        return;
+    }
+    
+    const content = document.getElementById(`reply-content-${parentId}`).value.trim();
+    
+    if (!content) {
+        showNotification('Vui lòng nhập nội dung trả lời', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`http://localhost:8080/api/comments/cartoon/${currentMovieId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': currentUser.id.toString(),
+                'X-Username': currentUser.username
+            },
+            body: JSON.stringify({
+                content: content,
+                rating: 5, // Default rating for replies
+                parentId: parentId
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Không thể gửi trả lời');
+        }
+        
+        const newReply = await response.json();
+        console.log('✅ Reply posted:', newReply);
+        
+        // Hide reply form
+        hideReplyForm(parentId);
+        
+        // Reload comments
+        loadComments(currentMovieId);
+        
+        showNotification('Đã gửi trả lời thành công!', 'success');
+        
+    } catch (error) {
+        console.error('❌ Error posting reply:', error);
+        showNotification(error.message, 'error');
+    }
 }
+
+// Toggle comment like/dislike
+async function toggleCommentLike(commentId, isLike) {
+    if (!currentUser) {
+        showNotification('Bạn cần đăng nhập để thực hiện hành động này', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`http://localhost:8080/api/comments/${commentId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                isLike: isLike
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Không thể thực hiện hành động');
+        }
+        
+        const result = await response.json();
+        console.log('✅ Like/dislike result:', result);
+        
+        if (result.success) {
+            // Update UI
+            updateCommentLikeUI(commentId, result.likeCount, result.dislikeCount, result.action);
+            
+            let message = '';
+            switch (result.action) {
+                case 'liked':
+                    message = 'Đã thích bình luận';
+                    break;
+                case 'disliked':
+                    message = 'Đã không thích bình luận';
+                    break;
+                case 'removed':
+                    message = 'Đã hủy đánh giá';
+                    break;
+            }
+            showNotification(message, 'success');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error toggling like:', error);
+        showNotification(error.message, 'error');
+    }
+}
+
+// Update comment like UI
+function updateCommentLikeUI(commentId, likeCount, dislikeCount, action) {
+    const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
+    if (!commentEl) return;
+    
+    const likeBtn = commentEl.querySelector('.like-btn');
+    const dislikeBtn = commentEl.querySelector('.dislike-btn');
+    const likeCountEl = commentEl.querySelector('.like-count');
+    const dislikeCountEl = commentEl.querySelector('.dislike-count');
+    
+    // Update counts
+    if (likeCountEl) likeCountEl.textContent = likeCount;
+    if (dislikeCountEl) dislikeCountEl.textContent = dislikeCount;
+    
+    // Update button states
+    if (likeBtn && dislikeBtn) {
+        likeBtn.classList.remove('active');
+        dislikeBtn.classList.remove('active');
+        
+        if (action === 'liked') {
+            likeBtn.classList.add('active');
+        } else if (action === 'disliked') {
+            dislikeBtn.classList.add('active');
+        }
+    }
+}
+
+// Delete comment
+async function deleteComment(commentId) {
+    if (!currentUser) {
+        showNotification('Bạn cần đăng nhập để xóa bình luận', 'warning');
+        return;
+    }
+    
+    if (!confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`http://localhost:8080/api/comments/${commentId}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Không thể xóa bình luận');
+        }
+        
+        const result = await response.json();
+        console.log('✅ Comment deleted:', result);
+        
+        // Reload comments
+        loadComments(currentMovieId);
+        
+        showNotification('Đã xóa bình luận thành công!', 'success');
+        
+    } catch (error) {
+        console.error('❌ Error deleting comment:', error);
+        showNotification(error.message, 'error');
+    }
+}
+
+// Setup comment event listeners
+function setupCommentEventListeners() {
+    // This function is called after comments are rendered
+    // Most event listeners are inline for simplicity, but you can add more here if needed
+}
+
+// Make functions globally available
+window.toggleCommentLike = toggleCommentLike;
+window.showReplyForm = showReplyForm;
+window.hideReplyForm = hideReplyForm;
+window.submitReply = submitReply;
+window.deleteComment = deleteComment;
+
+// === END COMMUNITY DISCUSSION FUNCTIONS ===

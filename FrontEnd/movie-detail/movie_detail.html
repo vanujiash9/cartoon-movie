@@ -2,35 +2,921 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demon Slayer - MAXION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Chi tiết phim - MAXION</title>
     <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="../movie detail/movie_detail.css">
-     -->
+    <link rel="stylesheet" href="./movie_detail.css">
+    <link rel="stylesheet" href="../header.css"> <!-- Add header CSS -->
+    <link rel="stylesheet" href="../css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Emergency fallback styles */
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --text-secondary: #cccccc;
+            --primary-color: #3498db;
+            --bg-secondary: #2c2c2c;
+            --light-color: #444444;
+        }
+          body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
         
+        /* Header styles - essential for inline header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 80px;
+            background: rgba(34, 35, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        .navbar {
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }        /* Header styles - essential for inline header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 80px;
+            background: rgba(34, 35, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        .navbar {
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .movie-detail-hero {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            margin-top: 80px; /* Match header height exactly */
+        }
+        
+        .movie-detail-hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .movie-detail-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .movie-info-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-top: -150px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .movie-poster-container {
+            position: relative;
+        }
+        
+        .movie-poster-lg {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .play-trailer-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(52, 152, 219, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .play-trailer-btn:hover {
+            background: rgba(52, 152, 219, 1);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .movie-info-main h1 {
+            font-size: 2.5rem;
+            margin: 0 0 1rem 0;
+            color: var(--text-color);
+        }
+        
+        .movie-meta-info {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .movie-meta-info span {
+            background: var(--bg-secondary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .movie-rating {
+            margin-bottom: 2rem;
+        }
+        
+        .stars {
+            color: #f39c12;
+            margin-right: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            border-bottom: 2px solid var(--bg-secondary);
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .tab:hover {
+            color: var(--text-color);
+        }
+        
+        .tab-content {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .category-item {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 10px;
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .close-btn, .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10001;
+        }
+        
+        .close-btn:hover, .close:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            border: 4px solid var(--bg-secondary);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Community section styles */
+        .community-section {
+            background: var(--bg-color);
+            padding: 3rem 0;
+        }
+        
+        .section-title h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+          /* Responsive design */
+        @media (max-width: 768px) {
+            .movie-info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin-top: -50px;
+            }
+            
+            .movie-info-main h1 {
+                font-size: 1.8rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+            
+            /* Mobile header adjustments */
+            .movie-detail-hero {
+                margin-top: 60px !important; /* Mobile header is typically smaller */
+            }
+            
+            #header-iframe {
+                height: 60px;
+                min-height: 60px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .movie-detail-overlay {
+                padding: 1rem;
+            }
+            
+            .movie-detail-overlay h1 {
+                font-size: 2rem !important;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+        }
+        
+        /* Additional header styles for full functionality */
+        .navbar-brand img {
+            width: 140px;
+            height: auto;
+            filter: drop-shadow(0 2px 8px rgba(52, 152, 219, 0.3));
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand:hover img {
+            filter: drop-shadow(0 2px 12px rgba(52, 152, 219, 0.5));
+            transform: scale(1.05);
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .navbar-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .navbar-form {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-form-search {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 25px;
+            padding: 10px 40px 10px 20px;
+            color: var(--text-color);
+            font-size: 14px;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-form-search:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .navbar-form-btn, .voice-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-form-btn:hover, .voice-btn:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+        
+        .navbar-signin {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-signin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-info-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-info-display:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-width: 200px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .dropdown-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        /* Notification styles */
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+            max-width: 400px;
+            z-index: 1001;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+        
+        .notification-dropdown-hidden {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+          .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1001;
+        }
+        
+        /* Community Discussion Styles */
+        .comments-container {
+            max-width: 100%;
+        }
+        
+        .comment {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .comment-main {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .comment-avatar {
+            flex-shrink: 0;
+        }
+        
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .avatar-circle.small {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+        
+        .comment-content {
+            flex: 1;
+        }
+        
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .comment-time {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .comment-rating {
+            color: #ffd700;
+            font-size: 0.9rem;
+        }
+        
+        .comment-text {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .action-btn {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+        
+        .action-btn.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .like-btn.active {
+            border-color: #27ae60;
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .dislike-btn.active {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .delete-btn:hover {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .comment-replies {
+            margin-left: 55px;
+            margin-top: 20px;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            padding-left: 20px;
+        }
+        
+        .comment-reply {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .reply-form-container {
+            margin-left: 55px;
+            margin-top: 15px;
+        }
+        
+        .reply-form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .reply-form textarea {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--light-color);
+            border-radius: 5px;
+            padding: 10px;
+            color: var(--text-color);
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        
+        .reply-form-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .submit-reply-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .cancel-reply-btn {
+            background: none;
+            color: var(--text-secondary);
+            border: 1px solid var(--light-color);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .no-comments {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .no-comments i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .comments-error {
+            text-align: center;
+            padding: 30px 20px;
+            color: #e74c3c;
+        }
+        
+        .retry-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        .star-rating label span:hover,
+        .star-rating label:hover ~ label span {
+            color: #ffd700 !important;
+        }
+        
+        .star-rating input:checked ~ label span {
+            color: #ffd700 !important;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mobile responsiveness for comments */
+        @media (max-width: 768px) {
+            .comment-main {
+                gap: 10px;
+            }
+            
+            .comment {
+                padding: 15px;
+            }
+            
+            .comment-replies {
+                margin-left: 35px;
+                padding-left: 15px;
+            }
+            
+            .reply-form-container {
+                margin-left: 35px;
+            }
+            
+            .comment-actions {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            
+            .action-btn {
+                font-size: 0.8rem;
+                padding: 5px 10px;
+            }
+        }
+        
+        /* ...existing code... */
     </style>
 </head>
-<body class="dark-mode"> <!-- Default to dark-mode, script.js might handle theme preference -->
-     <!-- Header Include -->
-    <iframe 
-        id="header-iframe" 
-        src="../header.html" 
-        style="width: 100%; border: none; position: fixed; top: 0; z-index: 1000;" 
-        onload="adjustIframeHeight(this); syncThemeWithIframe();"
-        title="Header Navigation"
-        loading="eager">
-    </iframe>
+<body class="dark-mode"> <!-- Default to dark-mode, script.js might handle theme preference -->     <!-- Header Include -->
+    <header>
+        <div class="navbar" id="navbar">            <a href="#" class="navbar-brand" onclick="navigateToHome()">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTQwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIyMCIgeT0iMjgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMzNDk4ZGIiPk1heGlvbjwvdGV4dD4KPC9zdmc+"
+                    alt="Maxion Logo">
+            </a>
 
-    <!-- Movie Detail Hero -->
-    <section class="movie-detail-hero" style="margin-top: 60px;"> <!-- Adjusted margin-top for fixed header -->
-        <img src="/api/placeholder/1200/500" alt="Demon Slayer Banner" class="movie-detail-hero-img">
+            <nav id="navMenu">
+                <ul class="navbar-nav">
+                    <li><a href="#" class="navbar-link" onclick="smartNavigate('top')">Trang chủ</a></li>
+                    <li><a href="#" class="navbar-link" onclick="smartNavigate('movies')">Danh sách phim</a></li>
+                    <li><a href="#" class="navbar-link indicator" onclick="smartNavigate('achievements')">Thành tựu</a></li>
+                    <li><a href="#" class="navbar-link" onclick="smartNavigate('category')">Thể loại</a></li>
+                    <li><a href="#" class="navbar-link" onclick="smartNavigate('live')">TV Trực tiếp</a></li>
+                </ul>
+            </nav>
+
+            <div class="navbar-actions">
+                <form class="navbar-form" id="searchForm">
+                    <input type="text" name="search" placeholder="Tìm kiếm phim..." class="navbar-form-search"
+                        id="searchInput">
+                    <button type="button" class="navbar-form-btn" id="searchBtn">
+                        <span style="font-size: 18px;">🔍</span>
+                    </button>
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </form>
+                
+                <button class="voice-btn" id="voiceBtn" title="Tìm kiếm bằng giọng nói">
+                    <span>🎤</span>
+                </button>
+
+
+                <div class="notification-menu" id="notificationMenu" style="position: relative; margin-right: 16px;">
+                    <div class="notification-bell-display" id="notificationBellDisplay" style="cursor: pointer;">
+                        <span style="font-size: 22px; transition: transform 0.2s;">🔔</span>
+                        <span id="notificationBadge"
+                            style="position: absolute; top: -4px; right: -4px; background: #ff4757; color: white; border-radius: 50%; font-size: 11px; padding: 2px 6px; display: none; min-width: 18px; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0</span>
+                    </div>
+                    <div id="notificationDropdown" class="notification-dropdown notification-dropdown-hidden">
+                        <div class="notification-header">
+                            <span>🔔 Thông báo</span>
+                            <span id="notificationCount" style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">0</span>
+                        </div>
+                        <div id="notificationList" style="max-height: 400px; overflow-y: auto;">
+                            <!-- Initial empty state - will be replaced by JS -->
+                        </div>
+                        <div style="padding: 12px; text-align: center; border-top: 1px solid #eee; background: #f8f9fa;">
+                            <a href="#" onclick="markAllNotificationsRead(); return false;"
+                                style="color: #667eea; font-size: 14px; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.2s; display: inline-block;"
+                                onmouseover="this.style.background='#667eea'; this.style.color='white';"
+                                onmouseout="this.style.background='transparent'; this.style.color='#667eea';">
+                                ✓ Đánh dấu tất cả đã đọc
+                            </a>
+                        </div>
+                    </div>                </div><!-- Sign In Button (shown when NOT logged in) -->
+                <a href="../login-register/login.html" class="navbar-signin" id="signInBtn">
+                    <span id="signInText">Đăng nhập</span>
+                    <span style="margin-left: 8px;">➡️</span>
+                </a>
+
+                <!-- User Menu (shown when logged in) -->
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <div class="user-info-display" id="userInfoDisplay">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+Cjx0ZXh0IHg9IjEwIiB5PSIxNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPC9zdmc+Cjwvc3ZnPg=="
+                            alt="User Avatar" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="displayUserName">Người dùng</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="viewProfile()">
+                            <span>👤</span>
+                            Hồ sơ của tôi
+                        </div>
+                        <div class="dropdown-item" onclick="viewBookmarks()">
+                            <span>❤️</span>
+                            Danh sách yêu thích
+                        </div>
+                        <div class="dropdown-item" onclick="viewHistory()">
+                            <span>⏰</span>
+                            Lịch sử xem
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <span>🚪</span>
+                            Đăng xuất
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header><!-- Movie Detail Hero -->
+    <section class="movie-detail-hero" style="margin-top: 80px;"> <!-- Adjusted margin-top to match header height -->
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI1MDAiIHZpZXdCb3g9IjAgMCAxMjAwIDUwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNTAwIiBmaWxsPSIjM2M0OGRiIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSJib2xkIj7EkGFuZyB04bqjaSBwaGltLi4uPC90ZXh0Pgo8L3N2Zz4K" alt="Movie Banner" class="movie-detail-hero-img" id="movie-banner-img">
         <div class="movie-detail-overlay">
             <div class="container">
-                <h1 style="color: white; font-size: 3rem; margin-bottom: 20px;">Demon Slayer</h1>
-                <p style="color: white; opacity: 0.9; max-width: 600px; margin-bottom: 30px;">
-                    Thanh gươm diệt quỷ (鬼滅の刃 Kimetsu no Yaiba) kể về câu chuyện của Tanjiro Kamado, một thiếu niên trở thành thợ săn quỷ để tìm cách biến em gái của mình trở lại thành người.
-                </p>
+                <!-- <h1 style="color: white; font-size: 3rem; margin-bottom: 20px;" id="movie-banner-title">Đang tải...</h1> -->
+                <!-- <p style="color: white; opacity: 0.9; max-width: 600px; margin-bottom: 30px;" id="movie-banner-description">
+                    Đang tải mô tả...
+                </p> -->
             </div>
         </div>
     </section>
@@ -38,26 +924,23 @@
     <!-- Movie Detail Content -->
     <section class="movie-detail-content">
         <div class="container">
-            <div class="movie-info-grid">
-                <div class="movie-poster-container">
-                    <img src="/api/placeholder/300/450" alt="Demon Slayer Poster" class="movie-poster-lg">
+            <div class="movie-info-grid"><div class="movie-poster-container">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMzQ0OTVlIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSJib2xkIj7EkGFuZyB04bqjaSBwb3N0ZXIuLi48L3RleHQ+Cjwvc3ZnPgo=" alt="Movie Poster" class="movie-poster-lg" id="movie-poster-img">
                     <div class="play-trailer-btn">▶</div>
                 </div>
                 <div class="movie-info-main">
-                    <h1>Demon Slayer</h1>
-                    <div class="movie-meta-info">
-                        <span>2023</span>
-                        <span>24 tập</span>
-                        <span>TV Series</span>
-                        <span>25 phút</span>
-                        <span>13+</span>
+                    <h1 id="movie-title">Đang tải...</h1>
+                    <div class="movie-meta-info" id="movie-meta-info">
+                        <!-- Dynamic content will be injected here by script.js -->
                     </div>
                     <div class="movie-rating">
+                        <!-- Rating can be made dynamic later -->
                         <span class="stars">★★★★★</span>
                         <span>9.2/10</span>
                         <span>(2.5k đánh giá)</span>
-                    </div>                    <div class="action-buttons">
-                        <button class="btn btn-primary btn-lg">▶ Xem ngay</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-lg" id="watch-now-btn">▶ Xem ngay</button>
                         <button class="btn btn-outline btn-lg">+ Thêm vào danh sách</button>
                         <button class="btn btn-outline btn-lg" onclick="openShareModal()">📤 Chia sẻ</button>
                     </div>
@@ -71,161 +954,37 @@
                     
                     <div class="tab-content active" id="overview">
                         <h3>Nội dung phim</h3>
-                        <p>
-                            Kimetsu no Yaiba, hay còn được biết đến với cái tên Thanh Gươm Diệt Quỷ, kể về câu chuyện của Kamado Tanjiro, một cậu bé sống cùng gia đình ở vùng núi hẻo lánh. Một ngày nọ, khi trở về nhà sau chuyến đi bán than, Tanjiro phát hiện cả gia đình mình đã bị quỷ sát hại, chỉ còn em gái Nezuko sống sót nhưng đã bị biến thành quỷ.
-                        </p>
-                        <p>
-                            Không chấp nhận sự thật rằng em gái mình là quỷ, Tanjiro quyết tâm tìm cách chữa trị cho Nezuko. Cậu được Urokodaki Sakonji, một thợ săn quỷ đã nghỉ hưu, huấn luyện và sau đó tham gia vào Đội Diệt Quỷ. Mục tiêu của Tanjiro là tiêu diệt Quỷ Vương Kibutsuji Muzan - kẻ đã biến em gái cậu thành quỷ và sát hại gia đình cậu, đồng thời tìm cách biến Nezuko trở lại thành người.
-                        </p>
-                        <p>
-                            Trên hành trình của mình, Tanjiro kết bạn với nhiều thợ săn quỷ khác như Zenitsu Agatsuma và Inosuke Hashibira, cùng nhau họ chiến đấu chống lại các con quỷ và dần tiến gần hơn đến Quỷ Vương Muzan.
-                        </p>
+                        <div id="movie-overview-description">
+                            <p>Đang tải nội dung...</p>
+                        </div>
                         
-                        <h3>Thể loại</h3>
-                        <div class="categories-list" style="justify-content: flex-start; margin-top: 15px;">
-                            <div class="category-item">Hành động</div>
-                            <div class="category-item">Phiêu lưu</div>
-                            <div class="category-item">Fantasy</div>
-                            <div class="category-item">Shonen</div>
-                            <div class="category-item">Siêu nhiên</div>
+                        <h3 style="margin-top: 20px;">Thể loại</h3>
+                        <div class="categories-list" id="movie-category-list" style="justify-content: flex-start; margin-top: 15px;">
+                            <!-- Dynamic categories will be injected here -->
                         </div>
                         
                         <h3 style="margin-top: 30px;">Studio</h3>
-                        <p>Ufotable</p>
+                        <p>Ufotable</p> <!-- This can be made dynamic if data is available -->
                         
                         <h3>Đạo diễn</h3>
-                        <p>Haruo Sotozaki</p>
+                        <p>Haruo Sotozaki</p> <!-- This can be made dynamic if data is available -->
                     </div>
                     
                     <div class="tab-content" id="episodes">
                         <h3>Danh sách tập phim</h3>
                         <div class="episode-grid">
-                            <div class="episode-card">
-                                <div style="position: relative;">
-                                    <img src="/api/placeholder/180/100" alt="Episode 1" class="episode-thumbnail">
-                                    <div class="episode-number">Tập 1</div>
-                                </div>
-                                <div class="episode-info">
-                                    <div class="episode-title">Cruetly - Tàn Khốc</div>
-                                    <div class="episode-duration">25 phút</div>
-                                </div>
-                            </div>
-                            <!-- Add more episodes as needed -->
-                             <div class="episode-card">
-                                <div style="position: relative;">
-                                    <img src="/api/placeholder/180/100" alt="Episode 2" class="episode-thumbnail">
-                                    <div class="episode-number">Tập 2</div>
-                                </div>
-                                <div class="episode-info">
-                                    <div class="episode-title">Trainer Sakonji Urokodaki</div>
-                                    <div class="episode-duration">25 phút</div>
-                                </div>
-                            </div>
-                             <div class="episode-card">
-                                <div style="position: relative;">
-                                    <img src="/api/placeholder/180/100" alt="Episode 3" class="episode-thumbnail">
-                                    <div class="episode-number">Tập 3</div>
-                                </div>
-                                <div class="episode-info">
-                                    <div class="episode-title">Sabito and Makomo</div>
-                                    <div class="episode-duration">25 phút</div>
-                                </div>
-                            </div>
+                           <p>Chức năng đang được phát triển.</p>
                         </div>
                     </div>
                     
                     <div class="tab-content" id="cast">
                         <h3>Dàn nhân vật & diễn viên lồng tiếng</h3>
-                        <div class="cast-grid">
-                            <div class="cast-card">
-                                <img src="/api/placeholder/150/150" alt="Natsuki Hanae" class="cast-img">
-                                <div class="cast-info">
-                                    <div class="cast-name">Natsuki Hanae</div>
-                                    <div class="cast-role">Tanjiro Kamado</div>
-                                </div>
-                            </div>
-                             <div class="cast-card">
-                                <img src="/api/placeholder/150/150" alt="Akari Kito" class="cast-img">
-                                <div class="cast-info">
-                                    <div class="cast-name">Akari Kitō</div>
-                                    <div class="cast-role">Nezuko Kamado</div>
-                                </div>
-                            </div>
-                             <div class="cast-card">
-                                <img src="/api/placeholder/150/150" alt="Hiro Shimono" class="cast-img">
-                                <div class="cast-info">
-                                    <div class="cast-name">Hiro Shimono</div>
-                                    <div class="cast-role">Zenitsu Agatsuma</div>
-                                </div>
-                            </div>
-                            <!-- Add more cast members as needed -->
-                        </div>
+                         <p>Chức năng đang được phát triển.</p>
                     </div>
                     
                     <div class="tab-content" id="reviews">
                         <h3>Đánh giá & Nhận xét</h3>
-                        <div class="comments-section">
-                            <h4>Để lại nhận xét của bạn</h4>
-                            <div class="comment-form">
-                                <img src="/api/placeholder/50/50" alt="User Avatar">
-                                <div class="comment-form-input">
-                                    <textarea placeholder="Viết nhận xét của bạn..."></textarea>
-                                    <div class="comment-form-actions">
-                                        <button class="btn btn-primary">Đăng nhận xét</button>
-                                    </div>
-                                </div>
-                            </div>
-                             <!-- Example Comment -->
-                            <div class="comment-list">
-                                <div class="comment">
-                                    <img src="/api/placeholder/50/50" alt="Commenter Avatar" class="comment-avatar">
-                                    <div class="comment-content">
-                                        <div class="comment-header">
-                                            <span class="comment-author">AnimeFan123</span>
-                                            <span class="comment-date">2 giờ trước</span>
-                                        </div>
-                                        <p class="comment-text">Phim hay quá! Hình ảnh đẹp, nội dung lôi cuốn. Hóng phần tiếp theo!</p>
-                                        <div class="comment-actions">
-                                            <a href="#">👍 Thích (15)</a>
-                                            <a href="#">💬 Trả lời</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                             <!-- Add more comments as needed -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Recommended Section -->
-            <div class="recommended-section">
-                <div class="section-header">
-                    <h2>Phim tương tự</h2>
-                    <a href="#" class="view-all">Xem tất cả ▶</a>
-                </div>
-                <div class="movies-grid">
-                    <!-- Placeholder for recommended movie cards -->
-                    <div class="episode-card"> <!-- Reusing episode-card style for simplicity -->
-                        <img src="/api/placeholder/180/270" alt="Similar Movie 1" class="episode-thumbnail" style="height: 270px;">
-                        <div class="episode-info">
-                            <div class="episode-title">Jujutsu Kaisen</div>
-                            <div class="episode-duration">Hành động, Siêu nhiên</div>
-                        </div>
-                    </div>
-                    <div class="episode-card">
-                        <img src="/api/placeholder/180/270" alt="Similar Movie 2" class="episode-thumbnail" style="height: 270px;">
-                        <div class="episode-info">
-                            <div class="episode-title">Attack on Titan</div>
-                            <div class="episode-duration">Hành động, Drama</div>
-                        </div>
-                    </div>
-                    <div class="episode-card">
-                        <img src="/api/placeholder/180/270" alt="Similar Movie 3" class="episode-thumbnail" style="height: 270px;">
-                        <div class="episode-info">
-                            <div class="episode-title">My Hero Academia</div>
-                            <div class="episode-duration">Hành động, Shonen</div>
-                        </div>
+                        <p>Chức năng đang được phát triển.</p>
                     </div>
                 </div>
             </div>
@@ -240,9 +999,13 @@
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background-color: #000;">
                     <div style="text-align: center;">
                         <div class="loading-spinner"></div>
-                        <p style="color: white; margin-top: 10px;">Đang tải video...</p>
-                        <!-- Actual video player would go here, this is a placeholder -->
-                        <img src="/api/placeholder/800/450" alt="Video Player Placeholder" style="max-width: 100%; display: block; margin: 20px auto;">
+                        <p style="color: white; margin-top: 10px;">Đang tải video...</p>                        <!-- Actual video player would go here, this is a placeholder -->
+                        <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; color: white;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">📺</div>
+                                <p>Video Player Placeholder</p>
+                            </div>
+                        </div>
                         <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 5px; margin-top: 10px;">
                             <button class="btn btn-outline" style="color: white;">Play</button>
                             <div style="color: white;">00:00 / 24:30</div>
@@ -279,110 +1042,66 @@
                 -->
             </div>
         </div>
-    </div>
-
-    <!-- Community Discussion Section -->
+    </div>    <!-- Community Discussion Section -->
     <section class="community-section">
         <div class="container">
             <div class="section-title">
                 <h2>Thảo luận cộng đồng</h2>
             </div>
-            <div class="community-container" style="max-width: 800px; margin: 20px auto 0;"> <!-- Reduced top margin -->
-                <div class="community-filter" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; flex-wrap: wrap; gap: 15px;">
-                    <div class="filter-tabs" style="display: flex; gap: 10px; flex-wrap: wrap;"> <!-- Added flex-wrap -->
-                        <div class="filter-tab active" style="padding: 8px 15px; border-radius: 20px; cursor: pointer; background-color: var(--primary-color); color: white; font-weight: 500;">Tất cả</div>
-                        <div class="filter-tab" style="padding: 8px 15px; border-radius: 20px; cursor: pointer; background-color: var(--bg-secondary); color: var(--text-color);">Thảo luận</div>
-                        <div class="filter-tab" style="padding: 8px 15px; border-radius: 20px; cursor: pointer; background-color: var(--bg-secondary); color: var(--text-color);">Hỏi đáp</div>
-                        <div class="filter-tab" style="padding: 8px 15px; border-radius: 20px; cursor: pointer; background-color: var(--bg-secondary); color: var(--text-color);">Spoilers</div>
-                    </div>
-                    <div class="filter-sort" style="display: flex; align-items: center; gap: 10px;">
-                        <span style="color: var(--text-secondary);">Sắp xếp:</span>
-                        <select style="padding: 8px; border-radius: 5px; background-color: var(--bg-secondary); color: var(--text-color); border: 1px solid var(--light-color);">
-                            <option>Mới nhất</option>
-                            <option>Phổ biến nhất</option>
-                            <option>Nóng nhất</option>
-                        </select>
-                    </div>
-                </div>
+            <div class="community-container" style="max-width: 800px; margin: 20px auto 0;">
                 
-                <div class="community-topics" style="margin-top: 30px;">
-                    <!-- Topic 1 -->
-                    <div class="topic-item" style="padding: 20px; border-radius: 10px; background-color: var(--bg-secondary); margin-bottom: 15px; transition: transform 0.3s, box-shadow 0.3s;">
-                        <div class="topic-header" style="display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                            <div class="topic-info" style="display: flex; align-items: center; gap: 15px;">
-                                <img src="/api/placeholder/40/40" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
-                                <div>
-                                    <div style="font-weight: 500; color: var(--text-color);">MinhOtaku98</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">3 giờ trước</div>
-                                </div>
-                            </div>
-                            <div class="topic-tag" style="padding: 3px 10px; background-color: var(--primary-color); color: white; border-radius: 15px; font-size: 0.8rem;">Thảo luận</div>
-                        </div>
-                        <div class="topic-content">
-                            <h4 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--text-color);">Tanjiro có thực sự là nhân vật chính mạnh nhất trong anime?</h4>
-                            <p style="color: var(--text-secondary); line-height: 1.5; margin-bottom: 15px;">So với nhiều nhân vật chính trong các anime khác, liệu Tanjiro có phải là một trong những nhân vật chính mạnh nhất không? Mình thấy cậu ấy phát triển rất nhanh nhưng vẫn có những giới hạn hợp lý...</p>
-                            <div class="topic-stats" style="display: flex; gap: 20px; color: var(--text-secondary); font-size: 0.9rem;">
-                                <span>👍 45 thích</span>
-                                <span>💬 23 bình luận</span>
-                                <a href="#" style="color: var(--primary-color); margin-left: auto; text-decoration: none;">Xem chi tiết ▶</a>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Comment Form (shown when logged in) -->
+                <div id="comment-form" class="comment-form" style="display: none; background: var(--bg-secondary); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px; color: var(--text-color);">Viết bình luận</h3>
+                    <textarea id="comment-content" placeholder="Chia sẻ suy nghĩ của bạn về bộ phim này..." 
+                              style="width: 100%; padding: 15px; border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--light-color); resize: vertical; min-height: 100px; margin-bottom: 15px; box-sizing: border-box;"></textarea>
                     
-                    <!-- Topic 2 -->
-                    <div class="topic-item" style="padding: 20px; border-radius: 10px; background-color: var(--bg-secondary); margin-bottom: 15px; transition: transform 0.3s, box-shadow 0.3s;">
-                        <div class="topic-header" style="display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                            <div class="topic-info" style="display: flex; align-items: center; gap: 15px;">
-                                <img src="/api/placeholder/40/40" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
-                                <div>
-                                    <div style="font-weight: 500; color: var(--text-color);">AnimeQueen22</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">1 ngày trước</div>
-                                </div>
-                            </div>
-                            <div class="topic-tag" style="padding: 3px 10px; background-color: #e74c3c; color: white; border-radius: 15px; font-size: 0.8rem;">Spoilers</div>
-                        </div>
-                        <div class="topic-content">
-                            <h4 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--text-color);">Về kết thúc của arc Vô Hạn Thành - Spoilers!</h4>
-                            <p style="color: var(--text-secondary); line-height: 1.5; margin-bottom: 15px;">SPOILER WARNING! Kết thúc của arc Vô Hạn Thành đã làm mình bất ngờ. Ai có thể ngờ rằng ... [Nội dung đã ẩn]</p>
-                            <div class="topic-stats" style="display: flex; gap: 20px; color: var(--text-secondary); font-size: 0.9rem;">
-                                <span>👍 128 thích</span>
-                                <span>💬 76 bình luận</span>
-                                <a href="#" style="color: var(--primary-color); margin-left: auto; text-decoration: none;">Xem chi tiết ▶</a>
-                            </div>
-                        </div>
-                    </div>
-                     <!-- Add more topics as needed -->
-                </div>
-                
-                <div style="text-align: center; margin-top: 30px;">
-                    <button class="btn btn-outline" style="padding: 10px 20px;">Xem thêm chủ đề</button>
-                </div>
-                
-                <div class="start-topic" style="margin-top: 40px; background-color: var(--bg-secondary); border-radius: 10px; padding: 20px;">
-                    <h3 style="margin-bottom: 15px; font-size: 1.2rem; color: var(--text-color);">Bắt đầu một chủ đề mới</h3>
-                    <textarea placeholder="Chia sẻ suy nghĩ của bạn về Demon Slayer..." style="width: 100%; padding: 15px; border-radius: 8px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--light-color); resize: none; height: 100px; margin-bottom: 15px;"></textarea>
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                        <select style="padding: 8px 15px; border-radius: 5px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--light-color);">
-                            <option>Chọn chủ đề</option>
-                            <option>Thảo luận</option>
-                            <option>Hỏi đáp</option>
-                            <option>Spoilers</option>
-                            <option>Fan Art</option>
-                        </select>
-                        <button class="btn btn-primary">Đăng chủ đề</button>
+                        <div class="rating-section" style="display: flex; align-items: center; gap: 10px;">
+                            <span style="color: var(--text-secondary);">Đánh giá:</span>
+                            <div class="star-rating" style="display: flex; gap: 5px;">
+                                <label><input type="radio" name="rating" value="1" style="display: none;"><span style="cursor: pointer; font-size: 20px; color: #ddd;">⭐</span></label>
+                                <label><input type="radio" name="rating" value="2" style="display: none;"><span style="cursor: pointer; font-size: 20px; color: #ddd;">⭐</span></label>
+                                <label><input type="radio" name="rating" value="3" style="display: none;"><span style="cursor: pointer; font-size: 20px; color: #ddd;">⭐</span></label>
+                                <label><input type="radio" name="rating" value="4" style="display: none;"><span style="cursor: pointer; font-size: 20px; color: #ddd;">⭐</span></label>
+                                <label><input type="radio" name="rating" value="5" checked style="display: none;"><span style="cursor: pointer; font-size: 20px; color: #ffd700;">⭐</span></label>
+                            </div>
+                        </div>
+                        <button class="submit-comment-btn" style="padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;" disabled>
+                            Đăng bình luận
+                        </button>
                     </div>
                 </div>
+                
+                <!-- Login Prompt (shown when not logged in) -->
+                <div id="login-prompt" class="login-prompt" style="display: block; background: var(--bg-secondary); padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+                    <p style="color: var(--text-secondary); margin-bottom: 15px;">Đăng nhập để tham gia thảo luận và bình luận về bộ phim này</p>
+                    <a href="../login-register/login.html" style="padding: 10px 20px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
+                        Đăng nhập
+                    </a>
+                </div>
+                
+                <!-- Comments Loading -->
+                <div id="comments-loading" style="display: none; text-align: center; padding: 20px; color: var(--text-secondary);">
+                    <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid var(--primary-color); border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 10px;"></div>
+                    Đang tải bình luận...
+                </div>
+                
+                <!-- Comments Container -->
+                <div id="comments-container" class="comments-container">
+                    <!-- Comments will be loaded here dynamically -->
+                </div>
+                
             </div>
         </div>
-    </section>
-
-      <iframe 
+    </section><iframe 
         id="footer-iframe"
         src="../footer.html" 
-        style="width: 100%; border: none;" 
+        style="width: 100%; border: none; min-height: 100px;" 
         onload="adjustIframeHeight(this);"
         title="Footer Information"
-        loading="lazy">    </iframe>
+        loading="lazy">
+      </iframe>
 
     <!-- Social Sharing Modal -->
     <div id="shareModal" class="modal" style="display: none;">
@@ -417,172 +1136,384 @@
                 </div>
             </div>
         </div>
-    </div>
-
+    </div>    <script src="../js/shared-api.js"></script>
     <script src="./script.js"></script>
     <script>
-        // Tab functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                const tabId = this.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-        
-        // Play trailer button
-        document.querySelector('.play-trailer-btn').addEventListener('click', function() {
-            openModal('trailer-modal');
-        });
-        
-        // Episode cards
-        document.querySelectorAll('.episode-card').forEach(card => {
-            card.addEventListener('click', function() {
-                // For actual functionality, you'd pass episode data to the modal
-                openModal('video-player-modal');
-            });
-        });        // "Xem ngay" button
-        document.querySelector('.btn-lg.btn-primary').addEventListener('click', function() {
-            // Get movie ID from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const movieId = urlParams.get('id');
+        // Header height adjustment - simplified for inline header
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroSection = document.querySelector('.movie-detail-hero');
             
-            if (movieId) {
-                // Chuyển tới trang xem phim
-                window.location.href = `../moive player/moive.html?id=${movieId}`;
-            } else {
-                alert('Không tìm thấy ID phim!');
+            // Set margin to fixed header height since we're using inline header (not iframe)
+            if (heroSection) {
+                heroSection.style.marginTop = '80px'; // Fixed header height from header.css
+                console.log('✅ Header margin set to 80px for inline header');
             }
         });
-
-        // Modal functions (should be in script.js but included here if script.js is minimal)
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'none';
-            document.body.style.overflow = ''; // Restore scrolling
-
-            // If it's a video modal, pause the video
-            const iframe = modal.querySelector('iframe');
-            if (iframe && iframe.contentWindow) {
-                 // For YouTube, postMessage API is more reliable
-                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                // Also try to reset src to stop loading/playing
-                const originalSrc = iframe.src;
-                iframe.src = ''; // Detach
-                iframe.src = originalSrc; // Reattach (usually stops playback)
-            }
-        }
         
-        // Close modal on escape key
-        window.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                document.querySelectorAll('.modal').forEach(modal => {
-                    if (modal.style.display === 'flex') {
-                        closeModal(modal.id);
+        // Navigation functions for header
+        window.navigateToHome = function() {
+            window.location.href = '../index.html';
+        };
+        
+        window.smartNavigate = function(section) {
+            switch(section) {
+                case 'top':
+                    window.location.href = '../index.html';
+                    break;
+                case 'movies':
+                    window.location.href = '../index.html#movies';
+                    break;
+                case 'achievements':
+                    window.location.href = '../index.html#achievements';
+                    break;
+                case 'category':
+                    window.location.href = '../index.html#category';
+                    break;
+                case 'live':
+                    window.location.href = '../index.html#live';
+                    break;
+                default:
+                    window.location.href = '../index.html';
+            }
+        };
+          // User menu functions
+        window.viewProfile = function() {
+            window.location.href = '../profile/profile.html';
+        };
+        
+        window.viewBookmarks = function() {
+            alert('Chức năng đang được phát triển');
+        };
+        
+        window.viewHistory = function() {
+            alert('Chức năng đang được phát triển');
+        };
+        
+        window.logout = function() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+                window.location.href = '../index.html';
+            }
+        };
+        
+        // User dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInfoDisplay = document.getElementById('userInfoDisplay');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userInfoDisplay && userDropdown) {
+                userInfoDisplay.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Toggle dropdown visibility
+                    if (userDropdown.style.display === 'none' || !userDropdown.style.display) {
+                        userDropdown.style.display = 'block';
+                    } else {
+                        userDropdown.style.display = 'none';
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userInfoDisplay.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userDropdown.style.display = 'none';
+                    }
+                });
+            }
+        });// Notification functions
+        window.markAllNotificationsRead = function() {
+            console.log('Marking all notifications as read');
+            // Implementation would go here
+        };
+        
+        // Notification Bell functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.getElementById('notificationBellDisplay');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            
+            if (notificationBell && notificationDropdown) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Toggle dropdown visibility
+                    if (notificationDropdown.classList.contains('notification-dropdown-hidden')) {
+                        notificationDropdown.classList.remove('notification-dropdown-hidden');
+                        
+                        // Load notifications if not already loaded
+                        loadNotifications();
+                    } else {
+                        notificationDropdown.classList.add('notification-dropdown-hidden');
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                        notificationDropdown.classList.add('notification-dropdown-hidden');
                     }
                 });
             }
         });
-
-        // Close modal when clicking outside of modal-content
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(event) {
-                if (event.target === modal) { // Clicked on the modal backdrop
-                    closeModal(modal.id);
+        
+        function loadNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            const notificationCount = document.getElementById('notificationCount');
+            const notificationBadge = document.getElementById('notificationBadge');
+            
+            if (notificationList) {
+                // Mock notifications data - in real app, this would be from API
+                const notifications = [
+                    {
+                        id: 1,
+                        title: 'Phim mới được thêm',
+                        message: 'Dragon Ball Super: Broly đã được thêm vào thư viện',
+                        time: '2 giờ trước',
+                        read: false
+                    },
+                    {
+                        id: 2,
+                        title: 'Tập mới đã ra',
+                        message: 'One Piece tập 1000 đã có sẵn',
+                        time: '1 ngày trước',
+                        read: true
+                    }
+                ];
+                
+                if (notifications.length === 0) {
+                    notificationList.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #999;">
+                            <i class="fas fa-bell-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
+                            <p>Không có thông báo nào</p>
+                        </div>
+                    `;
+                } else {
+                    notificationList.innerHTML = notifications.map(notification => `
+                        <div class="notification-item" style="padding: 12px 16px; border-bottom: 1px solid #eee; ${!notification.read ? 'background: #f0f8ff;' : ''} cursor: pointer;" onclick="markNotificationRead(${notification.id})">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: ${!notification.read ? '600' : '500'}; color: #333; margin-bottom: 4px; font-size: 14px;">${notification.title}</div>
+                                    <div style="color: #666; font-size: 13px; line-height: 1.4; margin-bottom: 4px;">${notification.message}</div>
+                                    <div style="color: #999; font-size: 12px;">${notification.time}</div>
+                                </div>
+                                ${!notification.read ? '<div style="width: 8px; height: 8px; background: #3498db; border-radius: 50%; margin-top: 4px;"></div>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
                 }
-            });
-        });
-
-
-        // Iframe height and theme sync (should be in script.js)
-        function adjustIframeHeight(iframe) {
-            try {
-                const body = iframe.contentWindow.document.body;
-                const html = iframe.contentWindow.document.documentElement;
-                const height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-                iframe.style.height = height + 'px';
-
-                // Send initial theme to iframe
-                 if (iframe.id === 'header-iframe' || iframe.id === 'footer-iframe') {
-                    const currentTheme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
-                    iframe.contentWindow.postMessage({ type: 'themeChange', theme: currentTheme }, '*');
+                
+                // Update notification count
+                const unreadCount = notifications.filter(n => !n.read).length;
+                if (notificationCount) {
+                    notificationCount.textContent = unreadCount;
                 }
-
-            } catch (e) {
-                console.warn("Could not adjust iframe height or sync theme, possibly due to cross-origin restrictions if not on a server.", e);
+                if (notificationBadge) {
+                    if (unreadCount > 0) {
+                        notificationBadge.textContent = unreadCount;
+                        notificationBadge.style.display = 'inline-block';
+                    } else {
+                        notificationBadge.style.display = 'none';
+                    }
+                }
             }
         }
         
-        function syncThemeWithIframe() {
-            const headerIframe = document.getElementById('header-iframe');
-            const footerIframe = document.getElementById('footer-iframe');
-            const currentTheme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
-
-            if (headerIframe && headerIframe.contentWindow) {
-                headerIframe.contentWindow.postMessage({ type: 'themeChange', theme: currentTheme }, '*');
+        function markNotificationRead(notificationId) {
+            console.log('Marking notification read:', notificationId);
+            // In real app, would make API call to mark as read
+            // Reload notifications to update UI
+            setTimeout(() => {
+                loadNotifications();
+            }, 100);
+        }
+          // Voice Search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const searchForm = document.getElementById('searchForm');
+            
+            if (voiceBtn && searchInput) {
+                voiceBtn.addEventListener('click', function() {
+                    startVoiceSearch();
+                });
             }
-            if (footerIframe && footerIframe.contentWindow) {
-                footerIframe.contentWindow.postMessage({ type: 'themeChange', theme: currentTheme }, '*');
+            
+            // Search form functionality
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    performSearch();
+                });
+            }
+            
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
+                    performSearch();
+                });
+            }
+            
+            // Search input enter key
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        performSearch();
+                    }
+                });
+            }
+        });
+        
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                showNotification('Vui lòng nhập từ khóa tìm kiếm', 'warning');
+                return;
+            }
+            
+            // Redirect to search results page or index with search params
+            const searchUrl = `../index.html?search=${encodeURIComponent(query)}`;
+            window.location.href = searchUrl;
+        }
+        
+        function startVoiceSearch() {
+            // Check if browser supports speech recognition
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Trình duyệt không hỗ trợ tìm kiếm bằng giọng nói', 'warning');
+                return;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.lang = 'vi-VN';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            const voiceBtn = document.getElementById('voiceBtn');
+            const searchInput = document.getElementById('searchInput');
+            
+            // Update button to show recording state
+            voiceBtn.innerHTML = '<span style="color: #e74c3c;">🎤</span>';
+            voiceBtn.style.background = 'rgba(231, 76, 60, 0.1)';
+            
+            recognition.onstart = function() {
+                console.log('Voice recognition started');
+                showNotification('Đang lắng nghe... Hãy nói từ khóa tìm kiếm', 'info');
+            };
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                console.log('Voice recognition result:', transcript);
+                
+                // Put result in search input
+                searchInput.value = transcript;
+                
+                // Trigger search
+                showNotification(`Đã nhận diện: "${transcript}"`, 'success');
+                
+                // You can trigger search here
+                // performSearch(transcript);
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('Voice recognition error:', event.error);
+                let errorMessage = 'Lỗi nhận diện giọng nói';
+                
+                switch(event.error) {
+                    case 'no-speech':
+                        errorMessage = 'Không phát hiện giọng nói';
+                        break;
+                    case 'network':
+                        errorMessage = 'Lỗi kết nối mạng';
+                        break;
+                    case 'not-allowed':
+                        errorMessage = 'Vui lòng cho phép quyền truy cập microphone';
+                        break;
+                }
+                
+                showNotification(errorMessage, 'error');
+            };
+            
+            recognition.onend = function() {
+                // Reset button state
+                voiceBtn.innerHTML = '<span>🎤</span>';
+                voiceBtn.style.background = '';
+                console.log('Voice recognition ended');
+            };
+            
+            // Start recognition
+            try {
+                recognition.start();
+            } catch (error) {
+                console.error('Failed to start voice recognition:', error);
+                showNotification('Không thể khởi động tìm kiếm bằng giọng nói', 'error');
+                
+                // Reset button state
+                voiceBtn.innerHTML = '<span>🎤</span>';
+                voiceBtn.style.background = '';
             }
         }
-
-        // Listen for theme changes from header iframe (if theme toggle is in header)
-        window.addEventListener('message', function(event) {
-            // Check origin for security if on a live domain
-            // if (event.origin !== 'expected_origin') return;
-
-            if (event.data.type === 'themeToggle') {
-                document.body.classList.toggle('light-mode');
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-                syncThemeWithIframe(); // Sync with footer and potentially other iframes
-            } else if (event.data.type === 'requestHeightUpdate') {
-                 const iframeToUpdate = document.getElementById(event.data.iframeId);
-                 if (iframeToUpdate) {
-                    adjustIframeHeight(iframeToUpdate);
-                 }
-            } else if (event.data.type === 'scrollToTop') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+        
+        // Star rating functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            setupStarRating();
         });
-
-        // Initial theme load
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
-            if (savedTheme === 'light') {
-                document.body.classList.remove('dark-mode');
-                document.body.classList.add('light-mode');
-            } else {
-                document.body.classList.remove('light-mode');
-                document.body.classList.add('dark-mode');
-            }
-            // Initial sync for iframes that might load after DOMContentLoaded but before their own onload
-            // The onload adjustIframeHeight already calls syncThemeWithIframe
-        });
-
-        // Adjust margin for fixed header after it loads
-        const headerIframe = document.getElementById('header-iframe');
-        if (headerIframe) {
-            headerIframe.addEventListener('load', function() {
-                try {
-                    const headerHeight = this.contentWindow.document.body.offsetHeight;
-                    document.querySelector('.movie-detail-hero').style.marginTop = headerHeight + 'px';
-                } catch (e) {
-                    // Fallback if accessing iframe content fails
-                    document.querySelector('.movie-detail-hero').style.marginTop = '70px'; // Approx height
-                    console.warn("Could not get header height from iframe for margin adjustment.", e);
-                }
+        
+        function setupStarRating() {
+            const starRating = document.querySelector('.star-rating');
+            if (!starRating) return;
+            
+            const labels = starRating.querySelectorAll('label');
+            const inputs = starRating.querySelectorAll('input[type="radio"]');
+            
+            labels.forEach((label, index) => {
+                label.addEventListener('click', function() {
+                    const rating = index + 1;
+                    
+                    // Update input
+                    inputs[index].checked = true;
+                    
+                    // Update visual stars
+                    labels.forEach((l, i) => {
+                        const span = l.querySelector('span');
+                        if (i <= index) {
+                            span.style.color = '#ffd700';
+                        } else {
+                            span.style.color = '#ddd';
+                        }
+                    });
+                });
+                
+                label.addEventListener('mouseenter', function() {
+                    labels.forEach((l, i) => {
+                        const span = l.querySelector('span');
+                        if (i <= index) {
+                            span.style.color = '#ffd700';
+                        } else {
+                            span.style.color = '#ddd';
+                        }
+                    });
+                });
+            });
+            
+            starRating.addEventListener('mouseleave', function() {
+                const checkedInput = starRating.querySelector('input:checked');
+                const checkedIndex = checkedInput ? Array.from(inputs).indexOf(checkedInput) : 4; // Default to 5 stars
+                
+                labels.forEach((l, i) => {
+                    const span = l.querySelector('span');
+                    if (i <= checkedIndex) {
+                        span.style.color = '#ffd700';
+                    } else {
+                        span.style.color = '#ddd';
+                    }
+                });
             });
         }
-
     </script>
 </body>
 </html>

@@ -37,11 +37,11 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/cartoons/vip-content").hasAnyRole("VIP", "ADMIN")
-                        .requestMatchers("/api/vip/**").hasAnyRole("VIP", "ADMIN")
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() // Allow static
+                        .requestMatchers("/api/vip/**").hasAnyRole("VIP", "ADMIN")                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() // Allow static
                                                                                                         // resources
                         .requestMatchers("/api/cartoons/**").permitAll() // PUBLIC cartoon API
                         .requestMatchers("/api/auth/**").permitAll() // PUBLIC auth API
+                        .requestMatchers(HttpMethod.GET, "/api/comments/cartoon/**").permitAll() // Allow reading comments without auth
                         .requestMatchers("/api/user-achievements/username/**").hasAnyRole("USER", "VIP", "ADMIN")
                         // Nếu có các API khác cần xác thực, thêm ở đây
                         .requestMatchers("/api/**").authenticated() // lock API access to authenticated users
