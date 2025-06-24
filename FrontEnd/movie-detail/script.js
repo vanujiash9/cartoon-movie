@@ -312,9 +312,9 @@ function startVoiceSearch() {
 
 // Show notification function
 function showNotification(message, type = 'success') {
-    // Try to use existing notification system first
-    if (window.showNotification && typeof window.showNotification === 'function') {
-        window.showNotification(message, type);
+    // Check if we have an external notification system (avoid calling ourselves)
+    if (window.showToast && typeof window.showToast === 'function') {
+        window.showToast(message, type);
         return;
     }
     
@@ -788,6 +788,14 @@ function initializeCommunityDiscussion(movieId) {
     currentMovieId = movieId;
     currentUser = getCurrentUser(); // Use shared function from shared-api.js
     
+    // Debug user data
+    console.log('🔍 Current user from localStorage:', currentUser);
+    if (currentUser) {
+        console.log('✅ User ID:', currentUser.id, 'Username:', currentUser.username);
+    } else {
+        console.log('❌ No user data found in localStorage');
+    }
+    
     // Load comments for the movie
     loadComments(movieId);
     
@@ -1046,22 +1054,55 @@ async function submitComment() {
         return;
     }
     
-    try {
+    // Debug the request data
+    console.log('🚀 Submitting comment:', {
+        currentUser,
+        movieId: currentMovieId,
+        content,
+        rating,
+        headers: {
+            'X-User-ID': currentUser.id?.toString(),
+            'X-Username': currentUser.username
+        }
+    });
+      try {
+        console.log('🚀 Posting comment with data:', {
+            movieId: currentMovieId,
+            content: content,
+            rating: rating,
+            user: currentUser
+        });
+          const headers = {
+            'Content-Type': 'application/json',
+            'X-User-ID': currentUser.id.toString(),
+            'X-Username': currentUser.username,
+            'Authorization': `Bearer token_${currentUser.id}_${Date.now()}`
+        };
+        
+        console.log('📋 Request headers:', headers);
+        
         const response = await fetch(`http://localhost:8080/api/comments/cartoon/${currentMovieId}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-User-ID': currentUser.id.toString(),
-                'X-Username': currentUser.username
-            },
+            headers: headers,
             body: JSON.stringify({
                 content: content,
                 rating: rating
             })
         });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
+          if (!response.ok) {
+            console.log('❌ Response status:', response.status);
+            console.log('❌ Response headers:', Object.fromEntries(response.headers.entries()));
+            
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch (e) {
+                const textData = await response.text();
+                console.log('❌ Response text:', textData);
+                errorData = { error: textData || 'Không thể đăng bình luận' };
+            }
+            
+            console.log('❌ Error data:', errorData);
             throw new Error(errorData.error || 'Không thể đăng bình luận');
         }
         
@@ -1135,11 +1176,11 @@ async function submitReply(parentId) {
     
     try {
         const response = await fetch(`http://localhost:8080/api/comments/cartoon/${currentMovieId}`, {
-            method: 'POST',
-            headers: {
+            method: 'POST',            headers: {
                 'Content-Type': 'application/json',
                 'X-User-ID': currentUser.id.toString(),
-                'X-Username': currentUser.username
+                'X-Username': currentUser.username,
+                'Authorization': `Bearer token_${currentUser.id}_${Date.now()}`
             },
             body: JSON.stringify({
                 content: content,
@@ -1289,11 +1330,128 @@ function setupCommentEventListeners() {
     // Most event listeners are inline for simplicity, but you can add more here if needed
 }
 
-// Make functions globally available
-window.toggleCommentLike = toggleCommentLike;
-window.showReplyForm = showReplyForm;
-window.hideReplyForm = hideReplyForm;
-window.submitReply = submitReply;
-window.deleteComment = deleteComment;
+// === DEBUG FUNCTIONS FOR TESTING ===
 
-// === END COMMUNITY DISCUSSION FUNCTIONS ===
+// Create a test user and login automatically
+async function createTestUserAndLogin() {
+    try {
+        // First try to register a test user
+        const registerResponse = await fetch('http://localhost:8080/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: 'testuser',
+                password: '123456',
+                fullName: 'Test User',
+                email: 'testuser@test.com'
+            })
+        });
+        
+        if (registerResponse.ok) {
+            console.log('✅ Test user registered successfully');
+        } else {
+            console.log('⚠️ Test user might already exist, proceeding with login...');
+        }
+        
+        // Then login
+        const loginResponse = await fetch('http://localhost:8080/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: 'testuser',
+                password: '123456'
+            })
+        });
+        
+        if (loginResponse.ok) {
+            const loginData = await loginResponse.json();
+            console.log('✅ Login successful:', loginData);
+            
+            // Create user object to store in localStorage
+            const userData = {
+                id: loginData.user ? loginData.user.id : 1,
+                username: loginData.user ? loginData.user.username : 'testuser',
+                fullName: loginData.user ? loginData.user.fullName : 'Test User',
+                email: loginData.user ? loginData.user.email : 'testuser@test.com',
+                role: loginData.user ? loginData.user.role : 'USER',
+                avatar: 'T'
+            };
+            
+            // Store user data and token
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            if (loginData.token) {
+                localStorage.setItem('authToken', loginData.token);
+            }
+            
+            // Refresh the current user and update UI
+            currentUser = getCurrentUser();
+            updateHeaderLoginStatus();
+            updateUIForLoginStatus();
+            
+            showNotification(`Đã đăng nhập thành công với tài khoản: ${userData.fullName}`, 'success');
+            return userData;
+        } else {
+            const errorData = await loginResponse.json();
+            throw new Error(errorData.message || 'Login failed');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error creating test user:', error);
+        showNotification(`Lỗi tạo user test: ${error.message}`, 'error');
+        
+        // Fallback to simple simulation
+        simulateLogin();
+    }
+}
+
+// Simulate user login for testing (fallback)
+function simulateLogin(username = 'testuser', fullName = 'Test User', id = 999) {
+    const userData = {
+        id: id,
+        username: username,
+        fullName: fullName,
+        email: `${username}@test.com`,
+        role: 'USER',
+        avatar: fullName.substring(0, 1).toUpperCase()
+    };
+    
+    // Also store authentication token
+    const authToken = `token_${id}_${Date.now()}`;
+    localStorage.setItem('authToken', authToken);
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    
+    console.log('✅ Simulated login for:', userData);
+    console.log('📋 Auth token:', authToken);
+    
+    // Refresh the current user and update UI
+    currentUser = getCurrentUser();
+    updateHeaderLoginStatus();
+    updateUIForLoginStatus();
+    
+    showNotification(`Đã đăng nhập thành công với tài khoản: ${fullName}`, 'success');
+}
+
+// Simulate logout for testing
+function simulateLogout() {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    
+    currentUser = null;
+    updateHeaderLoginStatus();
+    updateUIForLoginStatus();
+    
+    console.log('✅ Simulated logout');
+    showNotification('Đã đăng xuất thành công', 'info');
+}
+
+// Make debug functions available globally for console testing
+window.createTestUserAndLogin = createTestUserAndLogin;
+window.simulateLogin = simulateLogin;
+window.simulateLogout = simulateLogout;
+
+// === END DEBUG FUNCTIONS ===

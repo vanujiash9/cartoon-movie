@@ -962,12 +962,6 @@
                         <div class="categories-list" id="movie-category-list" style="justify-content: flex-start; margin-top: 15px;">
                             <!-- Dynamic categories will be injected here -->
                         </div>
-                        
-                        <h3 style="margin-top: 30px;">Studio</h3>
-                        <p>Ufotable</p> <!-- This can be made dynamic if data is available -->
-                        
-                        <h3>Đạo diễn</h3>
-                        <p>Haruo Sotozaki</p> <!-- This can be made dynamic if data is available -->
                     </div>
                     
                     <div class="tab-content" id="episodes">
@@ -1149,7 +1143,15 @@
                 console.log('✅ Header margin set to 80px for inline header');
             }
         });
-        
+          // === DEBUG: For testing comments without login page ===
+        // Option 1 (recommended): Create real test user and login:
+        // createTestUserAndLogin()
+        // 
+        // Option 2: Simple simulation (might fail if user doesn't exist):
+        // simulateLogin()
+        // 
+        // To logout: simulateLogout()
+        // ========================================================
         // Navigation functions for header
         window.navigateToHome = function() {
             window.location.href = '../index.html';

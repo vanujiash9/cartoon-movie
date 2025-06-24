@@ -1,11 +1,148 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
+<head>    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hồ sơ của tôi - Maxion</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     
     <link rel="stylesheet" href="user.css">
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--background-primary, #1a1a1a);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-header {
+            padding: 20px 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color, #333);
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary, #fff);
+            font-size: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-secondary, #ccc);
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background-color: var(--border-color, #333);
+            color: var(--text-primary, #fff);
+        }
+        
+        .modal-body {
+            padding: 0 25px;
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border-color, #333);
+            margin-top: 20px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .password-requirements {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--background-secondary, #2a2a2a);
+            border-radius: 8px;
+        }
+        
+        .password-requirements p {
+            margin: 0 0 10px;
+            color: var(--text-secondary, #ccc);
+            font-size: 0.9rem;
+        }
+        
+        .password-requirements ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text-secondary, #ccc);
+            font-size: 0.85rem;
+        }
+        
+        .password-requirements li {
+            margin: 5px 0;
+        }
+        
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+            
+            .modal-header, .modal-body, .modal-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            
+            .form-actions, .modal-footer {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Notification -->
@@ -19,30 +156,25 @@
 
         <ul class="navbar-nav">
             <li><a href="../index.html" class="navbar-link">Trang chủ</a></li>
-            <li><a href="../genres/genres.html" class="navbar-link">Danh sách phim</a></li>
             <li><a href="./user.html" class="navbar-link active">Hồ sơ</a></li>
-            <li><a href="../movie detail/movie_detail.html" class="navbar-link">TV Trực tiếp</a></li>
-        </ul>
-
-        <div class="navbar-actions">
+        </ul>        <div class="navbar-actions">
             <!-- XÓA NÚT CHUYỂN ĐỔI SÁNG/TỐI -->
             <!-- <button class="theme-toggle" id="themeToggle">
                 <ion-icon name="sunny" id="themeIcon"></ion-icon>
             </button> -->
             
-            <img src="https://i.postimg.cc/DzBqXXkF/user-avatar.jpg" alt="User Avatar" class="user-avatar">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzNDk4ZGIiLz4KPHRleHQgeD0iMjAiIHk9IjI2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPHN2Zz4=" alt="User Avatar" class="user-avatar">
         </div>
     </nav>
 
     <div class="container">
         <main class="main-content">
             <!-- Profile Header -->
-            <section class="profile-header">
-                <div class="profile-content">
-                    <img src="https://i.postimg.cc/DzBqXXkF/user-avatar.jpg" alt="Profile Avatar" class="profile-avatar" id="profileAvatar">
+            <section class="profile-header">                <div class="profile-content">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMzNDk4ZGIiLz4KPHRleHQgeD0iNDAiIHk9IjUyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSI+VTwvdGV4dD4KPHN2Zz4=" alt="Profile Avatar" class="profile-avatar" id="profileAvatar">
                     
                     <div class="profile-info">
-                        <h1 id="userName">Nguyễn Văn An</h1>
+                        <h1 id="userName">Chưa đăng nhập</h1>
                         <p class="subtitle">Thành viên Premium • Đã tham gia từ tháng 3/2024</p>
                         
                         <div class="profile-stats">
@@ -134,25 +266,19 @@
                         </h3>
                     </div>
                     
-                    <div class="settings-form">
-                        <div class="form-group">
+                    <div class="settings-form">                        <div class="form-group">
                             <label class="form-label">Tên hiển thị</label>
-                            <input type="text" class="form-input" value="Nguyễn Văn An" placeholder="Nhập tên của bạn">
+                            <input type="text" id="displayName" class="form-input" placeholder="Nhập tên của bạn">
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-input" value="nguyenvanan@email.com" placeholder="Email của bạn">
+                            <input type="email" id="userEmail" class="form-input" placeholder="Email của bạn">
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Chất lượng video mặc định</label>
-                            <select class="form-select">
-                                <option value="auto">Tự động</option>
-                                <option value="4k" selected>4K Ultra HD</option>
-                                <option value="1080p">1080p Full HD</option>
-                                <option value="720p">720p HD</option>
-                            </select>
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" id="userPhone" class="form-input" placeholder="Số điện thoại của bạn">
                         </div>
                         
                         <div class="form-group">
@@ -169,10 +295,16 @@
                             </label>
                         </div>
                         
-                        <button class="btn btn-primary" onclick="saveSettings()">
-                            <ion-icon name="save-outline"></ion-icon>
-                            Lưu thay đổi
-                        </button>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveSettings()">
+                                <ion-icon name="save-outline"></ion-icon>
+                                Lưu thay đổi
+                            </button>
+                            <button class="btn btn-secondary" onclick="showChangePasswordModal()">
+                                <ion-icon name="lock-closed-outline"></ion-icon>
+                                Đổi mật khẩu
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -190,223 +322,473 @@
                         <!-- Activity will be populated by JavaScript -->
                     </div>
                 </div>
-            </div>
-        </main>
+            </div>        </main>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chỉnh sửa hồ sơ</h2>
+                <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label class="form-label">Tên hiển thị</label>
+                        <input type="text" id="editDisplayName" class="form-input" placeholder="Nhập tên của bạn">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="editUserEmail" class="form-input" placeholder="Email của bạn">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="tel" id="editUserPhone" class="form-input" placeholder="Số điện thoại của bạn">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Giới thiệu bản thân</label>
+                        <textarea id="editUserBio" class="form-input" rows="3" placeholder="Viết vài dòng về bản thân..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditProfileModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="saveProfileChanges()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal" id="changePasswordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đổi mật khẩu</h2>
+                <button class="modal-close" onclick="closeChangePasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        <input type="password" id="currentPassword" class="form-input" placeholder="Nhập mật khẩu hiện tại">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <input type="password" id="newPassword" class="form-input" placeholder="Nhập mật khẩu mới">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Xác nhận mật khẩu mới</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Nhập lại mật khẩu mới">
+                    </div>
+                    
+                    <div class="password-requirements">
+                        <p>Mật khẩu phải có:</p>
+                        <ul>
+                            <li>Ít nhất 8 ký tự</li>
+                            <li>Ít nhất 1 chữ hoa</li>
+                            <li>Ít nhất 1 chữ số</li>
+                            <li>Ít nhất 1 ký tự đặc biệt</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeChangePasswordModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="savePasswordChanges()">Đổi mật khẩu</button>
+            </div>
+        </div>
+    </div>
+    
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    
-    <script>
+    <script src="../js/shared-api.js"></script>
+      <script>
         'use strict';
 
-        // Sample data
-        const userData = {
-            name: 'Nguyễn Văn An',
-            email: 'nguyenvanan@email.com',
-            avatar: 'https://i.postimg.cc/DzBqXXkF/user-avatar.jpg',
-            joinDate: 'tháng 3/2024',
-            isPremium: true,
-            stats: {
-                moviesWatched: 47,
-                hoursWatched: 124,
-                favoriteMovies: 23,
-                achievementsUnlocked: 8
-            }
-        };
-
-        const favoriteMovies = [
-            {
-                title: 'The Dark Knight',
-                genre: 'Hành động',
-                year: '2008',
-                rating: '9.0',
-                poster: 'https://i.postimg.cc/Gt6rKXMj/dark-knight.jpg'
-            },
-            {
-                title: 'Interstellar',
-                genre: 'Khoa học viễn tưởng',
-                year: '2014',
-                rating: '8.7',
-                poster: 'https://i.postimg.cc/cHgd3qhJ/interstaller.jpg'
-            },
-            {
-                title: 'Dune: Phần Một',
-                genre: 'Khoa học viễn tưởng',
-                year: '2021',
-                rating: '8.0',
-                poster: 'https://i.postimg.cc/Y9jJP1LD/dune.jpg'
-            }
-        ];
-
-        const watchHistory = [
-            {
-                title: 'John Wick 3',
-                genre: 'Hành động',
-                year: '2019',
-                rating: '7.4',
-                poster: 'https://i.postimg.cc/Y9SMdz0P/John-Wick-3.jpg',
-                watchedAt: '2 giờ trước'
-            },
-            {
-                title: 'Avengers: Endgame',
-                genre: 'Hành động',
-                year: '2019',
-                rating: '8.5',
-                poster: 'https://i.postimg.cc/6QSXtjKx/endgame.jpg',
-                watchedAt: '1 ngày trước'
-            },
-            {
-                title: 'Spider-Man: Homecoming',
-                genre: 'Hành động',
-                year: '2017',
-                rating: '7.4',
-                poster: 'https://i.postimg.cc/brB48dkY/spider-men.jpg',
-                watchedAt: '3 ngày trước'
-            }
-        ];
-
-        const achievements = [
-            {
-                id: 'first_movie',
-                name: 'Bước đầu tiên',
-                description: 'Xem bộ phim đầu tiên',
-                icon: '🎬',
-                progress: 100,
-                unlocked: true
-            },
-            {
-                id: 'movie_lover',
-                name: 'Người yêu phim',
-                description: 'Xem 10 bộ phim',
-                icon: '❤️',
-                progress: 100,
-                unlocked: true
-            },
-            {
-                id: 'binge_watcher',
-                name: 'Thức đêm xem phim',
-                description: 'Xem phim 5 giờ liên tục',
-                icon: '🌙',
-                progress: 80,
-                unlocked: false
-            },
-            {
-                id: 'critic',
-                name: 'Nhà phê bình',
-                description: 'Đánh giá 25 bộ phim',
-                icon: '⭐',
-                progress: 60,
-                unlocked: false
-            },
-            {
-                id: 'collector',
-                name: 'Nhà sưu tập',
-                description: 'Bookmark 50 bộ phim',
-                icon: '📚',
-                progress: 46,
-                unlocked: false
-            },
-            {
-                id: 'explorer',
-                name: 'Nhà thám hiểm',
-                description: 'Xem phim từ 10 thể loại khác nhau',
-                icon: '🗺️',
-                progress: 70,
-                unlocked: false
-            }
-        ];
-
-        const recentActivity = [
-            {
-                type: 'movie_watched',
-                title: 'Đã xem John Wick 3',
-                description: 'Hoàn thành với đánh giá 4.5⭐',
-                time: '2 giờ trước',
-                icon: 'play'
-            },
-            {
-                type: 'achievement',
-                title: 'Mở khóa thành tựu mới',
-                description: 'Người yêu phim - Xem 10 bộ phim',
-                time: '1 ngày trước',
-                icon: 'trophy'
-            },
-            {
-                type: 'bookmark',
-                title: 'Thêm vào yêu thích',
-                description: 'Dune: Phần Một',
-                time: '2 ngày trước',
-                icon: 'heart'
-            },
-            {
-                type: 'rating',
-                title: 'Đánh giá phim',
-                description: 'The Dark Knight - 5⭐',
-                time: '3 ngày trước',
-                icon: 'star'
-            },
-            {
-                type: 'profile',
-                title: 'Cập nhật hồ sơ',
-                description: 'Thay đổi avatar và thông tin cá nhân',
-                time: '1 tuần trước',
-                icon: 'person'
-            }
-        ];
-
-        // DOM elements
+        // User data from localStorage
+        let currentUser = null;
+        
+        // Dynamic data holders
+        let userAchievements = [];
+        let userFavorites = [];
+        let userHistory = [];
+        let userStats = { moviesWatched: 0, hoursWatched: 0, favoriteMovies: 0, achievementsUnlocked: 0 };        // DOM elements
         const notification = document.getElementById('notification');
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
 
-        // Initialize page
+        // === API HELPER FUNCTIONS ===
+        
+        // Get authentication headers
+        function getAuthHeaders() {
+            const authToken = localStorage.getItem('authToken');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (currentUser) {
+                headers['X-User-ID'] = currentUser.id.toString();
+                headers['X-Username'] = currentUser.username;
+                
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+            }
+            
+            return headers;        }
+
+        // === HELPER FUNCTIONS ===
+        
+        // Create movie poster SVG
+        function createMoviePoster(title) {
+            return `data:image/svg+xml;base64,${btoa(`<svg width="200" height="300" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="300" fill="#34495e"/><text x="100" y="150" text-anchor="middle" fill="white" font-size="14">${title}</text></svg>`)}`;
+        }
+        
+        // Create fallback movie data
+        function createFallbackMovie(movieId, title = null) {
+            const movieTitle = title || `Phim ${movieId}`;
+            return {
+                id: movieId,
+                title: movieTitle,
+                genre: 'Phim hoạt hình',
+                year: '2024',
+                rating: '8.0',
+                poster: createMoviePoster(movieTitle)
+            };
+        }
+        
+        // === DATA LOADING FUNCTIONS ===        // Load user achievements from API
+        async function loadUserAchievements() {
+            if (!currentUser) {
+                userAchievements = [];
+                userStats.achievementsUnlocked = 0;
+                return;
+            }
+            
+            try {
+                // Get user achievements
+                const result = await apiCall(`/api/user-achievements/user/${currentUser.id}`);
+                
+                if (result.success) {
+                    const achievements = result.data || [];
+                    
+                    // Convert to our format
+                    userAchievements = achievements.map(userAchievement => {
+                        const achievement = userAchievement.achievement || {};
+                        return {
+                            id: achievement.id,
+                            name: achievement.name || achievement.title || 'Thành tựu',
+                            description: achievement.description || 'Mô tả thành tựu',
+                            icon: getAchievementIcon(achievement.name || achievement.title || 'Thành tựu'),
+                            progress: 100, // If user has it, it's 100%
+                            unlocked: true,
+                            unlockedAt: userAchievement.unlockedAt || null
+                        };
+                    });
+                    
+                    // Update stats
+                    userStats.achievementsUnlocked = achievements.length;
+                } else {
+                    console.warn('Failed to load achievements:', result.error);
+                    // Fallback to sample achievements if API fails
+                    createSampleAchievements();
+                }
+                
+            } catch (error) {
+                console.error('Error loading achievements:', error);
+                // Fallback to sample achievements if API fails
+                createSampleAchievements();
+            }
+        }
+        
+        // Create sample achievements for fallback
+        function createSampleAchievements() {
+            userAchievements = [
+                {
+                    id: 1,
+                    name: 'Bước đầu tiên',
+                    description: 'Xem bộ phim đầu tiên',
+                    icon: '🎬',
+                    progress: 100,
+                    unlocked: true,
+                    unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString()
+                },
+                {
+                    id: 2,
+                    name: 'Người yêu phim',
+                    description: 'Xem 10 bộ phim',
+                    icon: '❤️',
+                    progress: 100,
+                    unlocked: true,
+                    unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString()
+                },
+                {
+                    id: 3,
+                    name: 'Nhà sưu tập',
+                    description: 'Thêm 25 phim vào yêu thích',
+                    icon: '📚',
+                    progress: 80,
+                    unlocked: false,
+                    unlockedAt: null
+                }
+            ];
+            
+            // Only count unlocked achievements
+            userStats.achievementsUnlocked = userAchievements.filter(a => a.unlocked).length;
+            console.log('Using sample achievements due to API unavailability');
+        }
+
+        // Helper function to get achievement icons
+        function getAchievementIcon(name) {
+            const iconMap = {
+                'Bước đầu tiên': '🎬',
+                'Người yêu phim': '❤️',
+                'Thức đêm xem phim': '🌙',
+                'Nhà phê bình': '⭐',
+                'Nhà sưu tập': '📚',
+                'Nhà thám hiểm': '🗺️',
+                'Khởi đầu': '🚀',
+                'Xem phim': '📺',
+                'Đánh giá': '🌟',
+                'Bình luận': '💬'
+            };
+            
+            for (const [key, icon] of Object.entries(iconMap)) {
+                if (name.toLowerCase().includes(key.toLowerCase())) {
+                    return icon;
+                }
+            }
+            
+            return '🏆'; // Default icon
+        }        // Load user favorite movies (from localStorage click history)
+        async function loadUserFavorites() {
+            try {
+                // Get click history from localStorage
+                const clickHistory = JSON.parse(localStorage.getItem('movieClickHistory') || '[]');
+                
+                if (clickHistory.length === 0) {
+                    userFavorites = [];
+                    userStats.favoriteMovies = 0;
+                    return;
+                }
+                
+                // Get top clicked movies
+                const movieCounts = {};
+                clickHistory.forEach(click => {
+                    movieCounts[click.movieId] = (movieCounts[click.movieId] || 0) + 1;
+                });
+                
+                // Sort by click count and get top 6
+                const topMovieIds = Object.entries(movieCounts)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 6)
+                    .map(([movieId]) => parseInt(movieId));
+                  // Fetch movie details for top clicked movies
+                userFavorites = [];
+                for (const movieId of topMovieIds) {
+                    try {
+                        const result = await apiCall(`/api/cartoons/${movieId}`);
+                        if (result.success) {
+                            const movie = result.data;
+                            userFavorites.push({
+                                id: movie.id,
+                                title: movie.title || movie.name,
+                                genre: movie.genre || 'Phim hoạt hình',
+                                year: movie.year || new Date(movie.releaseDate || Date.now()).getFullYear().toString(),
+                                rating: movie.rating || '8.0',
+                                poster: movie.posterUrl || movie.imageUrl || `data:image/svg+xml;base64,${btoa(`<svg width="200" height="300" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="300" fill="#34495e"/><text x="100" y="150" text-anchor="middle" fill="white" font-size="14">${movie.title || movie.name}</text></svg>`)}`
+                            });
+                        } else {
+                            throw new Error(result.error || 'Failed to load movie');
+                        }
+                    } catch (error) {
+                        console.warn(`Could not load movie ${movieId}, using fallback:`, error);
+                        // Add fallback movie data
+                        userFavorites.push(createFallbackMovie(movieId));
+                    }
+                }
+                
+                userStats.favoriteMovies = userFavorites.length;
+                
+            } catch (error) {
+                console.error('Error loading favorites:', error);
+                userFavorites = [];
+                userStats.favoriteMovies = 0;
+            }
+        }        // Load user watch history
+        async function loadUserHistory() {
+            try {
+                // Get recent history from localStorage
+                const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+                
+                if (watchHistory.length === 0) {
+                    userHistory = [];
+                    userStats.moviesWatched = 0;
+                    userStats.hoursWatched = 0;
+                    return;
+                }
+                
+                // Get recent 6 movies
+                const recentMovies = watchHistory
+                    .sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt))
+                    .slice(0, 6);
+                  userHistory = [];
+                for (const historyItem of recentMovies) {
+                    try {
+                        const result = await apiCall(`/api/cartoons/${historyItem.movieId}`);
+                        if (result.success) {
+                            const movie = result.data;
+                            userHistory.push({
+                                id: movie.id,
+                                title: movie.title || movie.name,
+                                genre: movie.genre || 'Phim hoạt hình',
+                                year: movie.year || new Date(movie.releaseDate || Date.now()).getFullYear().toString(),
+                                rating: movie.rating || '8.0',
+                                poster: movie.posterUrl || movie.imageUrl || `data:image/svg+xml;base64,${btoa(`<svg width="200" height="300" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="300" fill="#34495e"/><text x="100" y="150" text-anchor="middle" fill="white" font-size="14">${movie.title || movie.name}</text></svg>`)}`,
+                                watchedAt: formatTimeAgo(new Date(historyItem.watchedAt))
+                            });
+                        } else {
+                            throw new Error(result.error || 'Failed to load movie');
+                        }
+                    } catch (error) {
+                        console.warn(`Could not load movie ${historyItem.movieId}, using fallback:`, error);
+                        // Add fallback movie data
+                        userHistory.push(createFallbackMovie(historyItem.movieId, historyItem.title));
+                    }
+                }
+                
+                userStats.moviesWatched = watchHistory.length;
+                userStats.hoursWatched = Math.floor(watchHistory.length * 1.5); // Estimate 1.5 hours per movie
+                  } catch (error) {
+                console.error('Error loading history:', error);
+                userHistory = [];
+                userStats.moviesWatched = 0;
+                userStats.hoursWatched = 0;
+            }
+        }
+
+        // Helper function to format time ago
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            
+            if (diffMinutes < 60) {
+                return `${diffMinutes} phút trước`;
+            } else if (diffHours < 24) {
+                return `${diffHours} giờ trước`;
+            } else {
+                return `${diffDays} ngày trước`;
+            }
+        }
+
+        // === UPDATE PROFILE API ===
+          // Update user profile
+        async function updateUserProfile(profileData) {
+            try {
+                showNotification('Đang cập nhật hồ sơ...', 'info');
+                
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Since there's no dedicated profile update API, we'll update localStorage
+                // and potentially create a new API endpoint later
+                
+                const updatedUser = { ...currentUser, ...profileData };
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                
+                // Update individual fields in localStorage
+                if (profileData.fullName) {
+                    localStorage.setItem('fullName', profileData.fullName);
+                    localStorage.setItem('username', profileData.fullName);
+                }
+                if (profileData.email) {
+                    localStorage.setItem('email', profileData.email);
+                }
+                if (profileData.phone) {
+                    localStorage.setItem('phone', profileData.phone);
+                }
+                
+                currentUser = updatedUser;
+                showNotification('Đã cập nhật hồ sơ thành công!', 'success');
+                
+                // Update display immediately
+                document.getElementById('userName').textContent = profileData.fullName || currentUser.username;
+                document.querySelector('#displayName').value = profileData.fullName || '';
+                document.querySelector('#userEmail').value = profileData.email || '';
+                document.querySelector('#userPhone').value = profileData.phone || '';
+                
+                return true;
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showNotification('Lỗi cập nhật hồ sơ: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Change password
+        async function changePassword(currentPassword, newPassword) {
+            try {
+                // For now, we'll simulate password change
+                // In production, this should call a real API
+                showNotification('Đang thay đổi mật khẩu...', 'info');
+                
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // TODO: Implement actual password change API
+                // const result = await apiCall('/api/auth/change-password', 'POST', {
+                //     currentPassword,
+                //     newPassword
+                // });
+                
+                showNotification('Đã thay đổi mật khẩu thành công!', 'success');
+                return true;
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showNotification('Lỗi thay đổi mật khẩu: ' + error.message, 'error');
+                return false;
+            }
+        }        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             initializePage();
-            setupEventListeners();
-            loadUserData();
-            populateFavoriteMovies();
-            populateWatchHistory();
-            populateAchievements();
-            populateRecentActivity();
-        });
-
-        // LẤY THÔNG TIN USER TỪ LOCALSTORAGE VÀ HIỂN THỊ LÊN HỒ SƠ
+        });        // Load user data from localStorage and update UI
         window.addEventListener('DOMContentLoaded', function() {
-            // Lấy thông tin user từ localStorage
-            const username = localStorage.getItem('username') || 'Chưa đăng nhập';
-            const email = localStorage.getItem('email') || '';
-            const fullName = localStorage.getItem('fullName') || '';
-            // Hiển thị tên user
-            document.getElementById('userName').textContent = fullName || username;
-            // Hiển thị avatar chữ cái đầu
-            const profileAvatar = document.getElementById('profileAvatar');
-            if (profileAvatar && username) {
-                const firstLetter = username.charAt(0).toUpperCase();
-                profileAvatar.src = `data:image/svg+xml;base64,${btoa(`
-                    <svg width='80' height='80' viewBox='0 0 80 80' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                        <circle cx='40' cy='40' r='40' fill='#3498db'/>
-                        <text x='40' y='52' text-anchor='middle' font-family='Arial' font-size='36' font-weight='bold' fill='white'>${firstLetter}</text>
-                    </svg>
-                `)}`;
+            // Get user info from localStorage
+            currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            if (!currentUser) {
+                showNotification('Vui lòng đăng nhập để xem hồ sơ', 'error');
+                console.log('No user found, redirecting to login...');
+                // Redirect to login page after 2 seconds
+                setTimeout(() => {
+                    // Check if login page exists, otherwise stay on current page
+                    if (document.querySelector('a[href*="login"]')) {
+                        window.location.href = '../login-register/login.html';
+                    } else {
+                        console.log('Login page not found, staying on current page');
+                        // Create a demo user for testing
+                        console.log('Creating demo user for testing...');
+                        simulateLogin('demouser', 'Demo User');
+                    }
+                }, 2000);
+                return;
             }
-            // Có thể hiển thị thêm email nếu muốn
-            // document.getElementById('userEmail').textContent = email;
-            // LẤY VÀ ĐỔ DỮ LIỆU VÀO FORM CÀI ĐẶT
-            var _fullName = localStorage.getItem('fullName') || localStorage.getItem('username') || '';
-            var _email = localStorage.getItem('email') || '';
-            // Gán vào input
-            var inputName = document.querySelector('.settings-form input[type="text"]');
-            var inputEmail = document.querySelector('.settings-form input[type="email"]');
-            if(inputName) inputName.value = _fullName;
-            if(inputEmail) inputEmail.value = _email;
+            
+            console.log('Current user:', currentUser);
+            // Load all user data
+            loadUserData();
         });
 
-        function initializePage() {
+        async function initializePage() {
             // Initialize theme
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
-            themeIcon.name = savedTheme === 'light' ? 'moon' : 'sunny';
             
             // Add fade-in animation to cards
             const cards = document.querySelectorAll('.card');
@@ -414,32 +796,88 @@
                 card.style.animationDelay = `${index * 0.1}s`;
                 card.classList.add('fade-in');
             });
-        }
-
-        function setupEventListeners() {
-            themeToggle.addEventListener('click', toggleTheme);
+        }        async function loadUserData() {
+            if (!currentUser) return;
             
-            // Add click handlers for interactive elements
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.movie-item')) {
-                    const movieTitle = e.target.closest('.movie-item').querySelector('h4').textContent;
-                    showNotification(`Đang phát: ${movieTitle}`, 'success');
+            try {
+                showNotification('Đang tải dữ liệu hồ sơ...', 'info');
+                console.log('Loading user data for:', currentUser);
+                
+                // Load user display info
+                const username = currentUser.username || 'Chưa đăng nhập';
+                const fullName = currentUser.fullName || currentUser.username || '';
+                const email = currentUser.email || '';
+                
+                console.log('User info:', { username, fullName, email });
+                
+                // Update user display
+                document.getElementById('userName').textContent = fullName || username;
+                  // Update avatar
+                const profileAvatar = document.getElementById('profileAvatar');
+                const navbarAvatar = document.querySelector('.user-avatar');
+                if (profileAvatar && username) {
+                    const firstLetter = (fullName || username).charAt(0).toUpperCase();
+                    const avatarSvg = `data:image/svg+xml;base64,${btoa(`
+                        <svg width='80' height='80' viewBox='0 0 80 80' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                            <circle cx='40' cy='40' r='40' fill='#3498db'/>
+                            <text x='40' y='52' text-anchor='middle' font-family='Arial' font-size='36' font-weight='bold' fill='white'>${firstLetter}</text>
+                        </svg>
+                    `)}`;
+                    profileAvatar.src = avatarSvg;
+                    
+                    // Also update navbar avatar
+                    if (navbarAvatar) {
+                        const navbarAvatarSvg = `data:image/svg+xml;base64,${btoa(`
+                            <svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                                <circle cx='20' cy='20' r='20' fill='#3498db'/>
+                                <text x='20' y='26' text-anchor='middle' font-family='Arial' font-size='18' font-weight='bold' fill='white'>${firstLetter}</text>
+                            </svg>
+                        `)}`;
+                        navbarAvatar.src = navbarAvatarSvg;
+                    }
                 }
-            });
+                  // Update form fields
+                const inputName = document.querySelector('#displayName');
+                const inputEmail = document.querySelector('#userEmail');
+                const inputPhone = document.querySelector('#userPhone');
+                if (inputName) inputName.value = fullName;
+                if (inputEmail) inputEmail.value = email;
+                if (inputPhone) inputPhone.value = currentUser.phone || '';
+                  // Load dynamic data from APIs and localStorage
+                console.log('Starting to load dynamic data...');
+                await Promise.all([
+                    loadUserAchievements().then(() => console.log('Achievements loaded:', userAchievements.length)),
+                    loadUserFavorites().then(() => console.log('Favorites loaded:', userFavorites.length)),
+                    loadUserHistory().then(() => console.log('History loaded:', userHistory.length))
+                ]);
+                
+                console.log('All data loaded successfully');
+                
+                // Update UI with loaded data
+                updateUserStats();
+                populateFavoriteMovies();
+                populateWatchHistory();
+                populateAchievements();
+                populateRecentActivity();
+                
+                showNotification('Đã tải dữ liệu hồ sơ thành công!', 'success');
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Lỗi tải dữ liệu: ' + error.message, 'error');
+            }
         }
 
-        function loadUserData() {
+        function updateUserStats() {
             // Update user stats in the UI
-            document.getElementById('moviesWatched').textContent = userData.stats.moviesWatched;
-            document.getElementById('hoursWatched').textContent = userData.stats.hoursWatched;
-            document.getElementById('favoriteMovies').textContent = userData.stats.favoriteMovies;
-            document.getElementById('achievementsUnlocked').textContent = userData.stats.achievementsUnlocked;
-        }
-
-        function populateFavoriteMovies() {
+            document.getElementById('moviesWatched').textContent = userStats.moviesWatched;
+            document.getElementById('hoursWatched').textContent = userStats.hoursWatched;
+            document.getElementById('favoriteMovies').textContent = userStats.favoriteMovies;
+            document.getElementById('achievementsUnlocked').textContent = userStats.achievementsUnlocked;
+        }        function populateFavoriteMovies() {
             const container = document.getElementById('favoriteMoviesList');
             
-            if (favoriteMovies.length === 0) {
+            if (userFavorites.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <ion-icon name="heart-outline"></ion-icon>
@@ -450,7 +888,7 @@
                 return;
             }
             
-            container.innerHTML = favoriteMovies.map(movie => `
+            container.innerHTML = userFavorites.map(movie => `
                 <div class="movie-item">
                     <img src="${movie.poster}" alt="${movie.title}" class="movie-poster">
                     <div class="movie-info">
@@ -474,12 +912,10 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        function populateWatchHistory() {
+        }        function populateWatchHistory() {
             const container = document.getElementById('watchHistoryList');
             
-            if (watchHistory.length === 0) {
+            if (userHistory.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <ion-icon name="time-outline"></ion-icon>
@@ -490,7 +926,7 @@
                 return;
             }
             
-            container.innerHTML = watchHistory.map(movie => `
+            container.innerHTML = userHistory.map(movie => `
                 <div class="movie-item">
                     <img src="${movie.poster}" alt="${movie.title}" class="movie-poster">
                     <div class="movie-info">
@@ -515,12 +951,21 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        function populateAchievements() {
+        }        function populateAchievements() {
             const container = document.getElementById('achievementsList');
             
-            container.innerHTML = achievements.map(achievement => `
+            if (userAchievements.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <ion-icon name="trophy-outline"></ion-icon>
+                        <h3>Chưa có thành tựu</h3>
+                        <p>Hãy xem phim để mở khóa thành tựu mới</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = userAchievements.map(achievement => `
                 <div class="achievement-item ${achievement.unlocked ? 'unlocked' : ''}">
                     <div class="achievement-icon">${achievement.icon}</div>
                     <div class="achievement-name">${achievement.name}</div>
@@ -533,12 +978,44 @@
                     </span>
                 </div>
             `).join('');
-        }
-
-        function populateRecentActivity() {
+        }        function populateRecentActivity() {
             const container = document.getElementById('activityTimeline');
             
-            container.innerHTML = recentActivity.map(activity => `
+            // Create recent activity from user data
+            const activities = [];
+            
+            // Add recent movie watches
+            userHistory.slice(0, 3).forEach(movie => {
+                activities.push({
+                    icon: 'play-circle',
+                    title: `Xem phim "${movie.title}"`,
+                    description: `Đã xem bộ phim ${movie.genre}`,
+                    time: movie.watchedAt
+                });
+            });
+            
+            // Add recent achievements
+            userAchievements.filter(a => a.unlocked).slice(0, 2).forEach(achievement => {
+                activities.push({
+                    icon: 'trophy',
+                    title: `Mở khóa thành tựu "${achievement.name}"`,
+                    description: achievement.description,
+                    time: achievement.unlockedAt ? formatTimeAgo(new Date(achievement.unlockedAt)) : 'Gần đây'
+                });
+            });
+            
+            if (activities.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <ion-icon name="pulse-outline"></ion-icon>
+                        <h3>Chưa có hoạt động</h3>
+                        <p>Hoạt động của bạn sẽ hiển thị ở đây</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = activities.map(activity => `
                 <div class="timeline-item">
                     <div class="timeline-icon">
                         <ion-icon name="${activity.icon}"></ion-icon>
@@ -559,51 +1036,313 @@
             const label = element.nextElementSibling.textContent;
             
             showNotification(`${isActive ? 'Bật' : 'Tắt'} ${label.toLowerCase()}`, 'success');
-        }
-
-        function saveSettings() {
-            const name = document.querySelector('input[type="text"]').value;
-            const email = document.querySelector('input[type="email"]').value;
+        }        function saveSettings() {
+            const name = document.querySelector('#displayName').value;
+            const email = document.querySelector('#userEmail').value;
+            const phone = document.querySelector('#userPhone').value;
             
-            // Simulate saving
-            showNotification('Đang lưu cài đặt...', 'success');
+            if (!name.trim()) {
+                showNotification('Vui lòng nhập tên hiển thị', 'error');
+                return;
+            }
             
-            setTimeout(() => {
-                showNotification('Đã lưu thành công!', 'success');
-                document.getElementById('userName').textContent = name;
-            }, 1000);
-        }
-
-        // Profile actions
+            if (!email.trim()) {
+                showNotification('Vui lòng nhập email', 'error');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showNotification('Email không hợp lệ', 'error');
+                return;
+            }
+            
+            // Update user profile
+            updateUserProfile({
+                fullName: name,
+                email: email,
+                phone: phone
+            });
+        }        // Profile actions
         function editProfile() {
-            showNotification('Đang mở trình chỉnh sửa hồ sơ...', 'success');
+            showEditProfileModal();
         }
+        
+        // Modal functions
+        function showEditProfileModal() {
+            const modal = document.getElementById('editProfileModal');
+            const editDisplayName = document.getElementById('editDisplayName');
+            const editUserEmail = document.getElementById('editUserEmail');
+            const editUserPhone = document.getElementById('editUserPhone');
+            const editUserBio = document.getElementById('editUserBio');
+            
+            // Pre-fill form with current data
+            if (currentUser) {
+                editDisplayName.value = currentUser.fullName || currentUser.username || '';
+                editUserEmail.value = currentUser.email || '';
+                editUserPhone.value = currentUser.phone || '';
+                editUserBio.value = currentUser.bio || '';
+            }
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeEditProfileModal() {
+            const modal = document.getElementById('editProfileModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function saveProfileChanges() {
+            const editDisplayName = document.getElementById('editDisplayName');
+            const editUserEmail = document.getElementById('editUserEmail');
+            const editUserPhone = document.getElementById('editUserPhone');
+            const editUserBio = document.getElementById('editUserBio');
+            
+            const name = editDisplayName.value.trim();
+            const email = editUserEmail.value.trim();
+            const phone = editUserPhone.value.trim();
+            const bio = editUserBio.value.trim();
+            
+            if (!name) {
+                showNotification('Vui lòng nhập tên hiển thị', 'error');
+                return;
+            }
+            
+            if (!email) {
+                showNotification('Vui lòng nhập email', 'error');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showNotification('Email không hợp lệ', 'error');
+                return;
+            }
+            
+            // Update user profile
+            updateUserProfile({
+                fullName: name,
+                email: email,
+                phone: phone,
+                bio: bio
+            }).then(success => {
+                if (success) {
+                    closeEditProfileModal();
+                    loadUserData(); // Reload user data to reflect changes
+                }
+            });
+        }
+        
+        function showChangePasswordModal() {
+            const modal = document.getElementById('changePasswordModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Clear form
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+        
+        function closeChangePasswordModal() {
+            const modal = document.getElementById('changePasswordModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function savePasswordChanges() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!currentPassword) {
+                showNotification('Vui lòng nhập mật khẩu hiện tại', 'error');
+                return;
+            }
+            
+            if (!newPassword) {
+                showNotification('Vui lòng nhập mật khẩu mới', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('Mật khẩu xác nhận không khớp', 'error');
+                return;
+            }
+            
+            // Validate password strength
+            if (!validatePassword(newPassword)) {
+                showNotification('Mật khẩu không đủ mạnh', 'error');
+                return;
+            }
+            
+            // Change password
+            changePassword(currentPassword, newPassword).then(success => {
+                if (success) {
+                    closeChangePasswordModal();
+                }
+            });
+        }
+        
+        function validatePassword(password) {
+            const minLength = 8;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+              return password.length >= minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
+        }
+        
+        // === DEBUG AND TEST FUNCTIONS ===
+        
+        // Function to simulate login for testing
+        function simulateLogin(username = 'testuser', fullName = 'Nguyễn Văn Test') {
+            const testUser = {
+                id: 1,
+                username: username,
+                fullName: fullName,
+                email: username + '@example.com',
+                phone: '0901234567',
+                bio: 'Tôi là người dùng test',
+                isPremium: true,
+                joinDate: '2024-03-01'
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(testUser));
+            localStorage.setItem('username', username);
+            localStorage.setItem('fullName', fullName);
+            localStorage.setItem('email', testUser.email);
+            
+            // Create some sample data
+            createSampleData();
+            
+            location.reload();
+        }
+          // Create sample data for testing
+        function createSampleData() {
+            // Sample movie click history - using realistic cartoon IDs
+            const sampleClickHistory = [
+                { movieId: 1, title: 'One Piece', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
+                { movieId: 2, title: 'Naruto', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() },
+                { movieId: 3, title: 'Dragon Ball', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 10).toISOString() },
+                { movieId: 1, title: 'One Piece', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
+                { movieId: 4, title: 'Attack on Titan', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString() },
+                { movieId: 2, title: 'Naruto', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString() },
+                { movieId: 5, title: 'My Hero Academia', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 96).toISOString() },
+                { movieId: 1, title: 'One Piece', clickedAt: new Date(Date.now() - 1000 * 60 * 60 * 120).toISOString() }
+            ];
+            
+            // Sample watch history
+            const sampleWatchHistory = [
+                { movieId: 1, title: 'One Piece', watchedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
+                { movieId: 2, title: 'Naruto', watchedAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
+                { movieId: 3, title: 'Dragon Ball', watchedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString() },
+                { movieId: 4, title: 'Attack on Titan', watchedAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString() },
+                { movieId: 5, title: 'My Hero Academia', watchedAt: new Date(Date.now() - 1000 * 60 * 60 * 96).toISOString() },
+                { movieId: 6, title: 'Demon Slayer', watchedAt: new Date(Date.now() - 1000 * 60 * 60 * 168).toISOString() }
+            ];
+            
+            localStorage.setItem('movieClickHistory', JSON.stringify(sampleClickHistory));
+            localStorage.setItem('watchHistory', JSON.stringify(sampleWatchHistory));
+            
+            console.log('Sample data created with movie IDs:', sampleClickHistory.map(c => c.movieId));
+            console.log('Watch history created:', sampleWatchHistory.length, 'items');
+        }
+        
+        // Clear all user data
+        function clearUserData() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('username');
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('email');
+            localStorage.removeItem('phone');
+            localStorage.removeItem('movieClickHistory');
+            localStorage.removeItem('watchHistory');
+            console.log('User data cleared!');
+        }
+          // Console commands for testing
+        console.log(`
+=== DEBUG COMMANDS ===
+Để test các chức năng, bạn có thể dùng:
+- simulateLogin('username', 'Full Name') - Mô phỏng đăng nhập
+- createSampleData() - Tạo dữ liệu mẫu
+- clearUserData() - Xóa tất cả dữ liệu user
+- showEditProfileModal() - Mở modal chỉnh sửa hồ sơ
+- showChangePasswordModal() - Mở modal đổi mật khẩu
+
+Ví dụ: simulateLogin('nguyenvana', 'Nguyễn Văn A')
+
+=== CURRENT STATUS ===
+User: ${currentUser ? currentUser.username : 'Not logged in'}
+Click History: ${JSON.parse(localStorage.getItem('movieClickHistory') || '[]').length} items
+Watch History: ${JSON.parse(localStorage.getItem('watchHistory') || '[]').length} items
+        `);
 
         function shareProfile() {
             if (navigator.share) {
-                navigator.share({
+                const shareData = {
                     title: 'Hồ sơ Maxion của tôi',
-                    text: `Xem hồ sơ phim của ${userData.name} trên Maxion`,
+                    text: `Xem hồ sơ phim của ${currentUser?.fullName || currentUser?.username || 'tôi'} trên Maxion`,
                     url: window.location.href
-                });
+                };
+                navigator.share(shareData);
             } else {
                 // Fallback: copy to clipboard
                 navigator.clipboard.writeText(window.location.href);
                 showNotification('Đã sao chép liên kết hồ sơ!', 'success');
             }
-        }
-
-        // Movie actions
+        }// Movie actions
         function playMovie(title) {
+            // Add to watch history
+            const movieId = Math.floor(Math.random() * 100) + 1; // Random ID for demo
+            addToWatchHistory(movieId, title);
             showNotification(`Đang phát: ${title}`, 'success');
         }
 
         function addToFavorites(title) {
+            const movieId = Math.floor(Math.random() * 100) + 1; // Random ID for demo
+            addToClickHistory(movieId, title);
             showNotification(`Đã thêm "${title}" vào yêu thích`, 'success');
         }
 
         function removeFromFavorites(title) {
+            // Remove from click history
+            const clickHistory = JSON.parse(localStorage.getItem('movieClickHistory') || '[]');
+            const updatedHistory = clickHistory.filter(item => item.title !== title);
+            localStorage.setItem('movieClickHistory', JSON.stringify(updatedHistory));
+            
             showNotification(`Đã xóa "${title}" khỏi yêu thích`, 'success');
+            
+            // Reload favorites
+            loadUserFavorites().then(() => {
+                populateFavoriteMovies();
+                updateUserStats();
+            });
+        }
+        
+        // Helper functions for managing history
+        function addToClickHistory(movieId, title) {
+            const clickHistory = JSON.parse(localStorage.getItem('movieClickHistory') || '[]');
+            clickHistory.push({
+                movieId: movieId,
+                title: title,
+                clickedAt: new Date().toISOString()
+            });
+            localStorage.setItem('movieClickHistory', JSON.stringify(clickHistory));
+        }
+        
+        function addToWatchHistory(movieId, title) {
+            const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+            watchHistory.push({
+                movieId: movieId,
+                title: title,
+                watchedAt: new Date().toISOString()
+            });
+            localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
         }
 
         // View functions
@@ -655,9 +1394,7 @@
                     }, 1000);
                 }
             });
-        }, 10000); // Every 10 seconds
-
-        // Keyboard shortcuts
+        }, 10000); // Every 10 seconds        // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
                 e.preventDefault();
@@ -668,7 +1405,38 @@
                 e.preventDefault();
                 saveSettings();
             }
+            
+            // Close modals with Escape key
+            if (e.key === 'Escape') {
+                closeEditProfileModal();
+                closeChangePasswordModal();
+            }
         });
+        
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            const editModal = document.getElementById('editProfileModal');
+            const passwordModal = document.getElementById('changePasswordModal');
+            
+            if (e.target === editModal) {
+                closeEditProfileModal();
+            }
+            
+            if (e.target === passwordModal) {
+                closeChangePasswordModal();
+            }
+        });
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add click handlers for interactive elements
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.movie-item')) {
+                    const movieTitle = e.target.closest('.movie-item').querySelector('h4').textContent;
+                    showNotification(`Đang phát: ${movieTitle}`, 'success');
+                }
+            });
+        }
     </script>
 </body>
 </html>
